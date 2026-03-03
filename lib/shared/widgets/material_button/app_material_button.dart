@@ -35,7 +35,7 @@ class AppMaterialButton extends StatelessWidget {
     this.height = 56,
     this.width = double.infinity,
     this.elevation = 0,
-    this.borderRadius = 0,
+    this.borderRadius = 50,
     this.shape,
     this.backgroundColor,
     this.disabledColor,
