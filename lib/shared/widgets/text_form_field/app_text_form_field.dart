@@ -257,8 +257,9 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
                         final isValidBDPhone = RegExp(
                           r'^(1)[3-9]\d{8}$',
                         ).hasMatch(cleaned);
-                        if (isValidBDPhone)
+                        if (isValidBDPhone) {
                           FocusManager.instance.primaryFocus?.unfocus();
+                        }
                       }
                     },
 
