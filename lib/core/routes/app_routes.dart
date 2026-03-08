@@ -1,6 +1,7 @@
 abstract class AppRoutes {
   static const onboarding = '/onboarding';
   static const onboardingTwo = '/onboardingTwo';
+  static const onboardingThree = '/onboardingThree';
   static const dashboard = '/dashboard';
   static const appRoot = '/appRoot';
   static const appScaffold = '/appScaffold';

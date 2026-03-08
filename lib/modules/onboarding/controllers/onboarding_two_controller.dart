@@ -99,7 +99,7 @@ class OnboardingTwoController extends GetxController with BaseController {
   }
 
   void completeOnboarding() {
-    Get.offAllNamed(AppRoutes.dashboard, arguments: selectedPet.value);
+    Get.toNamed(AppRoutes.onboardingThree, arguments: selectedPet.value);
   }
 
   void skipDemo() {
