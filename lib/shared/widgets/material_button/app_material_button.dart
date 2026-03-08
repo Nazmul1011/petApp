@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../progress_loader/progress_loader.dart';
+import '../../helpers/responsive.dart';
 
 enum IconPosition { left, right }
 
@@ -116,8 +117,8 @@ class AppMaterialButton extends StatelessWidget {
 
     final content = isLoading
         ? SizedBox(
-            width: 24,
-            height: 24,
+            width: R.width(24),
+            height: R.width(24),
             child: showLoader(progressColor: Colors.white),
           )
         : _buildAlignedContent(labelWidget);
@@ -201,8 +202,8 @@ class AppMaterialButton extends StatelessWidget {
                   child: isLoading
                       ? SizedBox(
                           key: const ValueKey('loader'),
-                          width: 24,
-                          height: 24,
+                          width: R.width(24),
+                          height: R.width(24),
                           child: showLoader(progressColor: Colors.white),
                         )
                       : SizedBox(

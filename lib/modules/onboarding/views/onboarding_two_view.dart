@@ -6,6 +6,7 @@ import 'package:petapp/modules/onboarding/controllers/onboarding_two_controller.
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/helpers/responsive.dart';
 
 class OnboardingTwoView extends GetView<OnboardingTwoController> {
   const OnboardingTwoView({super.key});
@@ -19,10 +20,13 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
 
     return AppScaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: R.width(24.0),
+          vertical: R.height(40.0),
+        ),
         child: Column(
           children: [
-            const SizedBox(height: 60), // Space from top
+            SizedBox(height: R.height(60)), // Space from top
             // Main Interactive Area
             Expanded(
               child: Obx(() {
@@ -50,14 +54,14 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                           ? () => controller.completeOnboarding()
                           : () => controller.skipDemo()),
                 borderRadius: 30,
-                height: 64,
+                height: R.height(64),
                 backgroundColor: isResult
                     ? AppColors.primaryColor
                     : Colors.white,
                 textColor: isResult ? Colors.white : AppColors.primaryColor,
               );
             }),
-            const SizedBox(height: 20),
+            SizedBox(height: R.height(20)),
           ],
         ),
       ),
@@ -76,10 +80,13 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
           opacity: isProcessing ? 0.0 : 1.0,
           duration: const Duration(milliseconds: 200),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(
+              horizontal: R.width(20),
+              vertical: R.height(10),
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(R.width(25)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -108,8 +115,8 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
               // Outer Pulse Circle
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: isListening ? 220 : 200,
-                height: isListening ? 220 : 200,
+                width: isListening ? R.width(220) : R.width(200),
+                height: isListening ? R.width(220) : R.width(200),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isListening
@@ -126,8 +133,8 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
               // Main Circle
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: isListening ? 160 : 140,
-                height: isListening ? 160 : 140,
+                width: isListening ? R.width(160) : R.width(140),
+                height: isListening ? R.width(160) : R.width(140),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isListening ? AppColors.primaryColor : Colors.white,
@@ -141,9 +148,9 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                 ),
                 child: Center(
                   child: isProcessing
-                      ? const SizedBox(
-                          width: 40,
-                          height: 40,
+                      ? SizedBox(
+                          width: R.width(40),
+                          height: R.width(40),
                           child: CircularProgressIndicator(
                             strokeWidth: 3,
                             valueColor: AlwaysStoppedAnimation<Color>(
@@ -153,7 +160,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                         )
                       : Icon(
                           Icons.mic,
-                          size: 50,
+                          size: R.width(50),
                           color: isListening ? Colors.white : Colors.grey[400],
                         ),
                 ),
@@ -169,11 +176,11 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
           opacity: isListening ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 300),
           child: Container(
-            width: 361,
-            height: 48,
+            width: R.width(361),
+            height: R.height(48),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(R.width(12)),
               border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
             ),
             child: Obx(() {
@@ -190,9 +197,9 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
 
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: R.width(20)),
                   child: CustomPaint(
-                    size: const Size(double.infinity, 24),
+                    size: Size(double.infinity, R.height(24)),
                     painter: WaveformPainter(values: vals, color: dynamicColor),
                   ),
                 ),
@@ -212,29 +219,30 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
           Align(
             alignment: Alignment.topLeft,
             child: SizedBox(
-              width: 260,
-              height: 180,
+              width: R.width(260),
+              height: R.height(180),
               child: Stack(
                 children: [
                   // Pet Image
                   Positioned(
                     left: 0,
-                    top: 20,
+                    top: R.height(20),
                     child: Image.asset(
                       controller.petImagePath,
-                      width: 140,
-                      height: 140,
+                      width: R.width(140),
+                      height: R.width(140),
                       fit: BoxFit.contain,
                     ),
                   ),
                   // Animated Sound Waves (Golden Pulse)
                   Positioned(
-                    left: 125,
-                    top: 60,
+                    left: R.width(125),
+                    top: R.height(60),
+                    // t
                     child: Obx(() {
                       final animValue = controller.soundWaveAnimation.value;
                       return CustomPaint(
-                        size: const Size(60, 60),
+                        size: Size(R.width(60), R.width(60)),
                         painter: SoundWavePainter(
                           color: const Color(0xFFFFD700), // Golden/Yellow
                           animationValue: animValue,
@@ -247,15 +255,15 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
             ),
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: R.height(10)),
 
           // Waveform Container (Specific dimensions from user)
           Container(
-            width: 361,
-            height: 48,
+            width: R.width(361),
+            height: R.height(48),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12), // radius-12
+              borderRadius: BorderRadius.circular(R.width(12)), // radius-12
               border: Border.all(
                 color: Colors.grey.withValues(alpha: 0.1),
                 width: 1.0, // stroke-sm
@@ -270,12 +278,12 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
             ),
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: R.width(20)),
                 child: Obx(() {
                   // Explicit trigger
                   final vals = controller.waveformValues.toList();
                   return CustomPaint(
-                    size: const Size(double.infinity, 24),
+                    size: Size(double.infinity, R.height(24)),
                     painter: WaveformPainter(
                       values: vals,
                       color: AppColors.primaryColor,

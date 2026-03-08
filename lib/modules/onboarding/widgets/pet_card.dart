@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
+import 'package:petapp/shared/helpers/responsive.dart';
 
 class DashedCirclePainter extends CustomPainter {
   final Color color;
@@ -79,7 +80,7 @@ class PetCard extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   builder: (context, value, child) {
                     return CustomPaint(
-                      size: const Size(150, 150),
+                      size: Size(R.width(150), R.width(150)),
                       painter: DashedCirclePainter(
                         color: AppColors.primaryColor.withValues(alpha: value),
                         strokeWidth: 2,
@@ -90,8 +91,8 @@ class PetCard extends StatelessWidget {
               // Background circle
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: 140,
-                height: 140,
+                width: R.width(140),
+                height: R.width(140),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isSelected
@@ -106,21 +107,24 @@ class PetCard extends StatelessWidget {
                 curve: Curves.easeOutBack,
                 child: Image.asset(
                   imagePath,
-                  width: 90,
-                  height: 90,
+                  width: R.width(90),
+                  height: R.width(90),
                   fit: BoxFit.contain,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: R.height(12)),
           // Label pill
           AnimatedContainer(
             duration: const Duration(milliseconds: 1000),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            padding: EdgeInsets.symmetric(
+              horizontal: R.width(16),
+              vertical: R.height(6),
+            ),
             decoration: BoxDecoration(
               color: isSelected ? AppColors.primaryColor : Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(R.width(20)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),

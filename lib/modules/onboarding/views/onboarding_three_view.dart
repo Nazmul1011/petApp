@@ -5,6 +5,7 @@ import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_three_controller.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
+import 'package:petapp/shared/helpers/responsive.dart';
 
 class OnboardingThreeView extends GetView<OnboardingThreeController> {
   const OnboardingThreeView({super.key});
@@ -42,7 +43,7 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
             SafeArea(
               child: Column(
                 children: [
-                  const SizedBox(height: 48),
+                  SizedBox(height: R.height(48)),
                   Text(
                     "Understand feelings",
                     style: AppTypography.h4.copyWith(
@@ -51,7 +52,7 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: R.height(8)),
                   Text(
                     "Swipe to explore",
                     style: AppTypography.bodyMd.copyWith(
@@ -65,7 +66,7 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
 
                   // Swipeable Cards
                   SizedBox(
-                    height: 440,
+                    height: R.height(440),
                     child: PageView.builder(
                       controller: controller.pageController,
                       itemCount: controller.emotions.length,
@@ -78,15 +79,15 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                   ),
 
                   // Page Indicator
-                  const SizedBox(height: 32),
+                  SizedBox(height: R.height(32)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       controller.emotions.length,
                       (index) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: 8,
-                        height: 8,
+                        margin: EdgeInsets.symmetric(horizontal: R.width(4)),
+                        width: R.width(8),
+                        height: R.width(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: controller.currentPage.value == index
@@ -101,7 +102,7 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
 
                   // Continue Button
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: R.width(24)),
                     child: AnimatedOpacity(
                       opacity:
                           controller.currentPage.value ==
@@ -117,14 +118,14 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                           label: "Continue",
                           onPressed: () => controller.completeOnboarding(),
                           borderRadius: 30,
-                          height: 64,
+                          height: R.height(64),
                           backgroundColor: Colors.white,
                           textColor: AppColors.primaryColor,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: R.height(24)),
                 ],
               ),
             ),
@@ -143,12 +144,12 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
 
     return Center(
       child: Container(
-        width: 311,
-        height: 420,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
+        width: R.width(311),
+        height: R.height(420),
+        margin: EdgeInsets.symmetric(horizontal: R.width(8)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(R.width(32)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.08),
@@ -163,7 +164,7 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
             // Emotion Specific Illustration
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: R.width(24)),
                 child: isSvg
                     ? SvgPicture.asset(petImage, fit: BoxFit.contain)
                     : Image.asset(petImage, fit: BoxFit.contain),
@@ -178,9 +179,9 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: R.height(12)),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: EdgeInsets.symmetric(horizontal: R.width(32)),
               child: Text(
                 emotion.description,
                 style: AppTypography.bodyMd.copyWith(

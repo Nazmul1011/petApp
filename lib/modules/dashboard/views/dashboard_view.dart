@@ -4,6 +4,7 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/helpers/responsive.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -20,7 +21,7 @@ class DashboardView extends GetView<DashboardController> {
       body: Container(
         width: double.infinity,
         color: bgColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: R.width(24)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -28,14 +29,14 @@ class DashboardView extends GetView<DashboardController> {
               "${controller.petName} Dashboard",
               style: AppTypography.h4.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: R.height(20)),
             Image.asset(
               isDog
                   ? 'assets/images/dog image.png'
                   : 'assets/images/cat image.png',
-              width: 200,
+              width: R.width(200),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: R.height(40)),
             Text(
               "Welcome to your ${controller.petName.toLowerCase()}'s world!",
               style: AppTypography.bodyLg,
