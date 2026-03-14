@@ -4,6 +4,7 @@ import 'package:petapp/modules/onboarding/views/onboarding_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_two_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_three_view.dart';
 import 'package:petapp/modules/dashboard/views/dashboard_view.dart';
+import 'package:petapp/modules/payment/views/payment_view.dart';
 
 import '../../shared/widgets/scaffold/app_scaffold.dart';
 import 'app_routes.dart';
@@ -22,6 +23,7 @@ class AppPages {
       name: AppRoutes.onboardingThree,
       page: () => const OnboardingThreeView(),
     ),
+    GetPage(name: AppRoutes.payment, page: () => const PaymentView()),
     // Add your pages here
   ];
 }

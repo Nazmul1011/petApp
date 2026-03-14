@@ -5,6 +5,7 @@ abstract class AppRoutes {
   static const dashboard = '/dashboard';
   static const appRoot = '/appRoot';
   static const appScaffold = '/appScaffold';
+  static const payment = '/payment';
   // Add your routes here
 
   // Home
