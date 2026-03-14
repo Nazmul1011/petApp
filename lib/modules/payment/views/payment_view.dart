@@ -157,11 +157,10 @@ class PaymentView extends GetView<PaymentController> {
                   SizedBox(height: R.height(20)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text("PRIVACY POLICY", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
-                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
+                    children: [                      Text("PRIVACY POLICY", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
+                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white, width: R.width(5),height: R.height(5))),
                       Text("TERMS AND CONDITIONS", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
-                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
+                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white, width: R.width(5),height: R.height(5))),
                       Text("RESTORE", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
                     ],
                   ),
