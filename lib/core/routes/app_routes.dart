@@ -6,6 +6,8 @@ abstract class AppRoutes {
   static const appRoot = '/appRoot';
   static const appScaffold = '/appScaffold';
   static const payment = '/payment';
+  static const createPetProfileSplash = '/createPetProfileSplash';
+  static const createPetProfile = '/createPetProfile';
   // Add your routes here
 
   // Home
