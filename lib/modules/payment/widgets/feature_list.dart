@@ -15,8 +15,8 @@ class FeatureList extends StatelessWidget {
             Wrap(
               alignment: WrapAlignment.center,
               crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: R.width(12),
-              runSpacing: R.height(6),
+              spacing: R.width(4),
+              runSpacing: R.height(4),
               children: [
                   _buildFeatureItem("No ads, no data sold"),
                   _buildFeatureItem("Unlock all emojis and sounds"),
@@ -35,7 +35,7 @@ class FeatureList extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.circle, size: R.width(4), color: AppColors.primaryColor),
-        SizedBox(width: R.width(6)),
+        SizedBox(width: R.width(4)),
         Text(
           text,
           style: AppTypography.bodyXs.copyWith(
@@ -44,28 +44,5 @@ class FeatureList extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Widget _buildHighlightedFeatureItem(String text) {
-      return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.circle, size: R.width(4), color: AppColors.primaryColor),
-            SizedBox(width: R.width(6)),
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: R.width(2)),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue, width: 0.5),
-                ),
-                child: Text(
-                  text,
-                  style: AppTypography.bodyXs.copyWith(
-                    color: AppColors.headingText,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-            )
-          ],
-      );
   }
 }

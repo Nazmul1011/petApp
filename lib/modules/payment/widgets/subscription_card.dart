@@ -30,7 +30,6 @@ class SubscriptionCard extends StatelessWidget {
         width: double.infinity,
         padding: EdgeInsets.symmetric(
             horizontal: R.width(16), vertical: R.height(16)),
-        margin: EdgeInsets.only(bottom: R.height(12)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(R.width(16)),

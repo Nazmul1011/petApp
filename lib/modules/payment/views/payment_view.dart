@@ -10,6 +10,39 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import '../controllers/payment_controller.dart';
 import '../widgets/feature_list.dart';
 import '../widgets/subscription_card.dart';
+import 'package:petapp/shared/widgets/spacer/app_spacer.dart';
+import 'package:petapp/shared/widgets/richtext/app_rich_text.dart';
+
+class DashedDivider extends StatelessWidget {
+  final Color color;
+  final double height;
+  const DashedDivider({super.key, this.color = const Color(0xFF7F67CB), this.height = 0.5});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final boxWidth = constraints.constrainWidth();
+        const dashWidth = 5.0;
+        const dashSpace = 3.0;
+        final dashCount = (boxWidth / (dashWidth + dashSpace)).floor();
+        return Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
+          children: List.generate(dashCount, (_) {
+            return SizedBox(
+              width: dashWidth,
+              height: height,
+              child: DecoratedBox(
+                decoration: BoxDecoration(color: color),
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
+}
 
 class PaymentView extends GetView<PaymentController> {
   const PaymentView({super.key});
@@ -21,55 +54,54 @@ class PaymentView extends GetView<PaymentController> {
     }
 
     return AppScaffold(
-      horizontalPadding: R.width(16.0), // Request from prompt
+      horizontalPadding: 0,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
               Colors.white,
-              const Color(0xFF7F67CB).withValues(alpha: 0.8),
+              Colors.white,
+              const Color(0xCC7F67CB),
             ],
+            stops: const [0.0, 0.45, 1.0],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Column(
-          children: [
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: R.width(16.0)),
+          child: Column(
+            children: [
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(height: R.height(20)),
+                    addSpacer(R.height(16)),
                     // Hero Image
                     ClipRRect(
                       borderRadius: BorderRadius.circular(R.width(20)),
                       child: Image.asset(
                         'assets/images/payment.png',
                         width: double.infinity,
-                        height: R.height(220),
+                        height: R.height(185),
                         fit: BoxFit.cover,
                       ),
                     ),
                     
-                    SizedBox(height: R.height(24)),
+                    addSpacer(R.height(12)),
                     
                     // Title
-                    RichText(
+                    AppRichText(
+                      leadingText: "Get",
+                      highlightedText: "PRO",
+                      trailingText: "access",
+                      leadingTextStyle: AppTypography.h5.copyWith(color: Colors.black87, fontWeight: FontWeight.bold),
+                      highlightTextStyle: AppTypography.h5.copyWith(color: AppColors.primaryColor, fontWeight: FontWeight.bold),
+                      trailingTextStyle: AppTypography.h5.copyWith(color: Colors.black87, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: AppTypography.h5.copyWith(color: Colors.black87, fontWeight: FontWeight.bold),
-                        children: [
-                          const TextSpan(text: "Get "),
-                          TextSpan(
-                            text: "PRO ",
-                            style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold),
-                          ),
-                          const TextSpan(text: "access"),
-                        ],
-                      ),
                     ),
                     
-                    SizedBox(height: R.height(16)),
+                    addSpacer(R.height(8)),
                     
                     // Feature List
                     Padding(
@@ -77,7 +109,9 @@ class PaymentView extends GetView<PaymentController> {
                       child: const FeatureList(),
                     ),
                     
-                    SizedBox(height: R.height(30)),
+                    addSpacer(R.height(12)),
+                    const DashedDivider(),
+                    addSpacer(R.height(12)),
                     
                     // Subscriptions
                     Obx(() => Column(
@@ -89,6 +123,7 @@ class PaymentView extends GetView<PaymentController> {
                           isSelected: controller.selectedPlan.value == SubscriptionPlan.trial,
                           onTap: () => controller.selectPlan(SubscriptionPlan.trial),
                         ),
+                        addSpacer(R.height(12)),
                         SubscriptionCard(
                           title: "Weekly",
                           subtitle: "\$1.99 per week",
@@ -96,6 +131,7 @@ class PaymentView extends GetView<PaymentController> {
                           isSelected: controller.selectedPlan.value == SubscriptionPlan.weekly,
                           onTap: () => controller.selectPlan(SubscriptionPlan.weekly),
                         ),
+                        addSpacer(R.height(12)),
                         SubscriptionCard(
                           title: "Monthly",
                           subtitle: "\$2.99 per month",
@@ -104,6 +140,7 @@ class PaymentView extends GetView<PaymentController> {
                           isSelected: controller.selectedPlan.value == SubscriptionPlan.monthly,
                           onTap: () => controller.selectPlan(SubscriptionPlan.monthly),
                         ),
+                        addSpacer(R.height(12)),
                         SubscriptionCard(
                           title: "Yearly",
                           subtitle: "\$12.99 per year",
@@ -114,7 +151,7 @@ class PaymentView extends GetView<PaymentController> {
                       ],
                     )),
                     
-                    SizedBox(height: R.height(100)), // Space for sticky bottom bar
+                    addSpacer(R.height(40)), // Space for sticky bottom bar
                   ],
                 ),
               ),
@@ -127,17 +164,20 @@ class PaymentView extends GetView<PaymentController> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Obx(() => AppMaterialButton(
-                    label: "Continue with free trial",
-                    onPressed: controller.isLoading.value ? null : () => controller.continueWithTrial(),
-                    height: R.height(56),
-                    borderRadius: R.width(999),
-                    backgroundColor: Colors.white,
-                    textColor: AppColors.headingText,
-                    textStyle: AppTypography.labelMd.copyWith(color: AppColors.headingText),
-                    isLoading: controller.isLoading.value,
-                  )),
-                  SizedBox(height: R.height(12)),
+                  Obx(() {
+                    final isTrialSelected = controller.selectedPlan.value == SubscriptionPlan.trial;
+                    return AppMaterialButton(
+                      label: isTrialSelected ? "Continue with free trial" : "Buy subscription",
+                      onPressed: controller.isLoading.value ? null : () => controller.continueWithTrial(),
+                      height: R.height(56),
+                      borderRadius: R.width(999),
+                      backgroundColor: Colors.white,
+                      textColor: AppColors.headingText,
+                      textStyle: AppTypography.labelMd.copyWith(color: AppColors.headingText),
+                      isLoading: controller.isLoading.value,
+                    );
+                  }),
+                  addSpacer(R.height(16)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -147,29 +187,30 @@ class PaymentView extends GetView<PaymentController> {
                         height: R.height(16.125),
                         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                       ),
-                      SizedBox(width: R.width(6)),
+                      addSpacer(R.width(8), direction: SpacerDirection.horizontal),
                       Text(
                         "Cancel anytime",
                         style: AppTypography.labelXs.copyWith(color: Colors.white),
                       ),
                     ],
                   ),
-                  SizedBox(height: R.height(20)),
+                  SizedBox(height: R.height(16)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [                      Text("PRIVACY POLICY", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
-                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white, width: R.width(5),height: R.height(5))),
+                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
                       Text("TERMS AND CONDITIONS", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
-                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white, width: R.width(5),height: R.height(5))),
+                      Text("•", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
                       Text("RESTORE", style: AppTypography.overlineXs.copyWith(color: Colors.white)),
                     ],
                   ),
-                  SizedBox(height: R.height(10)),
+                  addSpacer(R.height(10)),
                 ],
               ),
             ),
           ],
         ),
+      ),
       ),
     );
   }
