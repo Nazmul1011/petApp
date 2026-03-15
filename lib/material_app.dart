@@ -5,6 +5,7 @@ import 'core/bindings/global_bindings.dart';
 import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
 import 'core/themes/app_theme.dart';
+
 import 'shared/helpers/responsive.dart';
 
 class Petapp extends StatelessWidget {

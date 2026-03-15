@@ -1,3 +1,4 @@
+
 abstract class AppRoutes {
   static const onboarding = '/onboarding';
   static const onboardingTwo = '/onboardingTwo';
@@ -9,4 +10,5 @@ abstract class AppRoutes {
 
   // Home
   static const homeView = '/homeView';
+
 }

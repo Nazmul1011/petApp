@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import 'package:petapp/modules/home/views/home_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_two_view.dart';
