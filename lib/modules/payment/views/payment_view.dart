@@ -220,19 +220,19 @@ class PaymentView extends GetView<PaymentController> {
                           _buildFooterLink("RESTORE"),
                         ],
                       ),
-                      SizedBox(height: R.height(34)),
+                      SizedBox(height: R.height(74)),
                       // Home Indicator Handle
-                      Center(
-                        child: Container(
-                          width: R.width(134),
-                          height: R.height(5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: R.height(8)),
+                      // Center(
+                      //   child: Container(
+                      //     width: R.width(134),
+                      //     height: R.height(5),
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.white,
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //   ),
+                      // ),
+                      // SizedBox(height: R.height(8)),
                     ],
                   ),
                 ),
