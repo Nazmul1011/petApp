@@ -6,6 +6,9 @@ abstract class AppRoutes {
   static const appRoot = '/appRoot';
   static const appScaffold = '/appScaffold';
   static const payment = '/payment';
+  static const language = '/language';
+  static const legal = '/legal';
+  static const subscription = '/subscription';
   // Add your routes here
 
   // Home
