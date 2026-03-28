@@ -17,7 +17,7 @@ class Petapp extends StatelessWidget {
       title: 'petapp',
       theme: appTheme(context),
       initialBinding: GlobalBindings(),
-      initialRoute: AppRoutes.language,
+      initialRoute: AppRoutes.dashboard,
       getPages: AppPages.pages,
     );
   }

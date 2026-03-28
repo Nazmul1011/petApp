@@ -3,7 +3,7 @@ import 'package:petapp/modules/home/views/home_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_two_view.dart';
 import 'package:petapp/modules/onboarding/views/onboarding_three_view.dart';
-import 'package:petapp/modules/dashboard/views/dashboard_view.dart';
+import 'package:petapp/modules/main/views/main_view.dart';
 import 'package:petapp/modules/payment/views/payment_view.dart';
 import 'package:petapp/modules/language/views/language_view.dart';
 import 'package:petapp/modules/legal/views/legal_view.dart';
@@ -21,7 +21,10 @@ class AppPages {
     ),
     GetPage(name: AppRoutes.appScaffold, page: () => const AppScaffold()),
     GetPage(name: AppRoutes.homeView, page: () => const HomeViewScreen()),
-    GetPage(name: AppRoutes.dashboard, page: () => const DashboardView()),
+    GetPage(
+      name: AppRoutes.dashboard,
+      page: () => const MainView(),
+    ),
     GetPage(
       name: AppRoutes.onboardingThree,
       page: () => const OnboardingThreeView(),
@@ -30,6 +33,5 @@ class AppPages {
     GetPage(name: AppRoutes.language, page: () => const LanguageView()),
     GetPage(name: AppRoutes.legal, page: () => const LegalView()),
     GetPage(name: AppRoutes.subscription, page: () => const SubscriptionView()),
-    // Add your pages here
   ];
 }

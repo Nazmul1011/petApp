@@ -2,12 +2,10 @@ import 'package:get/get.dart';
 
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/modules/payment/widgets/payment_required_modal.dart';
-import '../services/payment_service.dart';
 
 enum SubscriptionPlan { trial, weekly, monthly, yearly }
 
 class PaymentController extends GetxController with BaseController {
-  final PaymentService _service = Get.find<PaymentService>();
   final Rx<SubscriptionPlan> selectedPlan = SubscriptionPlan.monthly.obs;
 
   void selectPlan(SubscriptionPlan plan) {

@@ -4,7 +4,6 @@ import 'package:petapp/modules/payment/controllers/payment_controller.dart'; // 
 
 class SubscriptionModuleController extends GetxController with BaseController {
   final Rx<SubscriptionPlan> selectedPlan = SubscriptionPlan.monthly.obs;
-  final RxBool isLoading = false.obs;
 
   void selectPlan(SubscriptionPlan plan) {
     selectedPlan.value = plan;

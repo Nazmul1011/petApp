@@ -63,7 +63,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           border: Border.all(color: Colors.grey.shade200),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                             ),
                           ],
@@ -105,7 +105,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                       Text(
                                         "PREMIUM STATUS",
                                         style: AppTypography.overlineXs.copyWith(
-                                          color: Colors.white.withOpacity(0.9),
+                                          color: Colors.white.withValues(alpha: 0.9),
                                         ),
                                       ),
                                       SizedBox(height: R.height(8)),
@@ -128,7 +128,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                       Text(
                                         "Full access to all premium features and tools.",
                                         style: AppTypography.bodyXs.copyWith(
-                                          color: Colors.white.withOpacity(0.9),
+                                          color: Colors.white.withValues(alpha: 0.9),
                                         ),
                                       ),
                                     ],
