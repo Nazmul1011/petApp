@@ -1,6 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
@@ -14,17 +17,16 @@ class DashboardView extends GetView<DashboardController> {
         children: [
           _buildHeader(),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Microphone/Speaker Ring
-                _buildMicButton(),
-                SizedBox(height: R.height(60)),
-                
-                // Toggle Switcher (Pet vs Human)
-                _buildModeToggle(),
-              ],
-            ),
+            child: Obx(() {
+              switch (controller.uiState.value) {
+                case TranslationUIState.idle:
+                  return _buildIdleState();
+                case TranslationUIState.recording:
+                  return _buildRecordingState();
+                case TranslationUIState.result:
+                  return _buildResultState();
+              }
+            }),
           ),
         ],
       ),
@@ -81,95 +83,283 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildMicButton() {
-     return Container(
-      width: R.width(260),
-      height: R.width(260),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: Container(
-          width: R.width(220),
-          height: R.width(220),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                spreadRadius: 5,
+  Widget _buildIdleState() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: controller.startRecording,
+          child: Container(
+            width: R.width(180),
+            height: R.width(180),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+            ),
+            child: Container(
+              margin: EdgeInsets.all(R.width(20)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 20, 
+                    spreadRadius: 5,
+                  ),
+                ]
               ),
-            ],
-          ),
-          child: Center(
-            child: Icon(
-              Icons.mic,
-              size: R.width(60),
-              color: const Color(0xFF7F67CB),
+              child: const Center(
+                child: Icon(Icons.mic, color: Colors.grey, size: 40),
+              ),
             ),
           ),
         ),
+        SizedBox(height: R.height(80)),
+        _buildModeToggle(),
+      ],
+    );
+  }
+
+  Widget _buildRecordingState() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildAudioVisualizer(active: true),
+        SizedBox(height: R.height(40)),
+        GestureDetector(
+          onTap: controller.stopRecording,
+          child: Container(
+            width: R.width(140),
+            height: R.width(140),
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFF7F67CB), // Purple
+            ),
+            child: const Center(
+              child: Icon(Icons.mic, color: Colors.white, size: 50),
+            ),
+          ),
+        ),
+        SizedBox(height: R.height(80)),
+        // Placeholder to keep spacing identical
+        SizedBox(height: R.height(56)),
+      ],
+    );
+  }
+
+  Widget _buildResultState() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Spacer(),
+          
+          if (!controller.isHumanToDog.value)
+            Text(
+              controller.resultText.value,
+              style: AppTypography.h4.copyWith(fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
+            )
+          else 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/dog_happy_face.png', height: R.height(100)),
+                SizedBox(width: R.width(10)),
+                Icon(Icons.waves, color: Colors.yellow.shade700, size: R.width(40)),
+              ],
+            ),
+            
+          SizedBox(height: R.height(40)),
+          
+          Opacity(
+             opacity: 0.3, 
+             child: _buildAudioVisualizer(active: false)
+          ),
+          
+          SizedBox(height: R.height(30)),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+               IconButton(
+                 icon: const Icon(Icons.refresh),
+                 onPressed: controller.reset,
+                 color: Colors.black54,
+               ),
+               SizedBox(width: R.width(20)),
+               Container(
+                 decoration: BoxDecoration(
+                   shape: BoxShape.circle,
+                   border: Border.all(color: Colors.black87),
+                 ),
+                 child: IconButton(
+                   icon: const Icon(Icons.play_arrow),
+                   onPressed: controller.playResponse,
+                 ),
+               ),
+               SizedBox(width: R.width(20)),
+               Container(
+                 decoration: BoxDecoration(
+                   shape: BoxShape.circle,
+                   color: Colors.black87,
+                 ),
+                 child: IconButton(
+                   icon: const Icon(Icons.stop), 
+                   color: Colors.white,
+                   onPressed: () {}, 
+                 ),
+               ),
+            ],
+          ),
+          
+          const Spacer(flex: 2),
+          
+          // Save Voice Input
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Save voice",
+              style: AppTypography.labelXs.copyWith(color: Colors.grey.shade600),
+            ),
+          ),
+          SizedBox(height: R.height(8)),
+          TextFormField(
+            onChanged: (val) => controller.voiceLabel.value = val,
+            decoration: InputDecoration(
+              hintText: controller.isHumanToDog.value ? "ie. Hello boy" : "Snack",
+              hintStyle: AppTypography.bodyMd.copyWith(color: Colors.grey.shade400),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(R.width(30)),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(R.width(30)),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(R.width(30)),
+                borderSide: const BorderSide(color: Color(0xFF7F67CB)),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: R.width(20), vertical: R.height(16)),
+            ),
+          ),
+          
+          SizedBox(height: R.height(16)),
+          
+          Obx(() {
+            final isLabelEmpty = controller.voiceLabel.value.isEmpty;
+            return AppMaterialButton(
+              label: isLabelEmpty ? "Talk again" : "Save and continue",
+              onPressed: () {
+                if (isLabelEmpty) {
+                  controller.reset();
+                } else {
+                  // Save logic could go here
+                  controller.reset();
+                }
+              },
+              height: R.height(56),
+              borderRadius: 30,
+              backgroundColor: const Color(0xFF7F67CB),
+              textColor: Colors.white,
+            );
+          }),
+          
+          SizedBox(height: R.height(40)), // Padding for bottom nav visual
+        ],
       ),
     );
   }
 
+  Widget _buildAudioVisualizer({required bool active}) {
+    return SizedBox(
+      height: R.height(50),
+      child: Obx(() {
+        // Tie to amplitude stream -> fake visualizer effect
+        double amp = controller.amplitude.value; 
+        double normalized = (amp + 160) / 160; 
+        normalized = normalized.clamp(0.0, 1.0);
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(24, (index) {
+             // For a wavy look, use sine/random math
+             double baseHeight = active 
+                 ? max(6.0, 50 * normalized * Random().nextDouble())
+                 : 6.0 + (sin(index) * 4).abs();
+             
+             return AnimatedContainer(
+               duration: const Duration(milliseconds: 100),
+               width: 4,
+               height: active ? baseHeight : (index % 2 == 0 ? 10 : 4),
+               margin: const EdgeInsets.symmetric(horizontal: 3),
+               decoration: BoxDecoration(
+                 color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
+                 borderRadius: BorderRadius.circular(2),
+               ),
+             );
+          }),
+        );
+      }),
+    );
+  }
+
   Widget _buildModeToggle() {
-    return Container(
-      width: R.width(160),
-      height: R.height(48),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(R.width(24)),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-            onTap: () => controller.togglePetMode(false),
-            child: Obx(
-              () => Icon(
-                Icons.face,
-                color: !controller.isPetMode.value
-                    ? const Color(0xFF7F67CB)
-                    : Colors.grey,
-              ),
+    return GestureDetector(
+      onTap: controller.toggleMode,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: R.width(16), vertical: R.height(12)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05), 
+              blurRadius: 10, 
+              spreadRadius: 2
             ),
-          ),
-          const Icon(Icons.swap_horiz, color: Color(0xFF7F67CB)),
-          GestureDetector(
-            onTap: () => controller.togglePetMode(true),
-            child: Obx(
-              () => Container(
-                padding: EdgeInsets.all(R.width(2)),
-                decoration: controller.isPetMode.value 
-                  ? const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFF3F1FF))
-                  : null,
-                child: Icon(
-                  Icons.pets,
-                  size: 20,
-                  color: controller.isPetMode.value
-                      ? const Color(0xFF7F67CB)
-                      : Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ]
+        ),
+        child: Obx(() => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+             _buildToggleAvatar(
+               isHuman: controller.isHumanToDog.value,
+             ),
+             Padding(
+               padding: EdgeInsets.symmetric(horizontal: R.width(16)),
+               child: const Icon(Icons.swap_horiz, color: Color(0xFF7F67CB), size: 20),
+             ),
+             _buildToggleAvatar(
+               isHuman: !controller.isHumanToDog.value,
+             ),
+          ],
+        )),
       ),
     );
+  }
+
+  Widget _buildToggleAvatar({required bool isHuman}) {
+     if (isHuman) {
+        return Container(
+          width: R.width(28),
+          height: R.width(28),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.grey.shade700,
+          ),
+          child: const Icon(Icons.person, color: Colors.white, size: 18),
+        );
+     } else {
+        return Image.asset(
+          'assets/images/dog_happy_face.png', 
+          width: R.width(28), 
+          height: R.width(28),
+          fit: BoxFit.contain,
+        );
+     }
   }
 }

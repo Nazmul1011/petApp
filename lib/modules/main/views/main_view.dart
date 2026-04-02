@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:petapp/modules/emotions/views/cat_view.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/main_controller.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
@@ -25,7 +24,7 @@ class MainView extends GetView<MainController> {
           index: controller.currentIndex.value,
           children: const [
             DashboardView(),
-            CatViewMain(),
+            EmotionsView(),
             WhistleView(),
             TrainingView(),
             NotificationView(),
