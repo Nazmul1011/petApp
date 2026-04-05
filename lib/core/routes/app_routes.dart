@@ -9,6 +9,8 @@ abstract class AppRoutes {
   static const language = '/language';
   static const legal = '/legal';
   static const subscription = '/subscription';
+  static const trainingDetail = '/trainingDetail';
+  static const trainingViewAll = '/trainingViewAll';
   // Add your routes here
 
   // Home

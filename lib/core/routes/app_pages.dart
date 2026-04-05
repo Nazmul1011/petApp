@@ -8,6 +8,8 @@ import 'package:petapp/modules/payment/views/payment_view.dart';
 import 'package:petapp/modules/language/views/language_view.dart';
 import 'package:petapp/modules/legal/views/legal_view.dart';
 import 'package:petapp/modules/subscription/views/subscription_view.dart';
+import 'package:petapp/modules/training/views/training_detail_view.dart';
+import 'package:petapp/modules/training/views/training_view_all_view.dart';
 
 import '../../shared/widgets/scaffold/app_scaffold.dart';
 import 'app_routes.dart';
@@ -33,5 +35,7 @@ class AppPages {
     GetPage(name: AppRoutes.language, page: () => const LanguageView()),
     GetPage(name: AppRoutes.legal, page: () => const LegalView()),
     GetPage(name: AppRoutes.subscription, page: () => const SubscriptionView()),
+    GetPage(name: AppRoutes.trainingDetail, page: () => const TrainingDetailView()),
+    GetPage(name: AppRoutes.trainingViewAll, page: () => const TrainingViewAllView()),
   ];
 }
