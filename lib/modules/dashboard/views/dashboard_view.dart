@@ -185,8 +185,8 @@ class DashboardView extends GetView<DashboardController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
                IconButton(
-                 icon: const Icon(Icons.refresh),
-                 onPressed: controller.reset,
+                 icon: const Icon(Icons.replay),
+                 onPressed: controller.playRecordedVoice,
                  color: Colors.black54,
                ),
                SizedBox(width: R.width(20)),
@@ -209,7 +209,7 @@ class DashboardView extends GetView<DashboardController> {
                  child: IconButton(
                    icon: const Icon(Icons.stop), 
                    color: Colors.white,
-                   onPressed: () {}, 
+                   onPressed: controller.stopAudio, 
                  ),
                ),
             ],
@@ -257,7 +257,7 @@ class DashboardView extends GetView<DashboardController> {
                 if (isLabelEmpty) {
                   controller.reset();
                 } else {
-                  // Save logic could go here
+                  controller.saveCurrentVoice();
                   controller.reset();
                 }
               },

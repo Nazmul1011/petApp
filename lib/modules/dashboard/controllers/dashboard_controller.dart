@@ -11,6 +11,14 @@ import '../services/classifier_service.dart';
 
 enum TranslationUIState { idle, recording, result }
 
+class SavedVoice {
+  final String id;
+  final String name;
+  final String filePath;
+  final DateTime createdAt;
+  SavedVoice({required this.id, required this.name, required this.filePath, required this.createdAt});
+}
+
 class DashboardController extends GetxController with BaseController {
   final AudioRecorder audioRecorder = AudioRecorder();
   final AudioPlayer audioPlayer = AudioPlayer();
@@ -28,6 +36,9 @@ class DashboardController extends GetxController with BaseController {
   
   // Text input for save voice
   final RxString voiceLabel = "".obs;
+  
+  // Memory storage for saved voices
+  final RxList<SavedVoice> savedVoices = <SavedVoice>[].obs;
 
   StreamSubscription<RecordState>? _recordSub;
   StreamSubscription<Amplitude>? _amplitudeSub;
@@ -38,6 +49,21 @@ class DashboardController extends GetxController with BaseController {
     super.onInit();
     selectedPet.value = Get.arguments as PetType? ?? PetType.dog;
     classifierService.init();
+    
+    // Ensure iOS plays sound even if device is on silent mode
+    final audioContext = AudioContext(
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.playback,
+        options: {},
+      ),
+      android: AudioContextAndroid(
+        isSpeakerphoneOn: true,
+        contentType: AndroidContentType.music,
+        usageType: AndroidUsageType.media,
+        audioFocus: AndroidAudioFocus.gain,
+      ),
+    );
+    AudioPlayer.global.setAudioContext(audioContext);
     
     _recordSub = audioRecorder.onStateChanged().listen((RecordState state) {
       if (state == RecordState.stop) {
@@ -59,20 +85,54 @@ class DashboardController extends GetxController with BaseController {
   void startRecording() async {
     if (await audioRecorder.hasPermission()) {
       final directory = await getTemporaryDirectory();
-      final path = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.wav';
+      final ext = isHumanToDog.value ? 'm4a' : 'wav';
+      final path = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.$ext';
       currentRecordingPath.value = path;
 
-      const config = RecordConfig(
-        encoder: AudioEncoder.wav,
-        sampleRate: 16000,
-        numChannels: 1,
-      );
+      // Human Voice typically prefers m4a/aac with a standard sample rate of 44.1kHz.
+      // Yamnet dog analysis model explicitly requires wav encoding at 16000Hz mono.
+      final config = isHumanToDog.value 
+         ? const RecordConfig(
+             encoder: AudioEncoder.aacLc, 
+             sampleRate: 44100, 
+             numChannels: 1
+           )
+         : const RecordConfig(
+             encoder: AudioEncoder.wav,
+             sampleRate: 16000,
+             numChannels: 1,
+           );
 
       await audioRecorder.start(config, path: path);
       uiState.value = TranslationUIState.recording;
       _startRecordingTimer();
     }
   }
+
+  void saveCurrentVoice() {
+    if (voiceLabel.value.trim().isEmpty) {
+       Get.snackbar("Error", "Please enter a name for the voice");
+       return;
+    }
+    if (currentRecordingPath.value.isEmpty) {
+       Get.snackbar("Error", "No voice recorded");
+       return;
+    }
+
+    final newVoice = SavedVoice(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: voiceLabel.value.trim(),
+      filePath: currentRecordingPath.value,
+      createdAt: DateTime.now(),
+    );
+
+    savedVoices.add(newVoice);
+    Get.snackbar("Success", "Voice saved temporarily!");
+    
+    // Clear label after saving
+    voiceLabel.value = "";
+  }
+
 
   void stopRecording() async {
     final path = await audioRecorder.stop();
@@ -108,18 +168,24 @@ class DashboardController extends GetxController with BaseController {
   }
 
   void playResponse() async {
+    await audioPlayer.stop(); // Stop any currently playing audio
     if (isHumanToDog.value) {
       await audioPlayer.play(AssetSource(responseAssetPath.value));
     } else {
-       // Optional: play back the human's translated phrase as audio if we had TTS
-       // For now, just play a success ping or similar
+       // If Dog-to-Human, play back the recorded dog bark as the "voice"
+       playRecordedVoice();
     }
   }
 
   void playRecordedVoice() async {
+    await audioPlayer.stop(); // Stop any currently playing audio
     if (currentRecordingPath.value.isNotEmpty) {
       await audioPlayer.play(DeviceFileSource(currentRecordingPath.value));
     }
+  }
+
+  void stopAudio() async {
+    await audioPlayer.stop();
   }
 
   void reset() {

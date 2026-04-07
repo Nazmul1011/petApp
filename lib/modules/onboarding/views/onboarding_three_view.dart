@@ -29,12 +29,7 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white,
-                      backgroundColor.withValues(alpha: 0.2),
-                      backgroundColor.withValues(alpha: 0.5),
-                      backgroundColor,
-                    ],
+                    colors: [Colors.white, backgroundColor],
                   ),
                 ),
               ),
@@ -141,58 +136,77 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
     final isDog = petType.name == 'dog';
     final petImage = isDog ? emotion.dogImage : emotion.catImage;
     final isSvg = petImage.endsWith('.svg');
+    final backgroundColor = controller.getInterpolatedBackgroundColor();
 
     return Center(
       child: Container(
-        width: R.width(311),
-        height: R.height(420),
-        margin: EdgeInsets.symmetric(horizontal: R.width(8)),
+        // Outer Layer: The Light Thick Border
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(R.width(32)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 30,
-              offset: const Offset(0, 15),
-            ),
-          ],
+          color: backgroundColor.withValues(alpha: 0.2), // Light peach area
+          borderRadius: BorderRadius.circular(R.width(44)),
         ),
-        child: Column(
-          children: [
-            const SizedBox(height: 48),
-            // Emotion Specific Illustration
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-                child: isSvg
-                    ? SvgPicture.asset(petImage, fit: BoxFit.contain)
-                    : Image.asset(petImage, fit: BoxFit.contain),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              emotion.title,
-              style: AppTypography.h5.copyWith(
-                fontWeight: FontWeight.w800,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: R.height(12)),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: R.width(32)),
-              child: Text(
-                emotion.description,
-                style: AppTypography.bodyMd.copyWith(
-                  color: Colors.black54,
-                  height: 1.4,
+        padding: EdgeInsets.all(R.width(12)), // Light background thickness
+        child: Container(
+          // Inner Layer: The Deep Thick Border
+          decoration: BoxDecoration(
+            color: backgroundColor.withValues(alpha: 0.4), // Deeper peach area
+            borderRadius: BorderRadius.circular(R.width(36)),
+          ),
+          padding: EdgeInsets.all(R.width(12)), // Deep background thickness
+          child: Container(
+            // Core Layer: The White Card
+            width: R.width(273),
+            height: R.height(340),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(
+                R.width(28),
+              ), // Exactly radius-28
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-                textAlign: TextAlign.center,
-              ),
+              ],
             ),
-            const SizedBox(height: 48),
-          ],
+            child: Column(
+              children: [
+                const SizedBox(height: 48),
+                // Emotion Specific Illustration
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                    child: isSvg
+                        ? SvgPicture.asset(petImage, fit: BoxFit.contain)
+                        : Image.asset(petImage, fit: BoxFit.contain),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  emotion.title,
+                  style: AppTypography.h5.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: R.height(12)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(32)),
+                  child: Text(
+                    emotion.description,
+                    style: AppTypography.bodyMd.copyWith(
+                      color: Colors.black54,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 48),
+              ],
+            ),
+          ),
         ),
       ),
     );

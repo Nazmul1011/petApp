@@ -87,7 +87,7 @@ PODS:
   - OrderedSet (6.0.3)
   - pay_ios (0.0.1):
     - Flutter
-  - record_darwin (1.0.0):
+  - record_ios (1.2.0):
     - Flutter
   - SDWebImage (5.21.7):
     - SDWebImage/Core (= 5.21.7)
@@ -115,7 +115,7 @@ DEPENDENCIES:
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - pay_ios (from `.symlinks/plugins/pay_ios/ios`)
-  - record_darwin (from `.symlinks/plugins/record_darwin/ios`)
+  - record_ios (from `.symlinks/plugins/record_ios/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -151,8 +151,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   pay_ios:
     :path: ".symlinks/plugins/pay_ios/ios"
-  record_darwin:
-    :path: ".symlinks/plugins/record_darwin/ios"
+  record_ios:
+    :path: ".symlinks/plugins/record_ios/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqflite_darwin:
@@ -178,7 +178,7 @@ SPEC CHECKSUMS:
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   pay_ios: 2c48d76615ded0cfaff66185669501b8b1dfc55e
-  record_darwin: fb1f375f1d9603714f55b8708a903bbb91ffdb0a
+  record_ios: 412daca2350b228e698fffcd08f1f94ceb1e3844
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
