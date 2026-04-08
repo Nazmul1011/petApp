@@ -44,18 +44,16 @@ class WhistleController extends GetxController with GetSingleTickerProviderState
       pulseController.value = 0.0;
       isPlaying.value = false;
     } else {
-      if (_waveformSource == null) {
-        _waveformSource = await SoLoud.instance.loadWaveform(
-          WaveForm.sin,
-          true,
-          0.25,
-          1.0,
-        );
-      }
+      _waveformSource ??= await SoLoud.instance.loadWaveform(
+        WaveForm.sin,
+        true,
+        0.25,
+        1.0,
+      );
       
       if (_waveformSource != null) {
         SoLoud.instance.setWaveformFreq(_waveformSource!, frequency.value);
-        _currentHandle = SoLoud.instance.play(_waveformSource!);
+        _currentHandle = await SoLoud.instance.play(_waveformSource!);
         pulseController.repeat(reverse: true);
         isPlaying.value = true;
       }

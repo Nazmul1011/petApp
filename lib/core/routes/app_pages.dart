@@ -11,11 +11,16 @@ import 'package:petapp/modules/subscription/views/subscription_view.dart';
 import 'package:petapp/modules/training/views/training_detail_view.dart';
 import 'package:petapp/modules/training/views/training_view_all_view.dart';
 
+import 'package:petapp/modules/auth/views/splash_view.dart';
 import '../../shared/widgets/scaffold/app_scaffold.dart';
 import 'app_routes.dart';
 
+import 'package:petapp/modules/pet_setup/views/welcome_splash_view.dart';
+import 'package:petapp/modules/pet_setup/views/pet_profile_setup_view.dart';
+
 class AppPages {
   static final pages = [
+    GetPage(name: AppRoutes.appRoot, page: () => const SplashView()),
     GetPage(name: AppRoutes.onboarding, page: () => const OnboardingView()),
     GetPage(
       name: AppRoutes.onboardingTwo,
@@ -37,5 +42,7 @@ class AppPages {
     GetPage(name: AppRoutes.subscription, page: () => const SubscriptionView()),
     GetPage(name: AppRoutes.trainingDetail, page: () => const TrainingDetailView()),
     GetPage(name: AppRoutes.trainingViewAll, page: () => const TrainingViewAllView()),
+    GetPage(name: AppRoutes.welcomeSplash, page: () => const WelcomeSplashView()),
+    GetPage(name: AppRoutes.petProfileSetup, page: () => const PetProfileSetupView()),
   ];
 }

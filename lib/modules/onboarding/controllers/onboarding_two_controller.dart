@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
+import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 
 enum VoiceState { idle, listening, processing, result }
@@ -103,6 +104,8 @@ class OnboardingTwoController extends GetxController with BaseController {
   }
 
   void skipDemo() {
-    Get.offAllNamed(AppRoutes.dashboard, arguments: selectedPet.value);
+    // Instead of bypassing everything, we complete onboarding formally 
+    // so the AuthController can send the user to the Payment/Pet setup flow.
+    AuthController.to.completeOnboarding();
   }
 }

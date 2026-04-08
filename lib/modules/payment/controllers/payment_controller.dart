@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
+import 'package:petapp/core/routes/app_routes.dart';
 
 import 'package:petapp/core/controllers/base_controller.dart';
-import 'package:petapp/modules/payment/widgets/payment_required_modal.dart';
 
 enum SubscriptionPlan { trial, weekly, monthly, yearly }
 
@@ -13,17 +13,8 @@ class PaymentController extends GetxController with BaseController {
   }
 
   void continueWithTrial() async {
-    final result = await Get.dialog<bool>(
-      const PaymentRequiredModal(),
-      barrierDismissible: false,
-    );
-
-    if (result == true) {
-      // User tapped Continue
-      Get.log("User wants to continue with setting up a payment method.");
-    } else {
-      // User tapped Cancel
-      Get.log("User cancelled payment method setup.");
-    }
+    // Backend for payment is not fully completed.
+    // Proceed directly to the Pet Profile setup via Welcome Splash.
+    Get.offNamed(AppRoutes.welcomeSplash);
   }
 }

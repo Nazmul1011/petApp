@@ -1,0 +1,40 @@
+﻿Analyzing petApp...                                             
+
+   info - The constant name 'EN_UK' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:3:3 - constant_identifier_names
+   info - The constant name 'EN_US' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:4:3 - constant_identifier_names
+   info - The constant name 'BN' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:5:3 - constant_identifier_names
+   info - The constant name 'DE' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:6:3 - constant_identifier_names
+   info - The constant name 'FR' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:7:3 - constant_identifier_names
+   info - The constant name 'ES' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:8:3 - constant_identifier_names
+   info - The constant name 'IT' isn't a lowerCamelCase identifier - lib\modules\auth\model\user_model.dart:9:3 - constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\emotions\views\emotions_view.dart:70:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\emotions\views\emotions_view.dart:71:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\emotions\views\emotions_view.dart:82:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\emotions\views\emotions_view.dart:89:45 - deprecated_member_use
+warning - Unused import: 'dart:math' - lib\modules\more\views\more_view.dart:4:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:42:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:49:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:56:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:63:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:70:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:77:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:84:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:91:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:98:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\more\views\more_view.dart:122:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\training\views\training_detail_view.dart:58:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\training\views\training_view.dart:110:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\training\views\training_view.dart:126:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\training\views\training_view_all_view.dart:82:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\training\views\training_view_all_view.dart:98:45 - deprecated_member_use
+   info - The 'if' statement could be replaced by a null-aware assignment - lib\modules\whistle\controllers\whistle_controller.dart:47:7 - prefer_conditional_assignment
+  error - A value of type 'Future<SoundHandle>' can't be assigned to a variable of type 'SoundHandle?' - lib\modules\whistle\controllers\whistle_controller.dart:58:26 - invalid_assignment
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:70:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:82:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:105:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:135:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:141:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:200:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:244:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\whistle\views\whistle_view.dart:262:58 - deprecated_member_use
+

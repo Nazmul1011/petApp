@@ -16,7 +16,7 @@ dependencies:
   get_storage: ^2.1.1
   intl: ^0.20.2
   flutter_svg: ^2.2.2
-  record: ^5.0.0
+  record: ^6.2.0
   audioplayers: ^6.1.0
   path_provider: ^2.1.2
   flutter_dotenv: ^6.0.0
@@ -48,6 +48,8 @@ dependencies:
   url_launcher: ^6.3.1
   webview_flutter: ^4.10.0
   flutter_inappwebview: ^6.1.5
+  flutter_soloud: ^3.5.4
+  dotted_border: ^3.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/modules/main/controllers/main_controller.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:petapp/modules/emotions/controllers/emotions_controller.dart';
@@ -18,6 +19,9 @@ import 'package:petapp/modules/subscription/services/subscription_service.dart';
 class GlobalBindings extends Bindings {
   @override
   void dependencies() {
+    // Auth & Identity
+    Get.put<AuthController>(AuthController(), permanent: true);
+
     // Core Navigation & Main Shell
     Get.lazyPut<MainController>(() => MainController(), fenix: true);
     Get.lazyPut<DashboardController>(() => DashboardController(), fenix: true);

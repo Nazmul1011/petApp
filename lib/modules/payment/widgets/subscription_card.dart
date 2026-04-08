@@ -28,11 +28,11 @@ class SubscriptionCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: R.width(361),
-        height: R.height(66),
         padding: EdgeInsets.symmetric(
           horizontal: R.width(16),
-          vertical: R.height(6),
+          vertical: R.height(8),
         ),
+        constraints: BoxConstraints(minHeight: R.height(66)),
         margin: EdgeInsets.only(bottom: R.height(8)),
         decoration: BoxDecoration(
           color: Colors.white,

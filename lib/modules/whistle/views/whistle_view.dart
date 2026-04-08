@@ -67,7 +67,7 @@ class WhistleView extends GetView<WhistleController> {
                               shape: BoxShape.circle,
                               color: const Color(
                                 0xFF8B78E6,
-                              ).withOpacity(pulseOpacity * 0.4),
+                              ).withValues(alpha: pulseOpacity * 0.4),
                             ),
                           ),
                         ),
@@ -79,7 +79,7 @@ class WhistleView extends GetView<WhistleController> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: Colors.grey.withValues(alpha: 0.1),
                               width: 2,
                             ),
                           ),
@@ -102,7 +102,7 @@ class WhistleView extends GetView<WhistleController> {
                             height: 80,
                             color: isplaying
                                 ? Colors.white
-                                : Colors.grey.withOpacity(0.5),
+                                : Colors.grey.withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -132,13 +132,13 @@ class WhistleView extends GetView<WhistleController> {
                 data: SliderThemeData(
                   trackHeight: 24,
                   activeTrackColor: const Color(0xFF8B78E6),
-                  inactiveTrackColor: Colors.grey.withOpacity(0.15),
+                  inactiveTrackColor: Colors.grey.withValues(alpha: 0.15),
                   thumbColor: Colors.white,
                   thumbShape: const RoundSliderThumbShape(
                     enabledThumbRadius: 18.0,
                     elevation: 4.0,
                   ),
-                  overlayColor: const Color(0xFF8B78E6).withOpacity(0.2),
+                  overlayColor: const Color(0xFF8B78E6).withValues(alpha: 0.2),
                   overlayShape: const RoundSliderOverlayShape(
                     overlayRadius: 28.0,
                   ),
@@ -197,7 +197,7 @@ class WhistleView extends GetView<WhistleController> {
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -241,7 +241,7 @@ class WhistleView extends GetView<WhistleController> {
                     color: const Color(0xFFFFF7EA),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color(0xFFFFCC80).withOpacity(0.5),
+                      color: const Color(0xFFFFCC80).withValues(alpha: 0.5),
                     ),
                   ),
                   child: Column(
@@ -259,7 +259,7 @@ class WhistleView extends GetView<WhistleController> {
                       Text(
                         "For best results, use the whistle consistently for the same purpose so your pet learns what it means.",
                         style: TextStyle(
-                          color: const Color(0xFFFF9900).withOpacity(0.9),
+                          color: const Color(0xFFFF9900).withValues(alpha: 0.9),
                           fontSize: 13,
                           height: 1.4,
                         ),

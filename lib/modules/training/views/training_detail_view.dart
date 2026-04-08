@@ -55,7 +55,7 @@ class TrainingDetailView extends GetView<TrainingController> {
                       width: double.infinity,
                       height: R.height(200),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0E1).withOpacity(0.8),
+                        color: const Color(0xFFFFF0E1).withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(

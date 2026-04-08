@@ -28,23 +28,29 @@ class FeatureList extends StatelessWidget {
   }
 
   Widget _buildFeatureItem(String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.circle,
-          size: R.width(4),
-          color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
-        ),
-        SizedBox(width: R.width(6)),
-        Text(
-          text,
-          style: AppTypography.bodyXxs.copyWith(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: R.height(4)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.circle,
+            size: R.width(4),
+            color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
           ),
-        ),
-      ],
+          SizedBox(width: R.width(10)),
+          Flexible(
+            child: Text(
+              text,
+              style: AppTypography.bodyXxs.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -67,8 +67,8 @@ class EmotionsView extends GetView<EmotionsController> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: item.isLocked
-                    ? Colors.black.withOpacity(0.05)
-                    : const Color(0xFFFFF0E1).withOpacity(0.8),
+                    ? Colors.grey.shade400
+                    : const Color(0xFFFFF0E1).withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Stack(
@@ -76,22 +76,17 @@ class EmotionsView extends GetView<EmotionsController> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(R.width(8)),
-                    child: Image.asset(
-                      item.imagePath,
-                      fit: BoxFit.contain,
-                      color: item.isLocked ? Colors.black.withOpacity(0.2) : null,
-                      colorBlendMode: item.isLocked ? BlendMode.dstIn : null,
+                    child: Opacity(
+                      opacity: item.isLocked ? 0.5 : 1.0,
+                      child: Image.asset(
+                        item.imagePath,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   if (item.isLocked)
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.lock, color: Colors.white, size: 24),
-                      ),
+                    const Center(
+                      child: Icon(Icons.lock, color: Colors.white, size: 28),
                     ),
                 ],
               ),

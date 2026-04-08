@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:petapp/core/routes/app_routes.dart';
+import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 
 class EmotionData {
@@ -82,6 +82,8 @@ class OnboardingThreeController extends GetxController {
   }
 
   void completeOnboarding() {
-    Get.offAllNamed(AppRoutes.dashboard, arguments: selectedPet.value);
+    // Instead of direct navigation, we tell the AuthController onboarding is done
+    // This will hit the backend API and then trigger the correct routing
+    AuthController.to.completeOnboarding();
   }
 }

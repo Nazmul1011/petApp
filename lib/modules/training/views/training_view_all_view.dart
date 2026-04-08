@@ -79,7 +79,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF0E1).withOpacity(0.8),
+                color: const Color(0xFFFFF0E1).withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Stack(
@@ -95,7 +95,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
                   if (item.isLocked)
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Center(

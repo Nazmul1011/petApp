@@ -11,6 +11,8 @@ abstract class AppRoutes {
   static const subscription = '/subscription';
   static const trainingDetail = '/trainingDetail';
   static const trainingViewAll = '/trainingViewAll';
+  static const welcomeSplash = '/welcomeSplash';
+  static const petProfileSetup = '/petProfileSetup';
   // Add your routes here
 
   // Home

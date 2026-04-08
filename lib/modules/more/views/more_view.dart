@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
-import 'dart:math' as math;
+
 import '../controllers/more_controller.dart';
 
 class MoreView extends GetView<MoreController> {
@@ -39,63 +39,63 @@ class MoreView extends GetView<MoreController> {
               imagePath: "assets/images/icon/pet_profile.png",
               label: "Pet profile",
               iconColor: const Color(0xFF8B78E6),
-              bgColor: const Color(0xFF8B78E6).withOpacity(0.12),
+              bgColor: const Color(0xFF8B78E6).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/mood_history.png",
               label: "Mood History",
               iconColor: const Color(0xFFFF8A65),
-              bgColor: const Color(0xFFFF8A65).withOpacity(0.12),
+              bgColor: const Color(0xFFFF8A65).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Saved_talk.png",
               label: "Saved Talks",
               iconColor: const Color(0xFFF06292),
-              bgColor: const Color(0xFFF06292).withOpacity(0.12),
+              bgColor: const Color(0xFFF06292).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Language.png",
               label: "Language",
               iconColor: const Color(0xFF4DB6AC),
-              bgColor: const Color(0xFF4DB6AC).withOpacity(0.12),
+              bgColor: const Color(0xFF4DB6AC).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Subscription.png",
               label: "Subscription",
               iconColor: const Color(0xFF4DD0E1),
-              bgColor: const Color(0xFF4DD0E1).withOpacity(0.12),
+              bgColor: const Color(0xFF4DD0E1).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Others.png",
               label: "Others",
               iconColor: const Color(0xFFFFB300),
-              bgColor: const Color(0xFFFFB300).withOpacity(0.12),
+              bgColor: const Color(0xFFFFB300).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Support.png",
               label: "Support",
               iconColor: const Color(0xFFFF8A65),
-              bgColor: const Color(0xFFFF8A65).withOpacity(0.12),
+              bgColor: const Color(0xFFFF8A65).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Rate_Us.png",
               label: "Rate us",
               iconColor: const Color(0xFFFFB300),
-              bgColor: const Color(0xFFFFB300).withOpacity(0.12),
+              bgColor: const Color(0xFFFFB300).withValues(alpha: 0.12),
               onTap: () {},
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Share_app.png",
               label: "Share app",
               iconColor: const Color(0xFF5C6BC0),
-              bgColor: const Color(0xFF5C6BC0).withOpacity(0.12),
+              bgColor: const Color(0xFF5C6BC0).withValues(alpha: 0.12),
               onTap: () {},
             ),
           ],
@@ -119,7 +119,7 @@ class MoreView extends GetView<MoreController> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.15), width: 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
