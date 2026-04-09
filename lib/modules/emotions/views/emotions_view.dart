@@ -32,20 +32,38 @@ class EmotionsView extends GetView<EmotionsController> {
                   ),
                   SizedBox(height: R.height(24)),
                   Obx(
-                    () => GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.emotions.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: R.height(16),
-                        crossAxisSpacing: R.width(16),
-                        childAspectRatio: 0.85,
-                      ),
-                      itemBuilder: (context, index) {
-                        return _buildEmotionCard(controller.emotions[index]);
-                      },
-                    ),
+                    () => controller.isLoading.value
+                        ? Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: R.height(100)),
+                              child: const CircularProgressIndicator(color: Color(0xFF8C52FF)),
+                            ),
+                          )
+                        : controller.emotions.isEmpty
+                            ? Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: R.height(100)),
+                                  child: Text(
+                                    "No emotions found for your pet.\nPlease check your connection.",
+                                    textAlign: TextAlign.center,
+                                    style: AppTypography.bodyLg,
+                                  ),
+                                ),
+                              )
+                            : GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: controller.emotions.length,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  mainAxisSpacing: R.height(16),
+                                  crossAxisSpacing: R.width(16),
+                                  childAspectRatio: 0.85,
+                                ),
+                                itemBuilder: (context, index) {
+                                  return _buildEmotionCard(controller.emotions[index]);
+                                },
+                              ),
                   ),
                   SizedBox(height: R.height(40)),
                 ],

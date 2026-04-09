@@ -1,30 +1,58 @@
 import 'package:get/get.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
+import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
 import '../models/training_item.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../../../core/services/api_service.dart';
 
 class TrainingController extends GetxController with BaseController {
-  final basicCommands = <TrainingItem>[
-    TrainingItem(name: "Sit", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.command),
-    TrainingItem(name: "Stay", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.command),
-    TrainingItem(name: "Go outside", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.command, isLocked: true),
-    TrainingItem(name: "Drop it/Stop", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.command, isLocked: true),
-    TrainingItem(name: "Stand", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.command, isLocked: true),
-    TrainingItem(name: "Come", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.command, isLocked: true),
-  ].obs;
+  final ApiService _apiService = ApiService();
+  final AuthController _authController = Get.find<AuthController>();
 
-  final tricks = <TrainingItem>[
-    TrainingItem(name: "Cup game", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.trick, isLocked: true),
-    TrainingItem(name: "Give paw", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.trick, isLocked: true),
-    TrainingItem(name: "Bark", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.trick, isLocked: true),
-    TrainingItem(name: "Sit", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.trick),
-    TrainingItem(name: "Turn Around", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.trick),
-    TrainingItem(name: "Search", imagePath: "assets/images/dog_happy_face.png", type: TrainingType.trick),
-  ].obs;
+  final basicCommands = <TrainingItem>[].obs;
+  final tricks = <TrainingItem>[].obs;
+  final isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchTraining();
+  }
+
+  Future<void> fetchTraining() async {
+    isLoading.value = true;
+    try {
+      final response = await _apiService.get('/training');
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic> data = response.data;
+        final items = data.map((json) => TrainingItem.fromJson(json)).toList();
+        
+        // Filter by category
+        basicCommands.assignAll(items.where((e) => e.category == 'BASIC').toList());
+        tricks.assignAll(items.where((e) => e.category == 'TRICK').toList());
+      }
+    } catch (e) {
+      showSnack(
+        content: "Failed to load training content",
+        status: SnackBarStatus.error,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  bool isItemLocked(TrainingItem item) {
+    if (!item.isPremium) return false;
+    return !_authController.user.value!.isPremium;
+  }
 
   void goToDetail(TrainingItem item) {
-    if (item.isLocked) {
-      Get.snackbar("Locked", "This training is currently locked.", snackPosition: SnackPosition.BOTTOM);
+    if (isItemLocked(item)) {
+      showSnack(
+        content: "This training is locked. Please upgrade to premium.",
+        status: SnackBarStatus.warning,
+      );
     } else {
       Get.toNamed(AppRoutes.trainingDetail, arguments: item);
     }
@@ -32,15 +60,5 @@ class TrainingController extends GetxController with BaseController {
 
   void goToViewAll(String category) {
     Get.toNamed(AppRoutes.trainingViewAll, arguments: category);
-  }
-
-  Map<String, String> getTrainingData(String commandName) {
-    // For now, same text for all as per user request
-    return {
-      "Position": "Place the dog standing in front of you. Keep the environment quiet with minimal distractions. A leash may be used for control but is not required.",
-      "Command": "Say the word “$commandName” once in a clear, calm voice. Do not repeat the command. Consistency of the word matters more than volume.",
-      "Guidance": "Hold a treat close to the dog’s nose, then slowly move it upward and slightly backward over the head. As the head lifts, the dog’s hips naturally lower into a $commandName position.",
-      "Confirmation": "The moment the dog’s hips touch the ground, clearly say “Good” or another confirmation word to mark the success.",
-    };
   }
 }

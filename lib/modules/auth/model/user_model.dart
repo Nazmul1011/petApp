@@ -17,6 +17,7 @@ class UserModel {
   final int onboardingStep;
   final String? activePetId;
   final String? pushToken;
+  final List<dynamic> subscriptions;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -28,9 +29,12 @@ class UserModel {
     required this.onboardingStep,
     this.activePetId,
     this.pushToken,
+    this.subscriptions = const [],
     required this.createdAt,
     required this.updatedAt,
   });
+
+  bool get isPremium => subscriptions.isNotEmpty;
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -44,6 +48,7 @@ class UserModel {
       onboardingStep: json['onboardingStep'] ?? 0,
       activePetId: json['activePetId'],
       pushToken: json['pushToken'],
+      subscriptions: json['subscriptions'] ?? [],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
@@ -58,6 +63,7 @@ class UserModel {
       'onboardingStep': onboardingStep,
       'activePetId': activePetId,
       'pushToken': pushToken,
+      'subscriptions': subscriptions,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

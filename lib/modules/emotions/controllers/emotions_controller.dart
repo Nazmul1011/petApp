@@ -1,91 +1,119 @@
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/services/api_service.dart';
 import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../main/controllers/main_controller.dart';
 import '../models/emotion_item.dart';
 
 class EmotionsController extends GetxController with BaseController {
   final _apiService = ApiService();
+  final _audioPlayer = AudioPlayer();
 
-  final emotions = <EmotionItem>[
-    EmotionItem(name: "Happy", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Attention", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Angry", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Neutral", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Love", imagePath: "assets/images/dog_happy_face.png", isLocked: true),
-    EmotionItem(name: "Sleep", imagePath: "assets/images/dog_happy_face.png", isLocked: true),
-    EmotionItem(name: "Grumpy", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Scared", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Walking", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Yum", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Sorry", imagePath: "assets/images/dog_happy_face.png"),
-    EmotionItem(name: "Anxious", imagePath: "assets/images/dog_happy_face.png"),
-  ].obs;
+  final emotions = <EmotionItem>[].obs;
 
-  String _mapToBackendMoodType(String emotionName) {
-    switch (emotionName.toLowerCase()) {
-      case 'happy':
-        return 'EXCITED'; // Or PLAYFUL
-      case 'attention':
-        return 'CALM';
-      case 'angry':
-      case 'grumpy':
-        return 'ANGRY';
-      case 'neutral':
-        return 'NEUTRAL';
-      case 'love':
-        return 'EXCITED';
-      case 'sleep':
-        return 'SLEEPY';
-      case 'scared':
-      case 'sorry':
-      case 'anxious':
-        return 'ANXIOUS';
-      case 'walking':
-        return 'PLAYFUL';
-      case 'yum':
-        return 'HUNGRY';
-      default:
-        return 'NEUTRAL';
+  @override
+  void onInit() {
+    super.onInit();
+    _setupAudio();
+    fetchEmotions();
+
+    // Stop sound when switching tabs
+    try {
+      final mainController = Get.find<MainController>();
+      ever(mainController.currentIndex, (index) {
+        if (index != 1) { // 1 is the Emotions tab index
+          _audioPlayer.stop();
+        }
+      });
+    } catch (_) {
+      // MainController might not be initialized in some test scenarios
     }
   }
 
-  Future<void> selectEmotion(EmotionItem item) async {
-    if (item.isLocked) {
-      Get.snackbar("Locked", "This emotion is currently locked.",
-          snackPosition: SnackPosition.BOTTOM);
-      return;
-    }
+  void _setupAudio() {
+    // Simplified setup to avoid conflicts with other audio packages
+    // This uses default playback routing
+  }
 
+  @override
+  void onClose() {
+    _audioPlayer.dispose();
+    super.onClose();
+  }
+
+  Future<void> fetchEmotions() async {
     try {
       setLoading(true);
-      final moodType = _mapToBackendMoodType(item.name);
+      final response = await _apiService.get('/mood/presets');
       
-      final payload = {
-        "mood": moodType,
-        "detectedSound": item.name,
-        "confidence": 0.85 // Default mock confidence
-      };
+      if (response.data != null && response.data['success'] == true) {
+        final List<dynamic> data = response.data['data'];
+        final isPremiumUser = AuthController.to.user.value?.isPremium ?? false;
 
-      final response = await _apiService.post(
-        '/mood',
-        data: payload,
-      );
-
-      setLoading(false);
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        showSnack(
-          content: '${item.name} emotion recorded securely!',
-          status: SnackBarStatus.success,
-        );
+        emotions.value = data.map((json) {
+          final isPremiumItem = json['isPremium'] ?? false;
+          // Item is locked if it is premium but user is not a premium subscriber
+          final bool isLocked = isPremiumItem && !isPremiumUser;
+          return EmotionItem.fromJson(json, isLocked: isLocked);
+        }).toList();
       }
+      setLoading(false);
     } catch (e) {
       setLoading(false);
       showSnack(
-        content: e.toString(),
+        content: "Failed to load emotions: ${e.toString()}",
         status: SnackBarStatus.error,
       );
     }
+  }
+
+  final RxBool isPlayingSound = false.obs;
+
+  Future<void> selectEmotion(EmotionItem item) async {
+    if (item.isLocked) {
+      showSnack(
+        content: "This emotion is premium. Upgrade to unlock!",
+        status: SnackBarStatus.warning,
+      );
+      return;
+    }
+
+    // Play Sound
+    if (item.audioUrl != null && item.audioUrl!.isNotEmpty) {
+      try {
+        if (isPlayingSound.value) {
+          await _audioPlayer.stop();
+        }
+        
+        isPlayingSound.value = true;
+        await _audioPlayer.play(
+          UrlSource(item.audioUrl!, mimeType: "audio/mpeg"),
+        );
+      } catch (e) {
+        print("Error playing sound: $e");
+        showSnack(
+          content: "Failed to play sound. Please check your connection.",
+          status: SnackBarStatus.error,
+        );
+      } finally {
+        isPlayingSound.value = false;
+      }
+    }
+
+    // Optional: Record the selection in the backend history
+    /*
+    try {
+      final payload = {
+        "mood": _mapToBackendMoodType(item.name),
+        "detectedSound": item.name,
+        "confidence": 1.0
+      };
+      await _apiService.post('/mood', data: payload);
+    } catch (e) {
+      // Silent error for recording
+    }
+    */
   }
 }

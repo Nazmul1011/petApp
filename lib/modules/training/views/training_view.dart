@@ -120,7 +120,7 @@ class TrainingView extends GetView<TrainingController> {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  if (item.isLocked)
+                  if (controller.isItemLocked(item))
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.4),

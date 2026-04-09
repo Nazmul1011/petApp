@@ -17,7 +17,7 @@ class AppHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
-              'assets/images/Logo_image.png',
+              'assets/images/header_logo.png',
               height: R.height(40),
             ),
             Row(

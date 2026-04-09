@@ -14,7 +14,7 @@ class AuthController extends GetxController {
   final AuthTokenService _tokenService = AuthTokenService();
 
   static const String _gameIdKey = 'device_game_id';
-  
+
   final Rxn<UserModel> user = Rxn<UserModel>();
   final RxBool isLoading = false.obs;
 
@@ -37,13 +37,17 @@ class AuthController extends GetxController {
 
   Future<void> _autoLogin() async {
     final rt = _tokenService.refreshToken;
+    bool success = false;
 
     if (rt != null) {
-      await refreshAccessToken();
-    } else {
+      success = await refreshAccessToken();
+    }
+
+    // If refresh failed (e.g. database reset) or no token exists, try device login
+    if (!success) {
       await loginWithDevice();
     }
-    
+
     // After login attempt, decide where to go
     handleRouting();
   }
@@ -59,7 +63,8 @@ class AuthController extends GetxController {
     if (!currentUser.onboardingCompleted) {
       // Step 1: Force onboarding completion
       Get.offAllNamed(AppRoutes.onboarding);
-    } else if (currentUser.activePetId == null || currentUser.activePetId!.isEmpty) {
+    } else if (currentUser.activePetId == null ||
+        currentUser.activePetId!.isEmpty) {
       // Step 2: Onboarding done, but no pet profile yet. Go to Payment/Pet Setup flow.
       // Based on user request, the entry point for pet setup is after Payment.
       Get.offAllNamed(AppRoutes.payment);
@@ -77,10 +82,11 @@ class AuthController extends GetxController {
 
       if (response.success && response.data != null) {
         final authData = response.data!;
-        
+
         // Save tokens
         _tokenService.setTokens(
-          sessionToken: authData.accessToken, // Using accessToken as sessionToken for now
+          sessionToken:
+              authData.accessToken, // Using accessToken as sessionToken for now
           accessToken: authData.accessToken,
           refreshToken: authData.refreshToken,
         );
@@ -101,7 +107,7 @@ class AuthController extends GetxController {
     final response = await _authApi.refreshTokens(rt);
     if (response.success && response.data != null) {
       final authData = response.data!;
-      
+
       _tokenService.setTokens(
         sessionToken: authData.accessToken,
         accessToken: authData.accessToken,
@@ -138,7 +144,7 @@ class AuthController extends GetxController {
       'onboardingCompleted': true,
       'onboardingStep': 3,
     });
-    
+
     if (response.success && response.data != null) {
       user.value = response.data;
       handleRouting();

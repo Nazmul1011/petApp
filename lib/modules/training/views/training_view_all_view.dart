@@ -50,7 +50,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
               SizedBox(height: R.height(24)),
               Expanded(
                 child: GridView.builder(
-                  itemCount: items.length * 3, // Mocking more items as seen in screenshot
+                  itemCount: items.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: R.height(16),
@@ -58,7 +58,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
                     childAspectRatio: 0.85,
                   ),
                   itemBuilder: (context, index) {
-                    final item = items[index % items.length];
+                    final item = items[index];
                     return _buildGridItem(item);
                   },
                 ),
@@ -92,7 +92,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  if (item.isLocked)
+                  if (controller.isItemLocked(item))
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.4),

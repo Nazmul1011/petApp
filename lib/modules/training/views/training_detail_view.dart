@@ -11,8 +11,7 @@ class TrainingDetailView extends GetView<TrainingController> {
   @override
   Widget build(BuildContext context) {
     final item = Get.arguments as TrainingItem;
-    final trainingData = controller.getTrainingData(item.name);
-    final prefix = item.type == TrainingType.command ? "Basic Command" : "Trick";
+    final prefix = item.category == 'BASIC' ? "Basic Command" : "Trick";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -69,10 +68,10 @@ class TrainingDetailView extends GetView<TrainingController> {
                       ),
                     ),
                     SizedBox(height: R.height(24)),
-                    _buildTrainingSection("Position", trainingData["Position"]!),
-                    _buildTrainingSection("Command", trainingData["Command"]!),
-                    _buildTrainingSection("Guidance", trainingData["Guidance"]!),
-                    _buildTrainingSection("Confirmation", trainingData["Confirmation"]!),
+                    _buildTrainingSection("Position", item.position),
+                    _buildTrainingSection("Command", item.command),
+                    _buildTrainingSection("Guidance", item.guidance),
+                    _buildTrainingSection("Confirmation", item.confirmation),
                     SizedBox(height: R.height(40)),
                   ],
                 ),
