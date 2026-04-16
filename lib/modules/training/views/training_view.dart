@@ -31,15 +31,15 @@ class TrainingView extends GetView<TrainingController> {
                     ),
                   ),
                   SizedBox(height: R.height(24)),
-                  _buildSection(
+                  Obx(() => _buildSection(
                     title: "BASIC COMMANDS",
-                    items: controller.basicCommands,
-                  ),
+                    items: controller.basicCommands.take(3).toList(),
+                  )),
                   SizedBox(height: R.height(32)),
-                  _buildSection(
+                  Obx(() => _buildSection(
                     title: "TRICKS",
-                    items: controller.tricks,
-                  ),
+                    items: controller.tricks.take(3).toList(),
+                  )),
                   SizedBox(height: R.height(40)),
                 ],
               ),

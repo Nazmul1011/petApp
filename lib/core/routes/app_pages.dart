@@ -17,6 +17,7 @@ import 'app_routes.dart';
 
 import 'package:petapp/modules/pet_setup/views/welcome_splash_view.dart';
 import 'package:petapp/modules/pet_setup/views/pet_profile_setup_view.dart';
+import 'package:petapp/modules/talk/views/saved_talks_view.dart';
 
 class AppPages {
   static final pages = [
@@ -44,5 +45,6 @@ class AppPages {
     GetPage(name: AppRoutes.trainingViewAll, page: () => const TrainingViewAllView()),
     GetPage(name: AppRoutes.welcomeSplash, page: () => const WelcomeSplashView()),
     GetPage(name: AppRoutes.petProfileSetup, page: () => const PetProfileSetupView()),
+    GetPage(name: AppRoutes.savedTalks, page: () => const SavedTalksView()),
   ];
 }

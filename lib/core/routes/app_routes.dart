@@ -17,4 +17,7 @@ abstract class AppRoutes {
 
   // Home
   static const homeView = '/homeView';
+
+  // Talk
+  static const savedTalks = '/savedTalks';
 }

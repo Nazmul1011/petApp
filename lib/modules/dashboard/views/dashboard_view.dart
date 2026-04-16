@@ -203,16 +203,22 @@ class DashboardView extends GetView<DashboardController> {
           
           Obx(() {
             final isLabelEmpty = controller.voiceLabel.value.isEmpty;
+            final isSaving = controller.isSaving.value;
             return AppMaterialButton(
-              label: isLabelEmpty ? "Talk again" : "Save and continue",
-              onPressed: () {
-                if (isLabelEmpty) {
-                  controller.reset();
-                } else {
-                  // Save logic could go here
-                  controller.reset();
-                }
-              },
+              label: isSaving
+                  ? "Saving…"
+                  : isLabelEmpty
+                      ? "Talk again"
+                      : "Save and continue",
+              onPressed: isSaving
+                  ? null
+                  : () {
+                      if (isLabelEmpty) {
+                        controller.reset();
+                      } else {
+                        controller.saveVoice();
+                      }
+                    },
               height: R.height(56),
               borderRadius: 30,
               backgroundColor: const Color(0xFF7F67CB),

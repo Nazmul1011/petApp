@@ -25,8 +25,21 @@ class TrainingController extends GetxController with BaseController {
     try {
       final response = await _apiService.get('/training');
       if (response.statusCode == 200 && response.data != null) {
-        final List<dynamic> data = response.data;
-        final items = data.map((json) => TrainingItem.fromJson(json)).toList();
+        final dynamic respData = response.data;
+        
+        dynamic rawData = (respData is Map && respData.containsKey('data')) 
+            ? respData['data'] 
+            : respData;
+            
+        // The backend returns { items: [...], premiumAllowed: boolean }
+        List<dynamic> dataList = [];
+        if (rawData is Map && rawData.containsKey('items')) {
+          dataList = rawData['items'];
+        } else if (rawData is List) {
+          dataList = rawData;
+        }
+
+        final items = dataList.map((json) => TrainingItem.fromJson(json)).toList();
         
         // Filter by category
         basicCommands.assignAll(items.where((e) => e.category == 'BASIC').toList());
