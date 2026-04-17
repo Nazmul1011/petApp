@@ -118,7 +118,12 @@ class DashboardView extends GetView<DashboardController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/dog_happy_face.png', height: R.height(100)),
+                Image.asset(
+                  controller.selectedPet.value == PetType.dog
+                      ? 'assets/images/dog_happy_face.png'
+                      : 'assets/images/play cat 1.png',
+                  height: R.height(100),
+                ),
                 SizedBox(width: R.width(10)),
                 Icon(Icons.waves, color: Colors.yellow.shade700, size: R.width(40)),
               ],
@@ -133,39 +138,7 @@ class DashboardView extends GetView<DashboardController> {
           
           SizedBox(height: R.height(30)),
           
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-               IconButton(
-                 icon: const Icon(Icons.refresh),
-                 onPressed: controller.reset,
-                 color: Colors.black54,
-               ),
-               SizedBox(width: R.width(20)),
-               Container(
-                 decoration: BoxDecoration(
-                   shape: BoxShape.circle,
-                   border: Border.all(color: Colors.black87),
-                 ),
-                 child: IconButton(
-                   icon: const Icon(Icons.play_arrow),
-                   onPressed: controller.playResponse,
-                 ),
-               ),
-               SizedBox(width: R.width(20)),
-               Container(
-                 decoration: BoxDecoration(
-                   shape: BoxShape.circle,
-                   color: Colors.black87,
-                 ),
-                 child: IconButton(
-                   icon: const Icon(Icons.stop), 
-                   color: Colors.white,
-                   onPressed: () {}, 
-                 ),
-               ),
-            ],
-          ),
+          _buildResultIcons(),
           
           const Spacer(flex: 2),
           
@@ -228,6 +201,72 @@ class DashboardView extends GetView<DashboardController> {
           
           SizedBox(height: R.height(40)), // Padding for bottom nav visual
         ],
+      ),
+    );
+  }
+
+  Widget _buildResultIcons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _circleIconButton(
+          icon: Icons.refresh,
+          onTap: () => controller.reset(),
+        ),
+        SizedBox(width: R.width(20)),
+        _circleIconButton(
+          icon: Icons.stop,
+          onTap: () => controller.stopAudio(),
+          isSolid: true,
+        ),
+        SizedBox(width: R.width(20)),
+        Obx(() => _circleIconButton(
+          icon: controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+          onTap: () => controller.isPlaying.value 
+              ? controller.pauseAudio() 
+              : controller.playRecording(),
+          isSolid: true,
+        )),
+      ],
+    );
+  }
+
+  Widget _circleIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    bool isSolid = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: R.width(72),
+        height: R.width(72),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.1), width: 1),
+        ),
+        child: Center(
+          child: isSolid 
+              ? Container(
+                  width: R.width(48),
+                  height: R.width(48),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black87,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: R.width(20),
+                  ),
+                )
+              : Icon(
+                  icon,
+                  color: Colors.black54,
+                  size: R.width(28),
+                ),
+        ),
       ),
     );
   }

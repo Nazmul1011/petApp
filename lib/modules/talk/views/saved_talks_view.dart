@@ -51,6 +51,8 @@ class SavedTalksController extends GetxController {
       await _player.play(UrlSource(audioUrl));
     } else if (audioUrl != null && audioUrl.startsWith('file://')) {
       await _player.play(DeviceFileSource(audioUrl.replaceFirst('file://', '')));
+    } else if (audioUrl != null && audioUrl.isNotEmpty) {
+      await _player.play(AssetSource(audioUrl));
     }
     _player.onPlayerComplete.listen((_) => playingIndex.value = -1);
   }
@@ -130,10 +132,7 @@ class SavedTalksView extends StatelessWidget {
                           index: index,
                           isPlaying: controller.playingIndex.value == index,
                           onPlay: () {
-                            final url = item.isHumanToPet
-                                ? item.outputAudioUrl
-                                : item.inputAudioUrl;
-                            controller.togglePlay(index, url);
+                            controller.togglePlay(index, item.inputAudioUrl);
                           },
                         ));
                   },

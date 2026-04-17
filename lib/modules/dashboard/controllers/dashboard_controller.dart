@@ -9,7 +9,8 @@ import 'package:petapp/modules/model_pharse/mood_phrases.dart' as phrases;
 import 'package:petapp/core/routes/app_routes.dart';
 import '../services/classifier_service.dart';
 import '../../talk/services/talk_api_service.dart';
-import '../../talk/models/translation_model.dart';
+import '../../auth/controllers/auth_controller.dart';
+
 
 enum TranslationUIState { idle, recording, result }
 
@@ -33,6 +34,7 @@ class DashboardController extends GetxController with BaseController {
   final Rx<PetType> selectedPet = PetType.dog.obs;
   final RxString voiceLabel = ''.obs;
   final RxBool isSaving = false.obs;
+  final RxBool isPlaying = false.obs;
 
   // ----- Backend session & translation IDs -----
   String? _sessionId;
@@ -47,7 +49,27 @@ class DashboardController extends GetxController with BaseController {
   void onInit() {
     super.onInit();
     final arg = Get.arguments;
-    if (arg is PetType) selectedPet.value = arg;
+    if (arg is PetType) {
+      selectedPet.value = arg;
+    } else {
+      // Try to get from active user profile if no arg
+      final activePetId = AuthController.to.user.value?.activePetId;
+      if (activePetId != null) {
+        // Simple logic: if profile exists, we can infer or fetch. 
+        // For now, mirroring user's pet list lookup:
+        final pets = AuthController.to.user.value?.pets;
+        if (pets != null && pets.isNotEmpty) {
+           final activePet = pets.firstWhere((p) => p['id'] == activePetId, orElse: () => pets.first);
+           final typeStr = activePet['type'] as String?;
+           if (typeStr == 'CAT') {
+             selectedPet.value = PetType.cat;
+           } else {
+             selectedPet.value = PetType.dog;
+           }
+        }
+      }
+    }
+    
     classifierService.init();
     _initTalkSession();
 
@@ -61,6 +83,11 @@ class DashboardController extends GetxController with BaseController {
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
       amplitude.value = amp.current;
+    });
+
+    // Sync isPlaying with audio player state
+    audioPlayer.onPlayerStateChanged.listen((state) {
+      isPlaying.value = state == PlayerState.playing;
     });
   }
 
@@ -115,6 +142,10 @@ class DashboardController extends GetxController with BaseController {
     uiState.value = TranslationUIState.result;
 
     if (path != null) {
+      currentRecordingPath.value = path;
+      print('[Dashboard] Recording stopped, review path: $path');
+
+      // Trigger automatic ML processing/translation immediately
       if (isHumanToDog.value) {
         await _processHumanToPet(path);
       } else {
@@ -127,11 +158,9 @@ class DashboardController extends GetxController with BaseController {
   // Human → Pet (user's voice → pet sound translation)
   // ---------------------------------------------------------------------------
   Future<void> _processHumanToPet(String path) async {
-    // Pick a random bark locally (UI feedback while we send to backend)
-    final randomBark = Random().nextInt(3) + 1;
-    responseAssetPath.value = 'audio/bark_$randomBark.wav';
-    resultText.value = 'Translation Sent!';
-    playResponse();
+    final isDog = selectedPet.value == PetType.dog;
+    resultText.value = isDog ? 'Dog translation sent!' : 'Cat translation sent!';
+    playRecording();
 
     // Post to backend in background
     if (_sessionId != null) {
@@ -198,6 +227,21 @@ class DashboardController extends GetxController with BaseController {
   // ---------------------------------------------------------------------------
   // Save voice to backend
   // ---------------------------------------------------------------------------
+  Future<void> pauseAudio() async {
+    await audioPlayer.pause();
+  }
+
+  Future<void> stopAudio() async {
+    await audioPlayer.stop();
+  }
+
+  Future<void> playRecording() async {
+    // Both modes now play the original recorded sound as per user request
+    if (currentRecordingPath.value.isNotEmpty) {
+      await audioPlayer.play(DeviceFileSource(currentRecordingPath.value));
+    }
+  }
+
   Future<void> saveVoice() async {
     final name = voiceLabel.value.trim();
     if (name.isEmpty) {
@@ -206,7 +250,7 @@ class DashboardController extends GetxController with BaseController {
     }
 
     if (_translationId == null) {
-      // No backend record yet – just reset (offline scenario)
+      print('[Dashboard] No translation record found to save');
       reset();
       return;
     }
@@ -220,13 +264,14 @@ class DashboardController extends GetxController with BaseController {
       );
 
       if (saved != null) {
+        print('[Dashboard] Voice saved successfully');
         Get.toNamed(AppRoutes.savedTalks);
       }
     } catch (e) {
       print('[Dashboard] saveVoice error: $e');
+      reset();
     } finally {
       isSaving.value = false;
-      reset();
     }
   }
 
@@ -234,7 +279,7 @@ class DashboardController extends GetxController with BaseController {
   // Playback helpers
   // ---------------------------------------------------------------------------
   void playResponse() async {
-    if (isHumanToDog.value && responseAssetPath.value.isNotEmpty) {
+    if (responseAssetPath.value.isNotEmpty) {
       await audioPlayer.play(AssetSource(responseAssetPath.value));
     }
   }

@@ -80,26 +80,34 @@ class EmotionsController extends GetxController with BaseController {
       return;
     }
 
-    // Play Sound
-    if (item.audioUrl != null && item.audioUrl!.isNotEmpty) {
-      try {
-        if (isPlayingSound.value) {
-          await _audioPlayer.stop();
-        }
-        
-        isPlayingSound.value = true;
-        await _audioPlayer.play(
-          UrlSource(item.audioUrl!, mimeType: "audio/mpeg"),
-        );
-      } catch (e) {
-        print("Error playing sound: $e");
-        showSnack(
-          content: "Failed to play sound. Please check your connection.",
-          status: SnackBarStatus.error,
-        );
-      } finally {
-        isPlayingSound.value = false;
+    // Play Sound (using local assets to bypass internet issues)
+    try {
+      if (isPlayingSound.value) {
+        await _audioPlayer.stop();
       }
+      
+      isPlayingSound.value = true;
+      
+      // Safe lookup for active pet type
+      String petType = 'bark';
+      final user = AuthController.to.user.value;
+      if (user != null && user.activePetId != null) {
+        final activePet = user.pets.firstWhereOrNull(
+          (p) => p['id'] == user.activePetId,
+        );
+        if (activePet != null && activePet['type'] == 'CAT') {
+          petType = 'meow';
+        }
+      }
+
+      await _audioPlayer.play(
+        AssetSource('audio/${petType}_1.wav'),
+      );
+    } catch (e) {
+      print("Error playing sound: $e");
+      // Silently fail or show a more descriptive error if local assets are missing
+    } finally {
+      isPlayingSound.value = false;
     }
 
     // Optional: Record the selection in the backend history

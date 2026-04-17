@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class EmotionData {
   final String title;
@@ -23,6 +24,7 @@ class OnboardingThreeController extends GetxController {
   final Rx<PetType> selectedPet = PetType.none.obs;
   final RxInt currentPage = 0.obs;
   final PageController pageController = PageController();
+  final AudioPlayer _player = AudioPlayer();
 
   // To track the scroll position for background color interpolation
   final RxDouble scrollOffset = 0.0.obs;
@@ -64,7 +66,21 @@ class OnboardingThreeController extends GetxController {
   @override
   void onClose() {
     pageController.dispose();
+    _player.dispose();
     super.onClose();
+  }
+
+  void playPetSound() async {
+    final sound = selectedPet.value == PetType.cat 
+        ? 'audio/meow_1.wav' 
+        : 'audio/bark_1.wav';
+    
+    try {
+      await _player.stop();
+      await _player.play(AssetSource(sound));
+    } catch (e) {
+      print('[Onboarding] Error playing sound: $e');
+    }
   }
 
   Color getInterpolatedBackgroundColor() {

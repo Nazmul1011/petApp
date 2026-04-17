@@ -18,6 +18,7 @@ class UserModel {
   final String? activePetId;
   final String? pushToken;
   final List<dynamic> subscriptions;
+  final List<dynamic> pets;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -30,6 +31,7 @@ class UserModel {
     this.activePetId,
     this.pushToken,
     this.subscriptions = const [],
+    this.pets = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -49,6 +51,7 @@ class UserModel {
       activePetId: json['activePetId'],
       pushToken: json['pushToken'],
       subscriptions: json['subscriptions'] ?? [],
+      pets: json['pets'] ?? [],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
@@ -64,6 +67,7 @@ class UserModel {
       'activePetId': activePetId,
       'pushToken': pushToken,
       'subscriptions': subscriptions,
+      'pets': pets,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

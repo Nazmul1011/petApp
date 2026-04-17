@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/modules/onboarding/widgets/pet_pop_overlay.dart';
@@ -9,6 +10,7 @@ enum PetType { none, dog, cat }
 
 class OnboardingController extends GetxController with BaseController {
   final Rx<PetType> selectedPet = PetType.none.obs;
+  final AudioPlayer _player = AudioPlayer();
 
   void selectPet(PetType type) {
     selectedPet.value = type;
@@ -29,11 +31,21 @@ class OnboardingController extends GetxController with BaseController {
     );
   }
 
-  void _playPetSound() {
-    // Placeholder for actual dog/cat sounds
-    // User can add dog.mp3 and cat.mp3 to assets and use a player here
-    SystemSound.play(SystemSoundType.click);
-    Get.log('Playing pet sound preview...');
+  void _playPetSound() async {
+    final pet = selectedPet.value;
+    final sound = pet == PetType.cat ? 'audio/meow_1.wav' : 'audio/bark_1.wav';
+    try {
+      await _player.stop();
+      await _player.play(AssetSource(sound));
+    } catch (e) {
+      Get.log("[Onboarding Step 1] Error playing sound: $e");
+    }
+  }
+
+  @override
+  void onClose() {
+    _player.dispose();
+    super.onClose();
   }
 
   void completeOnboarding() {

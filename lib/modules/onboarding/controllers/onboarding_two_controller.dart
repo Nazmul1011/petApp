@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/modules/auth/controllers/auth_controller.dart';
@@ -12,6 +13,7 @@ enum VoiceState { idle, listening, processing, result }
 class OnboardingTwoController extends GetxController with BaseController {
   final Rx<VoiceState> voiceState = VoiceState.idle.obs;
   final Rx<PetType> selectedPet = PetType.none.obs;
+  final AudioPlayer _player = AudioPlayer();
 
   // Waveform data
   final RxList<double> waveformValues = RxList<double>.filled(75, 0.1);
@@ -32,6 +34,7 @@ class OnboardingTwoController extends GetxController with BaseController {
   void onClose() {
     _waveformTimer?.cancel();
     _soundWaveTimer?.cancel();
+    _player.dispose();
     super.onClose();
   }
 
@@ -65,11 +68,17 @@ class OnboardingTwoController extends GetxController with BaseController {
     });
   }
 
-  void _playPetResult() {
+  void _playPetResult() async {
     HapticFeedback.heavyImpact();
 
-    // Play sound placeholder
-    SystemSound.play(SystemSoundType.click);
+    // Play real pet sound
+    final sound = selectedPet.value == PetType.cat ? 'audio/meow_1.wav' : 'audio/bark_1.wav';
+    try {
+      await _player.stop();
+      await _player.play(AssetSource(sound));
+    } catch (e) {
+      print("[Onboarding Step 2] Error playing sound: $e");
+    }
 
     // Start yellow sound wave animation
     _soundWaveTimer?.cancel();
