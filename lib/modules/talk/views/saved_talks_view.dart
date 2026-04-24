@@ -29,8 +29,7 @@ class SavedTalksController extends GetxController {
   }
 
   List<TranslationModel> get filtered => talks
-      .where((t) =>
-          showHumanToPet.value ? t.isHumanToPet : !t.isHumanToPet)
+      .where((t) => showHumanToPet.value ? t.isHumanToPet : !t.isHumanToPet)
       .toList();
 
   void toggleView() {
@@ -50,7 +49,9 @@ class SavedTalksController extends GetxController {
     if (audioUrl != null && audioUrl.startsWith('http')) {
       await _player.play(UrlSource(audioUrl));
     } else if (audioUrl != null && audioUrl.startsWith('file://')) {
-      await _player.play(DeviceFileSource(audioUrl.replaceFirst('file://', '')));
+      await _player.play(
+        DeviceFileSource(audioUrl.replaceFirst('file://', '')),
+      );
     } else if (audioUrl != null && audioUrl.isNotEmpty) {
       await _player.play(AssetSource(audioUrl));
     }
@@ -97,8 +98,11 @@ class SavedTalksView extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.mic_none,
-                              size: 64, color: Color(0xFFCDC8E8)),
+                          const Icon(
+                            Icons.mic_none,
+                            size: 64,
+                            color: Color(0xFFCDC8E8),
+                          ),
                           SizedBox(height: R.height(16)),
                           Text(
                             'No saved talks yet',
@@ -113,7 +117,9 @@ class SavedTalksView extends StatelessWidget {
                             'Record a voice on the home screen and tap "Save and continue".',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontSize: 13, color: Colors.grey.shade400),
+                              fontSize: 13,
+                              color: Colors.grey.shade400,
+                            ),
                           ),
                         ],
                       ),
@@ -122,19 +128,23 @@ class SavedTalksView extends StatelessWidget {
                 }
                 return ListView.separated(
                   padding: EdgeInsets.symmetric(
-                      horizontal: R.width(20), vertical: R.height(8)),
+                    horizontal: R.width(20),
+                    vertical: R.height(8),
+                  ),
                   itemCount: list.length,
                   separatorBuilder: (_, __) => SizedBox(height: R.height(10)),
                   itemBuilder: (context, index) {
                     final item = list[index];
-                    return Obx(() => _TalkCard(
-                          item: item,
-                          index: index,
-                          isPlaying: controller.playingIndex.value == index,
-                          onPlay: () {
-                            controller.togglePlay(index, item.inputAudioUrl);
-                          },
-                        ));
+                    return Obx(
+                      () => _TalkCard(
+                        item: item,
+                        index: index,
+                        isPlaying: controller.playingIndex.value == index,
+                        onPlay: () {
+                          controller.togglePlay(index, item.inputAudioUrl);
+                        },
+                      ),
+                    );
                   },
                 );
               }),
@@ -162,50 +172,62 @@ class SavedTalksView extends StatelessWidget {
             child: const Icon(Icons.arrow_back, size: 22, color: Colors.black),
           ),
           SizedBox(height: R.height(12)),
-          Obx(() => Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Saved talks',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
+          Obx(
+            () => Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Saved talks',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
+                ),
+                const Spacer(),
+                // Human icon
+                GestureDetector(
+                  onTap: controller.showHumanToPet.value
+                      ? null
+                      : controller.toggleView,
+                  child: _AvatarBadge(
+                    isActive: controller.showHumanToPet.value,
+                    child: const Icon(
+                      Icons.person,
+                      size: 18,
+                      color: Colors.white,
                     ),
                   ),
-                  const Spacer(),
-                  // Human icon
-                  GestureDetector(
-                    onTap: controller.showHumanToPet.value ? null : controller.toggleView,
-                    child: _AvatarBadge(
-                      isActive: controller.showHumanToPet.value,
-                      child: const Icon(Icons.person,
-                          size: 18, color: Colors.white),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(8)),
+                  child: GestureDetector(
+                    onTap: controller.toggleView,
+                    child: const Icon(
+                      Icons.swap_horiz,
+                      size: 22,
+                      color: Color(0xFF7F67CB),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: R.width(8)),
-                    child: GestureDetector(
-                      onTap: controller.toggleView,
-                      child: const Icon(Icons.swap_horiz,
-                          size: 22, color: Color(0xFF7F67CB)),
+                ),
+                // Pet icon
+                GestureDetector(
+                  onTap: controller.showHumanToPet.value
+                      ? controller.toggleView
+                      : null,
+                  child: _AvatarBadge(
+                    isActive: !controller.showHumanToPet.value,
+                    child: Image.asset(
+                      'assets/images/dog_happy_face.png',
+                      width: 18,
+                      height: 18,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  // Pet icon
-                  GestureDetector(
-                    onTap: controller.showHumanToPet.value ? controller.toggleView : null,
-                    child: _AvatarBadge(
-                      isActive: !controller.showHumanToPet.value,
-                      child: Image.asset(
-                        'assets/images/dog_happy_face.png',
-                        width: 18,
-                        height: 18,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ],
-              )),
+                ),
+              ],
+            ),
+          ),
           SizedBox(height: R.height(8)),
         ],
       ),
@@ -249,13 +271,16 @@ class _TalkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = item.savedName ??
+    final displayName =
+        item.savedName ??
         item.inputText ??
         (item.isHumanToPet ? 'Human voice' : 'Pet sound');
 
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: R.width(16), vertical: R.height(12)),
+        horizontal: R.width(16),
+        vertical: R.height(12),
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -345,8 +370,11 @@ class _WaveBar extends StatefulWidget {
   final double height;
   final bool isPlaying;
   final int index;
-  const _WaveBar(
-      {required this.height, required this.isPlaying, required this.index});
+  const _WaveBar({
+    required this.height,
+    required this.isPlaying,
+    required this.index,
+  });
 
   @override
   State<_WaveBar> createState() => _WaveBarState();
@@ -364,8 +392,10 @@ class _WaveBarState extends State<_WaveBar>
       vsync: this,
       duration: Duration(milliseconds: 400 + widget.index * 20),
     );
-    _anim = Tween<double>(begin: 4, end: widget.height)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _anim = Tween<double>(
+      begin: 4,
+      end: widget.height,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     if (widget.isPlaying) {
       _controller.repeat(reverse: true);
     }

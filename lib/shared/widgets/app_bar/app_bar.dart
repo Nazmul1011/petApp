@@ -47,13 +47,13 @@ class TheAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   TextStyle get defaultTitleStyle => const TextStyle(
-        fontFamily: 'NationalPark',
-        color: Color(0xFF1F1F1F),
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        height: 0.67,
-        letterSpacing: 0.40,
-      );
+    fontFamily: 'NationalPark',
+    color: Color(0xFF1F1F1F),
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    height: 0.67,
+    letterSpacing: 0.40,
+  );
 
   @override
   Size get preferredSize => const Size.fromHeight(80);
@@ -63,8 +63,12 @@ class TheAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       key: appKey,
       title: isMultiSelectionMode
-          ? Text('$selectedCount Selected', style: titleTextStyle ?? defaultTitleStyle)
-          : (titleWidget ?? Text(title ?? '', style: titleTextStyle ?? defaultTitleStyle)),
+          ? Text(
+              '$selectedCount Selected',
+              style: titleTextStyle ?? defaultTitleStyle,
+            )
+          : (titleWidget ??
+                Text(title ?? '', style: titleTextStyle ?? defaultTitleStyle)),
       centerTitle: isMultiSelectionMode ? false : centerTitle,
       automaticallyImplyLeading: false,
       leading: showBackArrow
@@ -76,7 +80,10 @@ class TheAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Navigator.pop(context);
                 }
               },
-              icon: Icon(Icons.arrow_back, color: arrowBackColor ?? Colors.black),
+              icon: Icon(
+                Icons.arrow_back,
+                color: arrowBackColor ?? Colors.black,
+              ),
             )
           : leadingWidget,
       forceMaterialTransparency: forceMaterialTransparency,
@@ -86,10 +93,23 @@ class TheAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: titleSpacing,
       actions: isMultiSelectionMode && selectedCount > 0
           ? <Widget>[
-              if (onSelectAll != null) IconButton(onPressed: onSelectAll, icon: const Icon(Icons.select_all)),
-              if (onDeselectAll != null) IconButton(onPressed: onDeselectAll, icon: const Icon(Icons.deselect)),
-              if (onDelete != null) IconButton(onPressed: onDelete, icon: const Icon(Icons.delete_forever, color: Colors.red)),
-              if (selectedCount == 1 && onEdit != null) IconButton(onPressed: onEdit, icon: const Icon(Icons.edit)),
+              if (onSelectAll != null)
+                IconButton(
+                  onPressed: onSelectAll,
+                  icon: const Icon(Icons.select_all),
+                ),
+              if (onDeselectAll != null)
+                IconButton(
+                  onPressed: onDeselectAll,
+                  icon: const Icon(Icons.deselect),
+                ),
+              if (onDelete != null)
+                IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_forever, color: Colors.red),
+                ),
+              if (selectedCount == 1 && onEdit != null)
+                IconButton(onPressed: onEdit, icon: const Icon(Icons.edit)),
             ]
           : actions,
     );

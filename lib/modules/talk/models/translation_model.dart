@@ -3,8 +3,8 @@ class TranslationModel {
   final String userId;
   final String petId;
   final String sessionId;
-  final String inputType;   // TEXT | HUMAN_VOICE | PET_VOICE
-  final String direction;   // HUMAN_TO_PET | PET_TO_HUMAN
+  final String inputType; // TEXT | HUMAN_VOICE | PET_VOICE
+  final String direction; // HUMAN_TO_PET | PET_TO_HUMAN
   final String? inputText;
   final String? inputAudioUrl;
   final String? outputText;
@@ -52,7 +52,9 @@ class TranslationModel {
       status: json['status'] as String,
       isSaved: json['isSaved'] as bool? ?? false,
       savedName: json['savedName'] as String?,
-      savedAt: json['savedAt'] != null ? DateTime.parse(json['savedAt'] as String) : null,
+      savedAt: json['savedAt'] != null
+          ? DateTime.parse(json['savedAt'] as String)
+          : null,
       mood: json['mood'] as String?,
       confidence: (json['confidence'] as num?)?.toDouble(),
       createdAt: DateTime.parse(json['createdAt'] as String),

@@ -79,49 +79,49 @@ class LegalView extends GetView<LegalController> {
 
             // Content
             Expanded(
-              child: Obx(
-                () {
-                  final content = controller.selectedTabIndex.value == 0
-                      ? controller.privacyContent
-                      : controller.termsContent;
+              child: Obx(() {
+                final content = controller.selectedTabIndex.value == 0
+                    ? controller.privacyContent
+                    : controller.termsContent;
 
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: R.width(20), vertical: R.height(10)),
-                    itemCount: content.length,
-                    itemBuilder: (context, index) {
-                      final item = content[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: R.height(20)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.heading,
-                              style: AppTypography.labelSm.copyWith(
-                                color: AppColors.headingText,
-                              ),
+                return ListView.builder(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: R.width(20),
+                    vertical: R.height(10),
+                  ),
+                  itemCount: content.length,
+                  itemBuilder: (context, index) {
+                    final item = content[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: R.height(20)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.heading,
+                            style: AppTypography.labelSm.copyWith(
+                              color: AppColors.headingText,
                             ),
-                            SizedBox(height: R.height(4)),
-                            Text(
-                              item.body,
-                              style: AppTypography.labelSm.copyWith(
-                                color: AppColors.bodyText,
-                                fontWeight: FontWeight.normal,
-                                height: 1.5,
-                              ),
+                          ),
+                          SizedBox(height: R.height(4)),
+                          Text(
+                            item.body,
+                            style: AppTypography.labelSm.copyWith(
+                              color: AppColors.bodyText,
+                              fontWeight: FontWeight.normal,
+                              height: 1.5,
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),
       ),
     );
   }
-
 }

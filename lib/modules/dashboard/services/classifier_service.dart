@@ -171,10 +171,11 @@ class ClassifierService {
       // (robust: search for 'data' subchunk)
       int dataOffset = 44;
       for (int i = 12; i < bytes.length - 8; i++) {
-        if (bytes[i] == 0x64 &&     // 'd'
+        if (bytes[i] == 0x64 && // 'd'
             bytes[i + 1] == 0x61 && // 'a'
             bytes[i + 2] == 0x74 && // 't'
-            bytes[i + 3] == 0x61) { // 'a'
+            bytes[i + 3] == 0x61) {
+          // 'a'
           dataOffset = i + 8; // skip 'data' + 4-byte chunk size
           break;
         }

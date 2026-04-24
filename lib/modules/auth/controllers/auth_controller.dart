@@ -5,6 +5,7 @@ import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/api_service.dart';
 import '../model/user_model.dart';
 import '../services/auth_api_service.dart';
+import '../../subscription/services/subscription_service.dart' as sub_service;
 
 class AuthController extends GetxController {
   static AuthController get to => Get.find();
@@ -129,7 +130,21 @@ class AuthController extends GetxController {
   Future<void> fetchUserProfile() async {
     final response = await _authApi.getMe();
     if (response.success && response.data != null) {
-      user.value = response.data;
+      UserModel fetchedUser = response.data!;
+
+      // Also fetch subscription summary to update premium state
+      try {
+        final subResponse = await sub_service.SubscriptionService()
+            .getSummary();
+        if (subResponse.success && subResponse.data != null) {
+          final state = subResponse.data!['state'];
+          fetchedUser.isPremium = (state == 'active' || state == 'trial');
+        }
+      } catch (e) {
+        LoggerService().error('Failed to fetch subscription summary: $e');
+      }
+
+      user.value = fetchedUser;
     }
   }
 
@@ -149,5 +164,21 @@ class AuthController extends GetxController {
       user.value = response.data;
       handleRouting();
     }
+  }
+
+  Future<void> switchPet(String petId) async {
+    if (user.value?.activePetId == petId) return;
+
+    isLoading.value = true;
+    final response = await _authApi.updateProfile({'activePetId': petId});
+
+    if (response.success && response.data != null) {
+      // Retain the isPremium flag since updateProfile response might not re-calculate it locally
+      final isPremium = user.value?.isPremium ?? false;
+      user.value = response.data!;
+      user.value!.isPremium = isPremium;
+      user.refresh();
+    }
+    isLoading.value = false;
   }
 }

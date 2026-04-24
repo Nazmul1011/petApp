@@ -11,8 +11,8 @@ class TrainingViewAllView extends GetView<TrainingController> {
   @override
   Widget build(BuildContext context) {
     final category = Get.arguments as String;
-    final items = category.contains("COMMAND") 
-        ? controller.basicCommands 
+    final items = category.contains("COMMAND")
+        ? controller.basicCommands
         : controller.tricks;
 
     return Scaffold(
@@ -87,10 +87,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(R.width(8)),
-                    child: Image.asset(
-                      item.imagePath,
-                      fit: BoxFit.contain,
-                    ),
+                    child: Image.asset(item.imagePath, fit: BoxFit.contain),
                   ),
                   if (controller.isItemLocked(item))
                     Container(

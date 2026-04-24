@@ -34,7 +34,6 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-
   Widget _buildIdleState() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -56,10 +55,10 @@ class DashboardView extends GetView<DashboardController> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 20, 
+                    blurRadius: 20,
                     spreadRadius: 5,
                   ),
-                ]
+                ],
               ),
               child: const Center(
                 child: Icon(Icons.mic, color: Colors.grey, size: 40),
@@ -107,14 +106,14 @@ class DashboardView extends GetView<DashboardController> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Spacer(),
-          
+
           if (!controller.isHumanToDog.value)
             Text(
               controller.resultText.value,
               style: AppTypography.h4.copyWith(fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             )
-          else 
+          else
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -125,37 +124,44 @@ class DashboardView extends GetView<DashboardController> {
                   height: R.height(100),
                 ),
                 SizedBox(width: R.width(10)),
-                Icon(Icons.waves, color: Colors.yellow.shade700, size: R.width(40)),
+                Icon(
+                  Icons.waves,
+                  color: Colors.yellow.shade700,
+                  size: R.width(40),
+                ),
               ],
             ),
-            
+
           SizedBox(height: R.height(40)),
-          
-          Opacity(
-             opacity: 0.3, 
-             child: _buildAudioVisualizer(active: false)
-          ),
-          
+
+          Opacity(opacity: 0.3, child: _buildAudioVisualizer(active: false)),
+
           SizedBox(height: R.height(30)),
-          
+
           _buildResultIcons(),
-          
+
           const Spacer(flex: 2),
-          
+
           // Save Voice Input
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
               "Save voice",
-              style: AppTypography.labelXs.copyWith(color: Colors.grey.shade600),
+              style: AppTypography.labelXs.copyWith(
+                color: Colors.grey.shade600,
+              ),
             ),
           ),
           SizedBox(height: R.height(8)),
           TextFormField(
             onChanged: (val) => controller.voiceLabel.value = val,
             decoration: InputDecoration(
-              hintText: controller.isHumanToDog.value ? "ie. Hello boy" : "Snack",
-              hintStyle: AppTypography.bodyMd.copyWith(color: Colors.grey.shade400),
+              hintText: controller.isHumanToDog.value
+                  ? "ie. Hello boy"
+                  : "Snack",
+              hintStyle: AppTypography.bodyMd.copyWith(
+                color: Colors.grey.shade400,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(R.width(30)),
                 borderSide: BorderSide(color: Colors.grey.shade400),
@@ -168,12 +174,15 @@ class DashboardView extends GetView<DashboardController> {
                 borderRadius: BorderRadius.circular(R.width(30)),
                 borderSide: const BorderSide(color: Color(0xFF7F67CB)),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: R.width(20), vertical: R.height(16)),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: R.width(20),
+                vertical: R.height(16),
+              ),
             ),
           ),
-          
+
           SizedBox(height: R.height(16)),
-          
+
           Obx(() {
             final isLabelEmpty = controller.voiceLabel.value.isEmpty;
             final isSaving = controller.isSaving.value;
@@ -181,8 +190,8 @@ class DashboardView extends GetView<DashboardController> {
               label: isSaving
                   ? "Saving…"
                   : isLabelEmpty
-                      ? "Talk again"
-                      : "Save and continue",
+                  ? "Talk again"
+                  : "Save and continue",
               onPressed: isSaving
                   ? null
                   : () {
@@ -198,7 +207,7 @@ class DashboardView extends GetView<DashboardController> {
               textColor: Colors.white,
             );
           }),
-          
+
           SizedBox(height: R.height(40)), // Padding for bottom nav visual
         ],
       ),
@@ -209,10 +218,7 @@ class DashboardView extends GetView<DashboardController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _circleIconButton(
-          icon: Icons.refresh,
-          onTap: () => controller.reset(),
-        ),
+        _circleIconButton(icon: Icons.refresh, onTap: () => controller.reset()),
         SizedBox(width: R.width(20)),
         _circleIconButton(
           icon: Icons.stop,
@@ -220,13 +226,15 @@ class DashboardView extends GetView<DashboardController> {
           isSolid: true,
         ),
         SizedBox(width: R.width(20)),
-        Obx(() => _circleIconButton(
-          icon: controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
-          onTap: () => controller.isPlaying.value 
-              ? controller.pauseAudio() 
-              : controller.playRecording(),
-          isSolid: true,
-        )),
+        Obx(
+          () => _circleIconButton(
+            icon: controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+            onTap: () => controller.isPlaying.value
+                ? controller.pauseAudio()
+                : controller.playRecording(),
+            isSolid: true,
+          ),
+        ),
       ],
     );
   }
@@ -244,10 +252,13 @@ class DashboardView extends GetView<DashboardController> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.1), width: 1),
+          border: Border.all(
+            color: Colors.grey.withValues(alpha: 0.1),
+            width: 1,
+          ),
         ),
         child: Center(
-          child: isSolid 
+          child: isSolid
               ? Container(
                   width: R.width(48),
                   height: R.width(48),
@@ -255,17 +266,9 @@ class DashboardView extends GetView<DashboardController> {
                     shape: BoxShape.circle,
                     color: Colors.black87,
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: R.width(20),
-                  ),
+                  child: Icon(icon, color: Colors.white, size: R.width(20)),
                 )
-              : Icon(
-                  icon,
-                  color: Colors.black54,
-                  size: R.width(28),
-                ),
+              : Icon(icon, color: Colors.black54, size: R.width(28)),
         ),
       ),
     );
@@ -276,28 +279,28 @@ class DashboardView extends GetView<DashboardController> {
       height: R.height(50),
       child: Obx(() {
         // Tie to amplitude stream -> fake visualizer effect
-        double amp = controller.amplitude.value; 
-        double normalized = (amp + 160) / 160; 
+        double amp = controller.amplitude.value;
+        double normalized = (amp + 160) / 160;
         normalized = normalized.clamp(0.0, 1.0);
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(24, (index) {
-             // For a wavy look, use sine/random math
-             double baseHeight = active 
-                 ? max(6.0, 50 * normalized * Random().nextDouble())
-                 : 6.0 + (sin(index) * 4).abs();
-             
-             return AnimatedContainer(
-               duration: const Duration(milliseconds: 100),
-               width: 4,
-               height: active ? baseHeight : (index % 2 == 0 ? 10 : 4),
-               margin: const EdgeInsets.symmetric(horizontal: 3),
-               decoration: BoxDecoration(
-                 color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
-                 borderRadius: BorderRadius.circular(2),
-               ),
-             );
+            // For a wavy look, use sine/random math
+            double baseHeight = active
+                ? max(6.0, 50 * normalized * Random().nextDouble())
+                : 6.0 + (sin(index) * 4).abs();
+
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              width: 4,
+              height: active ? baseHeight : (index % 2 == 0 ? 10 : 4),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            );
           }),
         );
       }),
@@ -308,55 +311,60 @@ class DashboardView extends GetView<DashboardController> {
     return GestureDetector(
       onTap: controller.toggleMode,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: R.width(16), vertical: R.height(12)),
+        padding: EdgeInsets.symmetric(
+          horizontal: R.width(16),
+          vertical: R.height(12),
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05), 
-              blurRadius: 10, 
-              spreadRadius: 2
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              spreadRadius: 2,
             ),
-          ]
-        ),
-        child: Obx(() => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-             _buildToggleAvatar(
-               isHuman: controller.isHumanToDog.value,
-             ),
-             Padding(
-               padding: EdgeInsets.symmetric(horizontal: R.width(16)),
-               child: const Icon(Icons.swap_horiz, color: Color(0xFF7F67CB), size: 20),
-             ),
-             _buildToggleAvatar(
-               isHuman: !controller.isHumanToDog.value,
-             ),
           ],
-        )),
+        ),
+        child: Obx(
+          () => Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: R.width(16)),
+                child: const Icon(
+                  Icons.swap_horiz,
+                  color: Color(0xFF7F67CB),
+                  size: 20,
+                ),
+              ),
+              _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildToggleAvatar({required bool isHuman}) {
-     if (isHuman) {
-        return Container(
-          width: R.width(28),
-          height: R.width(28),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.grey.shade700,
-          ),
-          child: const Icon(Icons.person, color: Colors.white, size: 18),
-        );
-     } else {
-        return Image.asset(
-          'assets/images/dog_happy_face.png', 
-          width: R.width(28), 
-          height: R.width(28),
-          fit: BoxFit.contain,
-        );
-     }
+    if (isHuman) {
+      return Container(
+        width: R.width(28),
+        height: R.width(28),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.grey.shade700,
+        ),
+        child: const Icon(Icons.person, color: Colors.white, size: 18),
+      );
+    } else {
+      return Image.asset(
+        'assets/images/dog_happy_face.png',
+        width: R.width(28),
+        height: R.width(28),
+        fit: BoxFit.contain,
+      );
+    }
   }
 }

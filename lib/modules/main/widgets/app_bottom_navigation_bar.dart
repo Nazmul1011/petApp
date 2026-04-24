@@ -22,11 +22,15 @@ class AppBottomNavigationBar extends GetView<MainController> {
         () => Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Expanded(child: _buildNavItem(0, "Talk", Icons.chat_bubble_outline)),
+            Expanded(
+              child: _buildNavItem(0, "Talk", Icons.chat_bubble_outline),
+            ),
             Expanded(child: _buildNavItem(1, "Emotions", Icons.pets)),
             Expanded(child: _buildNavItem(2, "Whistle", Icons.settings_voice)),
             Expanded(child: _buildNavItem(3, "Training", Icons.fitness_center)),
-            Expanded(child: _buildNavItem(4, "Notification", Icons.notifications_none)),
+            Expanded(
+              child: _buildNavItem(4, "Notification", Icons.notifications_none),
+            ),
             Expanded(child: _buildNavItem(5, "More", Icons.grid_view)),
           ],
         ),

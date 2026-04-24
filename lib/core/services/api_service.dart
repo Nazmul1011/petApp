@@ -1,4 +1,4 @@
-                          import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +104,9 @@ class LoggerService {
     // Pretty-print JSON-like maps/lists
     if (payload is Map || payload is List) {
       try {
-        _logger.i('📦 [PAYLOAD] => ${const JsonEncoder.withIndent('  ').convert(payload)}');
+        _logger.i(
+          '📦 [PAYLOAD] => ${const JsonEncoder.withIndent('  ').convert(payload)}',
+        );
       } catch (_) {
         _logger.i('📦 [PAYLOAD] => $payload');
       }
@@ -113,7 +115,9 @@ class LoggerService {
 
     // Expand Dio FormData (fields + files)
     if (payload is FormData) {
-      final fields = <String, String>{for (final e in payload.fields) e.key: e.value};
+      final fields = <String, String>{
+        for (final e in payload.fields) e.key: e.value,
+      };
 
       // Don't dump raw bytes; summarize each file safely
       final files = payload.files.map((e) {
@@ -133,12 +137,11 @@ class LoggerService {
         };
       }).toList();
 
-      final summarized = {
-        'fields': fields,
-        'files': files,
-      };
+      final summarized = {'fields': fields, 'files': files};
 
-      _logger.i('📦 [PAYLOAD] => ${const JsonEncoder.withIndent('  ').convert(summarized)}');
+      _logger.i(
+        '📦 [PAYLOAD] => ${const JsonEncoder.withIndent('  ').convert(summarized)}',
+      );
       return;
     }
 
@@ -185,7 +188,8 @@ class ConnectivityService {
   }
 
   void updateStatus(List<ConnectivityResult> results) {
-    final connected = results.contains(ConnectivityResult.mobile) ||
+    final connected =
+        results.contains(ConnectivityResult.mobile) ||
         results.contains(ConnectivityResult.wifi);
 
     if (connected != isOnline.value) {
@@ -349,7 +353,8 @@ class ApiService {
         onResponse: (response, handler) {
           logger.logResponse(response.statusCode, response.data);
           if (response.statusCode == 401 ||
-              (response.statusCode == 403 && isUnauthorizedError(response.data))) {
+              (response.statusCode == 403 &&
+                  isUnauthorizedError(response.data))) {
             logger.error('[PRIVATE API] Unauthorized response. Logging out.');
             AuthTokenService().logOut();
           }
@@ -357,8 +362,11 @@ class ApiService {
         },
         onError: (e, handler) {
           if (e.response?.statusCode == 401 ||
-              (e.response?.statusCode == 403 && isUnauthorizedError(e.response?.data))) {
-            logger.error('[PRIVATE API ERROR] Unauthorized (onError). Logging out.');
+              (e.response?.statusCode == 403 &&
+                  isUnauthorizedError(e.response?.data))) {
+            logger.error(
+              '[PRIVATE API ERROR] Unauthorized (onError). Logging out.',
+            );
             AuthTokenService().logOut();
           }
 
@@ -390,10 +398,12 @@ class ApiService {
       String message = 'Unexpected error';
 
       if (data is Map<String, dynamic>) {
-        message = data['message']?.toString()
-            ?? data['error']?.toString()
-            ?? (data['errors'] is Map
-                ? (data['errors'] as Map).values.first?.first?.toString() ?? 'Invalid data'
+        message =
+            data['message']?.toString() ??
+            data['error']?.toString() ??
+            (data['errors'] is Map
+                ? (data['errors'] as Map).values.first?.first?.toString() ??
+                      'Invalid data'
                 : 'Something went wrong');
       } else if (data != null) {
         message = data.toString();
@@ -408,11 +418,11 @@ class ApiService {
   /// =========================================================================
   Future<Response> get(
     String path, {
-      Map<String, dynamic>? query,
-      ApiType apiType = ApiType.private,
-      String? overrideBaseUrl,
-      Map<String, dynamic>? headers,
-    }) async {
+    Map<String, dynamic>? query,
+    ApiType apiType = ApiType.private,
+    String? overrideBaseUrl,
+    Map<String, dynamic>? headers,
+  }) async {
     final client = getClient(apiType, overrideBaseUrl);
     final options = Options(
       headers: headers != null
@@ -431,12 +441,12 @@ class ApiService {
 
   Future<Response> post(
     String path, {
-      dynamic data,
-      Map<String, dynamic>? query,
-      ApiType apiType = ApiType.private,
-      String? overrideBaseUrl,
-      Map<String, dynamic>? headers,
-    }) async {
+    dynamic data,
+    Map<String, dynamic>? query,
+    ApiType apiType = ApiType.private,
+    String? overrideBaseUrl,
+    Map<String, dynamic>? headers,
+  }) async {
     final client = getClient(apiType, overrideBaseUrl);
     final options = Options(
       headers: headers != null
@@ -456,12 +466,12 @@ class ApiService {
 
   Future<Response> patch(
     String path, {
-      dynamic data,
-      Map<String, dynamic>? query,
-      ApiType apiType = ApiType.private,
-      String? overrideBaseUrl,
-      Map<String, dynamic>? headers,
-    }) async {
+    dynamic data,
+    Map<String, dynamic>? query,
+    ApiType apiType = ApiType.private,
+    String? overrideBaseUrl,
+    Map<String, dynamic>? headers,
+  }) async {
     final client = getClient(apiType, overrideBaseUrl);
     final options = Options(
       headers: headers != null
@@ -481,12 +491,12 @@ class ApiService {
 
   Future<Response> put(
     String path, {
-      dynamic data,
-      Map<String, dynamic>? query,
-      ApiType apiType = ApiType.private,
-      String? overrideBaseUrl,
-      Map<String, dynamic>? headers,
-    }) async {
+    dynamic data,
+    Map<String, dynamic>? query,
+    ApiType apiType = ApiType.private,
+    String? overrideBaseUrl,
+    Map<String, dynamic>? headers,
+  }) async {
     final client = getClient(apiType, overrideBaseUrl);
     final options = Options(
       headers: headers != null
@@ -506,12 +516,12 @@ class ApiService {
 
   Future<Response> delete(
     String path, {
-      dynamic data,
-      Map<String, dynamic>? query,
-      ApiType apiType = ApiType.private,
-      String? overrideBaseUrl,
-      Map<String, dynamic>? headers,
-    }) async {
+    dynamic data,
+    Map<String, dynamic>? query,
+    ApiType apiType = ApiType.private,
+    String? overrideBaseUrl,
+    Map<String, dynamic>? headers,
+  }) async {
     final client = getClient(apiType, overrideBaseUrl);
     final options = Options(
       headers: headers != null

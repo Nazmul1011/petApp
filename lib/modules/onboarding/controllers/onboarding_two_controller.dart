@@ -72,7 +72,9 @@ class OnboardingTwoController extends GetxController with BaseController {
     HapticFeedback.heavyImpact();
 
     // Play real pet sound
-    final sound = selectedPet.value == PetType.cat ? 'audio/meow_1.wav' : 'audio/bark_1.wav';
+    final sound = selectedPet.value == PetType.cat
+        ? 'audio/meow_1.wav'
+        : 'audio/bark_1.wav';
     try {
       await _player.stop();
       await _player.play(AssetSource(sound));
@@ -113,7 +115,7 @@ class OnboardingTwoController extends GetxController with BaseController {
   }
 
   void skipDemo() {
-    // Instead of bypassing everything, we complete onboarding formally 
+    // Instead of bypassing everything, we complete onboarding formally
     // so the AuthController can send the user to the Payment/Pet setup flow.
     AuthController.to.completeOnboarding();
   }

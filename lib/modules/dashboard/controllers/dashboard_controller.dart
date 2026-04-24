@@ -11,7 +11,6 @@ import '../services/classifier_service.dart';
 import '../../talk/services/talk_api_service.dart';
 import '../../auth/controllers/auth_controller.dart';
 
-
 enum TranslationUIState { idle, recording, result }
 
 /// Which mode the user is in (Human speaks → pet sound, or Pet sound → human phrase)
@@ -55,21 +54,24 @@ class DashboardController extends GetxController with BaseController {
       // Try to get from active user profile if no arg
       final activePetId = AuthController.to.user.value?.activePetId;
       if (activePetId != null) {
-        // Simple logic: if profile exists, we can infer or fetch. 
+        // Simple logic: if profile exists, we can infer or fetch.
         // For now, mirroring user's pet list lookup:
         final pets = AuthController.to.user.value?.pets;
         if (pets != null && pets.isNotEmpty) {
-           final activePet = pets.firstWhere((p) => p['id'] == activePetId, orElse: () => pets.first);
-           final typeStr = activePet['type'] as String?;
-           if (typeStr == 'CAT') {
-             selectedPet.value = PetType.cat;
-           } else {
-             selectedPet.value = PetType.dog;
-           }
+          final activePet = pets.firstWhere(
+            (p) => p['id'] == activePetId,
+            orElse: () => pets.first,
+          );
+          final typeStr = activePet['type'] as String?;
+          if (typeStr == 'CAT') {
+            selectedPet.value = PetType.cat;
+          } else {
+            selectedPet.value = PetType.dog;
+          }
         }
       }
     }
-    
+
     classifierService.init();
     _initTalkSession();
 
@@ -82,8 +84,8 @@ class DashboardController extends GetxController with BaseController {
     _amplitudeSub = audioRecorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
-      amplitude.value = amp.current;
-    });
+          amplitude.value = amp.current;
+        });
 
     // Sync isPlaying with audio player state
     audioPlayer.onPlayerStateChanged.listen((state) {
@@ -159,7 +161,9 @@ class DashboardController extends GetxController with BaseController {
   // ---------------------------------------------------------------------------
   Future<void> _processHumanToPet(String path) async {
     final isDog = selectedPet.value == PetType.dog;
-    resultText.value = isDog ? 'Dog translation sent!' : 'Cat translation sent!';
+    resultText.value = isDog
+        ? 'Dog translation sent!'
+        : 'Cat translation sent!';
     playRecording();
 
     // Post to backend in background

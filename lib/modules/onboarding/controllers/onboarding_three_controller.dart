@@ -71,10 +71,10 @@ class OnboardingThreeController extends GetxController {
   }
 
   void playPetSound() async {
-    final sound = selectedPet.value == PetType.cat 
-        ? 'audio/meow_1.wav' 
+    final sound = selectedPet.value == PetType.cat
+        ? 'audio/meow_1.wav'
         : 'audio/bark_1.wav';
-    
+
     try {
       await _player.stop();
       await _player.play(AssetSource(sound));

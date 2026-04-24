@@ -31,11 +31,13 @@ class _WelcomeSplashViewState extends State<WelcomeSplashView> {
           Center(
             child: Image.asset(
               'assets/images/Logo Container.png',
-              height: R.height(150), // Made it a bit larger since it's the only content now
+              height: R.height(
+                150,
+              ), // Made it a bit larger since it's the only content now
               color: Colors.white,
             ),
           ),
-          
+
           // Bottom Content
           Align(
             alignment: Alignment.bottomCenter,
@@ -49,7 +51,9 @@ class _WelcomeSplashViewState extends State<WelcomeSplashView> {
                     padding: EdgeInsets.symmetric(horizontal: R.width(4)),
                     child: Icon(
                       Icons.pets,
-                      color: Colors.white.withValues(alpha: index == 4 ? 0.3 : 1.0),
+                      color: Colors.white.withValues(
+                        alpha: index == 4 ? 0.3 : 1.0,
+                      ),
                       size: R.width(18),
                     ),
                   ),

@@ -100,13 +100,17 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                 Expanded(
                                   flex: 3,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "PREMIUM STATUS",
-                                        style: AppTypography.overlineXs.copyWith(
-                                          color: Colors.white.withValues(alpha: 0.9),
-                                        ),
+                                        style: AppTypography.overlineXs
+                                            .copyWith(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.9,
+                                              ),
+                                            ),
                                       ),
                                       SizedBox(height: R.height(8)),
                                       Text(
@@ -119,16 +123,19 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                       SizedBox(height: R.height(4)),
                                       Text(
                                         "\$12.99/year",
-                                        style: AppTypography.subtitleLg.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: AppTypography.subtitleLg
+                                            .copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                       SizedBox(height: R.height(12)),
                                       Text(
                                         "Full access to all premium features and tools.",
                                         style: AppTypography.bodyXs.copyWith(
-                                          color: Colors.white.withValues(alpha: 0.9),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.9,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -140,12 +147,13 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                     // Use best match from assets found
                                     'assets/images/dog image.png',
                                     fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(
-                                          Icons.pets,
-                                          size: 80,
-                                          color: Colors.white54,
-                                        ),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.pets,
+                                              size: 80,
+                                              color: Colors.white54,
+                                            ),
                                   ),
                                 ),
                               ],
@@ -175,8 +183,10 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                 SubscriptionCard(
                                   title: "Weekly",
                                   subtitle: "\$1.99 per week",
-                                  rightText: "Short-term access to all Pro features",
-                                  isSelected: controller.selectedPlan.value ==
+                                  rightText:
+                                      "Short-term access to all Pro features",
+                                  isSelected:
+                                      controller.selectedPlan.value ==
                                       SubscriptionPlan.weekly,
                                   onTap: () => controller.selectPlan(
                                     SubscriptionPlan.weekly,
@@ -185,9 +195,11 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                 SubscriptionCard(
                                   title: "Monthly",
                                   subtitle: "\$2.99 per month",
-                                  rightText: "Full Pro access with better value",
+                                  rightText:
+                                      "Full Pro access with better value",
                                   badgeText: "Best value",
-                                  isSelected: controller.selectedPlan.value ==
+                                  isSelected:
+                                      controller.selectedPlan.value ==
                                       SubscriptionPlan.monthly,
                                   onTap: () => controller.selectPlan(
                                     SubscriptionPlan.monthly,
@@ -197,7 +209,8 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                   title: "Yearly",
                                   subtitle: "\$12.99 per year",
                                   rightText: "Full Pro access",
-                                  isSelected: controller.selectedPlan.value ==
+                                  isSelected:
+                                      controller.selectedPlan.value ==
                                       SubscriptionPlan.yearly,
                                   onTap: () => controller.selectPlan(
                                     SubscriptionPlan.yearly,

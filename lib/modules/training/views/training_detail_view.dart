@@ -19,7 +19,10 @@ class TrainingDetailView extends GetView<TrainingController> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: R.width(24), vertical: R.height(20)),
+              padding: EdgeInsets.symmetric(
+                horizontal: R.width(24),
+                vertical: R.height(20),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

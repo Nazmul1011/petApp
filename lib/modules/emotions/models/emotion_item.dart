@@ -15,7 +15,10 @@ class EmotionItem {
     this.isLocked = false,
   });
 
-  factory EmotionItem.fromJson(Map<String, dynamic> json, {bool isLocked = false}) {
+  factory EmotionItem.fromJson(
+    Map<String, dynamic> json, {
+    bool isLocked = false,
+  }) {
     return EmotionItem(
       id: json['id'],
       name: json['name'],

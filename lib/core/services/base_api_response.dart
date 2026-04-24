@@ -1,4 +1,4 @@
-                            import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 
 class BaseApiResponse<T> {
   final bool success;
@@ -14,16 +14,18 @@ class BaseApiResponse<T> {
   });
 
   factory BaseApiResponse.fromHttp(
-      Response response,
-      T Function(dynamic json)? fromData,
-      ) {
+    Response response,
+    T Function(dynamic json)? fromData,
+  ) {
     final code = response.statusCode;
     final body = response.data;
 
     // If server returns envelope: { success, message, data }
-    if (body is Map<String, dynamic> && (body.containsKey('success') || body.containsKey('data'))) {
+    if (body is Map<String, dynamic> &&
+        (body.containsKey('success') || body.containsKey('data'))) {
       return BaseApiResponse<T>(
-        success: (body['success'] as bool?) ??
+        success:
+            (body['success'] as bool?) ??
             ((code ?? 0) >= 200 && (code ?? 0) < 400),
         message: body['message']?.toString() ?? 'Success',
         data: fromData != null ? fromData(body['data'] ?? body) : null,
@@ -41,9 +43,9 @@ class BaseApiResponse<T> {
   }
 
   factory BaseApiResponse.fromJson(
-      Map<String, dynamic> json,
-      T Function(dynamic json)? fromData,
-      ) {
+    Map<String, dynamic> json,
+    T Function(dynamic json)? fromData,
+  ) {
     return BaseApiResponse<T>(
       success: json['success'] ?? true,
       message: json['message'] ?? 'Success',

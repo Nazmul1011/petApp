@@ -3,7 +3,14 @@ import 'package:get/get.dart';
 
 import '../../../core/themes/app_colors.dart';
 
-enum SnackBarStatus { success, warning, error, connected, disconnected, general }
+enum SnackBarStatus {
+  success,
+  warning,
+  error,
+  connected,
+  disconnected,
+  general,
+}
 
 void showSnack({
   String? content = 'This functionality is under development',
@@ -46,16 +53,26 @@ void showSnack({
       elevation: 0,
       content: Text(
         content!,
-        style: TextStyle(color: status == SnackBarStatus.disconnected ? Colors.white : Colors.black),
+        style: TextStyle(
+          color: status == SnackBarStatus.disconnected
+              ? Colors.white
+              : Colors.black,
+        ),
       ),
       backgroundColor: backgroundColor,
       behavior: behavior,
-      margin: behavior == SnackBarBehavior.floating ? EdgeInsets.only(left: 16, right: 16, bottom: bottomMargin) : null,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      margin: behavior == SnackBarBehavior.floating
+          ? EdgeInsets.only(left: 16, right: 16, bottom: bottomMargin)
+          : null,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
       duration: action != null ? Duration.zero : duration,
       dismissDirection: DismissDirection.horizontal,
       showCloseIcon: showCloseIcon,
-      closeIconColor: status == SnackBarStatus.disconnected ? Colors.white : Colors.black,
+      closeIconColor: status == SnackBarStatus.disconnected
+          ? Colors.white
+          : Colors.black,
       action: action,
     ),
   );

@@ -7,7 +7,7 @@ class SplashView extends StatelessWidget {
   Widget build(BuildContext context) {
     // AuthController is already initialized via GlobalBindings (permanent: true)
     // and it handles routing automatically in onInit() -> _autoLogin() -> handleRouting()
-    
+
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(

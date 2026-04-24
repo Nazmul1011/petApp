@@ -14,7 +14,7 @@ class PetSetupController extends GetxController with BaseController {
 
   final petNameController = TextEditingController();
   final petAgeController = TextEditingController();
-  
+
   final Rxn<XFile> imageFile = Rxn<XFile>();
 
   Future<void> pickImage() async {
@@ -28,7 +28,13 @@ class PetSetupController extends GetxController with BaseController {
   final RxString selectedBreed = 'Pitbull'.obs; // Default based on UI
 
   final List<String> petTypes = ['DOG', 'CAT'];
-  final List<String> dogBreeds = ['Pitbull', 'Golden Retriever', 'Bulldog', 'Poodle', 'Mixed'];
+  final List<String> dogBreeds = [
+    'Pitbull',
+    'Golden Retriever',
+    'Bulldog',
+    'Poodle',
+    'Mixed',
+  ];
   final List<String> catBreeds = ['Persian', 'Siamese', 'Maine Coon', 'Mixed'];
 
   @override
@@ -48,10 +54,10 @@ class PetSetupController extends GetxController with BaseController {
     }
 
     final age = int.tryParse(ageStr);
-    
+
     try {
       setLoading(true);
-      
+
       final Map<String, dynamic> payload = {
         "type": selectedType.value,
         "name": name,
@@ -59,17 +65,14 @@ class PetSetupController extends GetxController with BaseController {
       };
       if (age != null) payload["age"] = age;
 
-      final response = await _api.post(
-        '/pets',
-        data: payload,
-      );
+      final response = await _api.post('/pets', data: payload);
 
       setLoading(false);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         // Refresh user profile so activePetId is updated globally
         await AuthController.to.fetchUserProfile();
-        
+
         showSnack(
           content: 'Pet profile created successfully!',
           status: SnackBarStatus.success,

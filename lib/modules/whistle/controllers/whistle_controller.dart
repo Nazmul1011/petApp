@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 
-class WhistleController extends GetxController with GetSingleTickerProviderStateMixin, BaseController {
+class WhistleController extends GetxController
+    with GetSingleTickerProviderStateMixin, BaseController {
   final RxBool isPlaying = false.obs;
   final RxDouble frequency = 8740.0.obs;
 
@@ -50,7 +51,7 @@ class WhistleController extends GetxController with GetSingleTickerProviderState
         0.25,
         1.0,
       );
-      
+
       if (_waveformSource != null) {
         SoLoud.instance.setWaveformFreq(_waveformSource!, frequency.value);
         _currentHandle = await SoLoud.instance.play(_waveformSource!);

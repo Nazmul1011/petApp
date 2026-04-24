@@ -372,8 +372,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   }
 }
 
-
-// Example : 
+// Example :
 
 // AppTextFormField(
 //             label: "Type",

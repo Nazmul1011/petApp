@@ -19,11 +19,17 @@ class EmotionsController extends GetxController with BaseController {
     _setupAudio();
     fetchEmotions();
 
+    // Re-fetch emotions when user state changes (e.g., premium upgrade)
+    ever(AuthController.to.user, (_) {
+      fetchEmotions();
+    });
+
     // Stop sound when switching tabs
     try {
       final mainController = Get.find<MainController>();
       ever(mainController.currentIndex, (index) {
-        if (index != 1) { // 1 is the Emotions tab index
+        if (index != 1) {
+          // 1 is the Emotions tab index
           _audioPlayer.stop();
         }
       });
@@ -47,7 +53,7 @@ class EmotionsController extends GetxController with BaseController {
     try {
       setLoading(true);
       final response = await _apiService.get('/mood/presets');
-      
+
       if (response.data != null && response.data['success'] == true) {
         final List<dynamic> data = response.data['data'];
         final isPremiumUser = AuthController.to.user.value?.isPremium ?? false;
@@ -85,9 +91,9 @@ class EmotionsController extends GetxController with BaseController {
       if (isPlayingSound.value) {
         await _audioPlayer.stop();
       }
-      
+
       isPlayingSound.value = true;
-      
+
       // Safe lookup for active pet type
       String petType = 'bark';
       final user = AuthController.to.user.value;
@@ -100,9 +106,7 @@ class EmotionsController extends GetxController with BaseController {
         }
       }
 
-      await _audioPlayer.play(
-        AssetSource('audio/${petType}_1.wav'),
-      );
+      await _audioPlayer.play(AssetSource('audio/${petType}_1.wav'));
     } catch (e) {
       print("Error playing sound: $e");
       // Silently fail or show a more descriptive error if local assets are missing

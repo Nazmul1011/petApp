@@ -40,13 +40,10 @@ class LanguageItem extends StatelessWidget {
                 color: Colors.grey.withValues(alpha: 0.1),
               ),
               clipBehavior: Clip.antiAlias,
-              child: SvgPicture.asset(
-                flagAsset,
-                fit: BoxFit.cover,
-              ),
+              child: SvgPicture.asset(flagAsset, fit: BoxFit.cover),
             ),
             SizedBox(width: R.width(16)),
-            
+
             // Text Information
             Expanded(
               child: Column(
@@ -70,7 +67,7 @@ class LanguageItem extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Custom Radio Button
             Container(
               width: R.width(20),

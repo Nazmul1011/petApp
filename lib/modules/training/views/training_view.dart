@@ -31,15 +31,19 @@ class TrainingView extends GetView<TrainingController> {
                     ),
                   ),
                   SizedBox(height: R.height(24)),
-                  Obx(() => _buildSection(
-                    title: "BASIC COMMANDS",
-                    items: controller.basicCommands.take(3).toList(),
-                  )),
+                  Obx(
+                    () => _buildSection(
+                      title: "BASIC COMMANDS",
+                      items: controller.basicCommands.take(3).toList(),
+                    ),
+                  ),
                   SizedBox(height: R.height(32)),
-                  Obx(() => _buildSection(
-                    title: "TRICKS",
-                    items: controller.tricks.take(3).toList(),
-                  )),
+                  Obx(
+                    () => _buildSection(
+                      title: "TRICKS",
+                      items: controller.tricks.take(3).toList(),
+                    ),
+                  ),
                   SizedBox(height: R.height(40)),
                 ],
               ),
@@ -115,10 +119,7 @@ class TrainingView extends GetView<TrainingController> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(R.width(8)),
-                    child: Image.asset(
-                      item.imagePath,
-                      fit: BoxFit.contain,
-                    ),
+                    child: Image.asset(item.imagePath, fit: BoxFit.contain),
                   ),
                   if (controller.isItemLocked(item))
                     Container(

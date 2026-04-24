@@ -15,7 +15,9 @@ class TalkApiService {
       final raw = response.data;
       final data = (raw is Map && raw.containsKey('data')) ? raw['data'] : raw;
       if (data != null) {
-        return TalkSessionModel.fromJson(Map<String, dynamic>.from(data as Map));
+        return TalkSessionModel.fromJson(
+          Map<String, dynamic>.from(data as Map),
+        );
       }
     } catch (e) {
       print('[TalkApiService] createSession error: $e');
@@ -26,8 +28,8 @@ class TalkApiService {
   /// Step 2 — Submit a recorded audio file for translation.
   Future<TranslationModel?> createTranslation({
     required String sessionId,
-    required String inputType,   // 'HUMAN_VOICE' | 'PET_VOICE'
-    required String direction,   // 'HUMAN_TO_PET' | 'PET_TO_HUMAN'
+    required String inputType, // 'HUMAN_VOICE' | 'PET_VOICE'
+    required String direction, // 'HUMAN_TO_PET' | 'PET_TO_HUMAN'
     String? inputText,
     String? inputAudioUrl,
   }) async {
@@ -44,7 +46,9 @@ class TalkApiService {
       final raw = response.data;
       final data = (raw is Map && raw.containsKey('data')) ? raw['data'] : raw;
       if (data != null) {
-        return TranslationModel.fromJson(Map<String, dynamic>.from(data as Map));
+        return TranslationModel.fromJson(
+          Map<String, dynamic>.from(data as Map),
+        );
       }
     } catch (e) {
       print('[TalkApiService] createTranslation error: $e');
@@ -69,7 +73,9 @@ class TalkApiService {
       final raw = response.data;
       final data = (raw is Map && raw.containsKey('data')) ? raw['data'] : raw;
       if (data != null) {
-        return TranslationModel.fromJson(Map<String, dynamic>.from(data as Map));
+        return TranslationModel.fromJson(
+          Map<String, dynamic>.from(data as Map),
+        );
       }
     } catch (e) {
       print('[TalkApiService] saveTranslation error: $e');
@@ -95,7 +101,10 @@ class TalkApiService {
       }
 
       return items
-          .map((e) => TranslationModel.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) =>
+                TranslationModel.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
           .toList();
     } catch (e) {
       print('[TalkApiService] listSaved error: $e');

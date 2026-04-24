@@ -30,23 +30,29 @@ class GlobalBindings extends Bindings {
     Get.lazyPut<EmotionsController>(() => EmotionsController(), fenix: true);
     Get.lazyPut<WhistleController>(() => WhistleController(), fenix: true);
     Get.lazyPut<TrainingController>(() => TrainingController(), fenix: true);
-    Get.lazyPut<NotificationController>(() => NotificationController(), fenix: true);
+    Get.lazyPut<NotificationController>(
+      () => NotificationController(),
+      fenix: true,
+    );
     Get.lazyPut<MoreController>(() => MoreController(), fenix: true);
 
     // Payments
     Get.lazyPut<PaymentService>(() => PaymentService(), fenix: true);
     Get.lazyPut<PaymentController>(() => PaymentController(), fenix: true);
-    
+
     // Language
     Get.lazyPut<LanguageService>(() => LanguageService(), fenix: true);
     Get.lazyPut<LanguageController>(() => LanguageController(), fenix: true);
-    
+
     // Legal
     Get.lazyPut<LegalService>(() => LegalService(), fenix: true);
     Get.lazyPut<LegalController>(() => LegalController(), fenix: true);
-    
+
     // Subscriptions
     Get.lazyPut<SubscriptionService>(() => SubscriptionService(), fenix: true);
-    Get.lazyPut<SubscriptionModuleController>(() => SubscriptionModuleController(), fenix: true);
+    Get.lazyPut<SubscriptionModuleController>(
+      () => SubscriptionModuleController(),
+      fenix: true,
+    );
   }
 }

@@ -64,7 +64,9 @@ class PaymentRequiredModal extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => Get.back(result: true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2C2C2E), // Dark Gray Continue
+                      backgroundColor: const Color(
+                        0xFF2C2C2E,
+                      ), // Dark Gray Continue
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -82,7 +84,7 @@ class PaymentRequiredModal extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

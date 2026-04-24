@@ -16,13 +16,17 @@ abstract class BaseService {
       final response = await request();
       final data = response.data;
 
-      debugPrint('safeRequest: statusCode=${response.statusCode}, dataType=${data.runtimeType}');
+      debugPrint(
+        'safeRequest: statusCode=${response.statusCode}, dataType=${data.runtimeType}',
+      );
 
       // One-liner: normalize + attach status code
       return BaseApiResponse<T>.fromHttp(response, fromJson);
     } on AppException catch (e) {
       // Raised by handleError(...) with statusCode attached
-      debugPrint('safeRequest: AppException caught: ${e.message} (status=${e.statusCode})');
+      debugPrint(
+        'safeRequest: AppException caught: ${e.message} (status=${e.statusCode})',
+      );
       return BaseApiResponse<T>(
         success: false,
         message: e.message,
@@ -30,7 +34,8 @@ abstract class BaseService {
         statusCode: e.statusCode,
       );
     } on DioException catch (e) {
-      final isConnectionError = e.type == DioExceptionType.connectionError ||
+      final isConnectionError =
+          e.type == DioExceptionType.connectionError ||
           (e.message?.toLowerCase().contains('failed host lookup') ?? false);
 
       debugPrint('safeRequest: DioException caught: ${e.message}');

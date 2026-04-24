@@ -1,13 +1,4 @@
-
-enum AppLanguage {
-  enUk,
-  enUs,
-  bn,
-  de,
-  fr,
-  es,
-  it,
-}
+enum AppLanguage { enUk, enUs, bn, de, fr, es, it }
 
 class UserModel {
   final String id;
@@ -22,6 +13,8 @@ class UserModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  bool isPremium;
+
   UserModel({
     required this.id,
     required this.gameId,
@@ -34,11 +27,11 @@ class UserModel {
     this.pets = const [],
     required this.createdAt,
     required this.updatedAt,
+    this.isPremium = false,
   });
 
-  bool get isPremium => subscriptions.isNotEmpty;
-
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final subscriptions = json['subscriptions'] as List<dynamic>? ?? [];
     return UserModel(
       id: json['id'],
       gameId: json['gameId'],
@@ -50,10 +43,11 @@ class UserModel {
       onboardingStep: json['onboardingStep'] ?? 0,
       activePetId: json['activePetId'],
       pushToken: json['pushToken'],
-      subscriptions: json['subscriptions'] ?? [],
+      subscriptions: subscriptions,
       pets: json['pets'] ?? [],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      isPremium: json['isPremium'] ?? subscriptions.isNotEmpty,
     );
   }
 

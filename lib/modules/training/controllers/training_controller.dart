@@ -18,6 +18,12 @@ class TrainingController extends GetxController with BaseController {
   void onInit() {
     super.onInit();
     fetchTraining();
+
+    // Refresh UI when user state changes (e.g., premium upgrade)
+    ever(_authController.user, (_) {
+      basicCommands.refresh();
+      tricks.refresh();
+    });
   }
 
   Future<void> fetchTraining() async {
@@ -26,11 +32,11 @@ class TrainingController extends GetxController with BaseController {
       final response = await _apiService.get('/training');
       if (response.statusCode == 200 && response.data != null) {
         final dynamic respData = response.data;
-        
-        dynamic rawData = (respData is Map && respData.containsKey('data')) 
-            ? respData['data'] 
+
+        dynamic rawData = (respData is Map && respData.containsKey('data'))
+            ? respData['data']
             : respData;
-            
+
         // The backend returns { items: [...], premiumAllowed: boolean }
         List<dynamic> dataList = [];
         if (rawData is Map && rawData.containsKey('items')) {
@@ -39,10 +45,14 @@ class TrainingController extends GetxController with BaseController {
           dataList = rawData;
         }
 
-        final items = dataList.map((json) => TrainingItem.fromJson(json)).toList();
-        
+        final items = dataList
+            .map((json) => TrainingItem.fromJson(json))
+            .toList();
+
         // Filter by category
-        basicCommands.assignAll(items.where((e) => e.category == 'BASIC').toList());
+        basicCommands.assignAll(
+          items.where((e) => e.category == 'BASIC').toList(),
+        );
         tricks.assignAll(items.where((e) => e.category == 'TRICK').toList());
       }
     } catch (e) {

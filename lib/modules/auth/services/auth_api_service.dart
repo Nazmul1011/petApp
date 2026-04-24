@@ -17,7 +17,9 @@ class AuthApiService extends BaseService {
   }
 
   /// Refresh tokens
-  Future<BaseApiResponse<AuthResponse>> refreshTokens(String refreshToken) async {
+  Future<BaseApiResponse<AuthResponse>> refreshTokens(
+    String refreshToken,
+  ) async {
     return safeRequest(
       request: () => api.post(
         '/auth/refresh',
@@ -38,14 +40,13 @@ class AuthApiService extends BaseService {
 
   /// Logout
   Future<BaseApiResponse<void>> logout() async {
-    return safeRequest(
-      request: () => api.post('/auth/logout'),
-      fromJson: null,
-    );
+    return safeRequest(request: () => api.post('/auth/logout'), fromJson: null);
   }
 
   /// Update user profile (e.g., onboarding completed)
-  Future<BaseApiResponse<UserModel>> updateProfile(Map<String, dynamic> data) async {
+  Future<BaseApiResponse<UserModel>> updateProfile(
+    Map<String, dynamic> data,
+  ) async {
     return safeRequest(
       request: () => api.patch('/user/', data: data),
       fromJson: (json) => UserModel.fromJson(json),

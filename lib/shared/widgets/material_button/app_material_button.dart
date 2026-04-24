@@ -110,7 +110,8 @@ class AppMaterialButton extends StatelessWidget {
 
     final labelWidget = Text(
       label,
-      style: textStyle ??
+      style:
+          textStyle ??
           TextStyle(
             fontFamily: 'NationalPark',
             color: textColor,

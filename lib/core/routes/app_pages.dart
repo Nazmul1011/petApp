@@ -7,6 +7,7 @@ import 'package:petapp/modules/main/views/main_view.dart';
 import 'package:petapp/modules/payment/views/payment_view.dart';
 import 'package:petapp/modules/language/views/language_view.dart';
 import 'package:petapp/modules/legal/views/legal_view.dart';
+import 'package:petapp/modules/pet_setup/views/welcome_splash_view.dart';
 import 'package:petapp/modules/subscription/views/subscription_view.dart';
 import 'package:petapp/modules/training/views/training_detail_view.dart';
 import 'package:petapp/modules/training/views/training_view_all_view.dart';
@@ -15,9 +16,11 @@ import 'package:petapp/modules/auth/views/splash_view.dart';
 import '../../shared/widgets/scaffold/app_scaffold.dart';
 import 'app_routes.dart';
 
-import 'package:petapp/modules/pet_setup/views/welcome_splash_view.dart';
 import 'package:petapp/modules/pet_setup/views/pet_profile_setup_view.dart';
 import 'package:petapp/modules/talk/views/saved_talks_view.dart';
+import 'package:petapp/modules/pet_profile/views/pet_profile_view.dart';
+import 'package:petapp/modules/pet_profile/views/add_pet_view.dart';
+import 'package:petapp/modules/pet_profile/bindings/pet_profile_binding.dart';
 
 class AppPages {
   static final pages = [
@@ -29,10 +32,7 @@ class AppPages {
     ),
     GetPage(name: AppRoutes.appScaffold, page: () => const AppScaffold()),
     GetPage(name: AppRoutes.homeView, page: () => const HomeViewScreen()),
-    GetPage(
-      name: AppRoutes.dashboard,
-      page: () => const MainView(),
-    ),
+    GetPage(name: AppRoutes.dashboard, page: () => const MainView()),
     GetPage(
       name: AppRoutes.onboardingThree,
       page: () => const OnboardingThreeView(),
@@ -41,10 +41,28 @@ class AppPages {
     GetPage(name: AppRoutes.language, page: () => const LanguageView()),
     GetPage(name: AppRoutes.legal, page: () => const LegalView()),
     GetPage(name: AppRoutes.subscription, page: () => const SubscriptionView()),
-    GetPage(name: AppRoutes.trainingDetail, page: () => const TrainingDetailView()),
-    GetPage(name: AppRoutes.trainingViewAll, page: () => const TrainingViewAllView()),
-    GetPage(name: AppRoutes.welcomeSplash, page: () => const WelcomeSplashView()),
-    GetPage(name: AppRoutes.petProfileSetup, page: () => const PetProfileSetupView()),
+    GetPage(
+      name: AppRoutes.trainingDetail,
+      page: () => const TrainingDetailView(),
+    ),
+    GetPage(
+      name: AppRoutes.trainingViewAll,
+      page: () => const TrainingViewAllView(),
+    ),
+    GetPage(
+      name: AppRoutes.welcomeSplash,
+      page: () => const WelcomeSplashView(),
+    ),
+    GetPage(
+      name: AppRoutes.petProfileSetup,
+      page: () => const PetProfileSetupView(),
+    ),
     GetPage(name: AppRoutes.savedTalks, page: () => const SavedTalksView()),
+    GetPage(
+      name: AppRoutes.petProfile,
+      page: () => const PetProfileView(),
+      binding: PetProfileBinding(),
+    ),
+    GetPage(name: AppRoutes.addPet, page: () => const AddPetView()),
   ];
 }

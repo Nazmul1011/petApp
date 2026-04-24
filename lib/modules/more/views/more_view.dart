@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../controllers/more_controller.dart';
+import '../../mood_history/views/mood_history_view.dart';
 
 class MoreView extends GetView<MoreController> {
   const MoreView({super.key});
@@ -40,35 +43,35 @@ class MoreView extends GetView<MoreController> {
               label: "Pet profile",
               iconColor: const Color(0xFF8B78E6),
               bgColor: const Color(0xFF8B78E6).withValues(alpha: 0.12),
-              onTap: () {},
+              onTap: () => Get.toNamed(AppRoutes.petProfile),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/mood_history.png",
               label: "Mood History",
               iconColor: const Color(0xFFFF8A65),
               bgColor: const Color(0xFFFF8A65).withValues(alpha: 0.12),
-              onTap: () {},
+              onTap: () => Get.to(() => const MoodHistoryView()),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Saved_talk.png",
               label: "Saved Talks",
               iconColor: const Color(0xFFF06292),
               bgColor: const Color(0xFFF06292).withValues(alpha: 0.12),
-              onTap: () {},
+              onTap: () => Get.toNamed(AppRoutes.savedTalks),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Language.png",
               label: "Language",
               iconColor: const Color(0xFF4DB6AC),
               bgColor: const Color(0xFF4DB6AC).withValues(alpha: 0.12),
-              onTap: () {},
+              onTap: () => Get.toNamed(AppRoutes.language),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Subscription.png",
               label: "Subscription",
               iconColor: const Color(0xFF4DD0E1),
               bgColor: const Color(0xFF4DD0E1).withValues(alpha: 0.12),
-              onTap: () {},
+              onTap: () => Get.toNamed(AppRoutes.subscription),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Others.png",
@@ -96,7 +99,11 @@ class MoreView extends GetView<MoreController> {
               label: "Share app",
               iconColor: const Color(0xFF5C6BC0),
               bgColor: const Color(0xFF5C6BC0).withValues(alpha: 0.12),
-              onTap: () {},
+              onTap: () {
+                Share.share(
+                  'Check out the PawLingo app! It helps you communicate with your pet.',
+                );
+              },
             ),
           ],
         ),
@@ -119,7 +126,10 @@ class MoreView extends GetView<MoreController> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.15), width: 1),
+          border: Border.all(
+            color: Colors.grey.withValues(alpha: 0.15),
+            width: 1,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

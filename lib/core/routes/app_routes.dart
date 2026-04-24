@@ -20,4 +20,8 @@ abstract class AppRoutes {
 
   // Talk
   static const savedTalks = '/savedTalks';
+
+  // Pet Profile
+  static const petProfile = '/petProfile';
+  static const addPet = '/addPet';
 }

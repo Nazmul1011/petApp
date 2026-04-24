@@ -5,31 +5,31 @@ final Map<String, List<String>> moodPhrases = {
     'I love you!',
     'The cat wants to kiss you!',
     'You are my favorite human!',
-    'Life is good!'
+    'Life is good!',
   ],
   'hungry': [
     'Feed me now!',
     'Food time!',
     'My bowl is empty...',
-    'I could eat a whole fish right now.'
+    'I could eat a whole fish right now.',
   ],
   'playful': [
     'Let\'s play!',
     'Geo geoo fun!',
     'Throw the ball!',
-    'Catch me if you can!'
+    'Catch me if you can!',
   ],
   'angry': [
     'Back off!',
     'I\'m mad!',
     'Don\'t touch me!',
-    'Grrrr... stay away!'
+    'Grrrr... stay away!',
   ],
   'sad': [
     'I missed you...',
     'Give me a hug?',
     'I feel a bit lonely.',
-    'Where have you been?'
+    'Where have you been?',
   ],
 };
 
