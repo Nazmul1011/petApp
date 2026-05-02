@@ -26,10 +26,17 @@ class MoodHistoryController extends GetxController {
   Future<void> fetchData() async {
     isLoading.value = true;
     
-    // final response = await _api.fetchMoodAnalytics(selectedFilter.value);
-    // Use dummy data to visualize the UI
-    await Future.delayed(const Duration(milliseconds: 600));
-    analyticsData.value = _getDummyData();
+    try {
+      // Fetch real data from the backend API
+      final response = await _api.fetchMoodAnalytics(selectedFilter.value);
+      if (response != null) {
+        analyticsData.value = response;
+      } else {
+        analyticsData.value = null; 
+      }
+    } catch (e) {
+      print('[MoodHistoryController] Error fetching data: $e');
+    }
     
     isLoading.value = false;
   }
