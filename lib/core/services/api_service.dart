@@ -67,92 +67,93 @@ class LoggerService {
     _logger.e(message, error: error, stackTrace: stackTrace);
   }
 
-  /// Log HTTP request method and URI
-  void logRequest(String method, Uri uri) {
-    _logger.i('📡 [REQUEST] $method => $uri');
-  }
-
-  /// Log HTTP headers map
-  void logHeaders(Map<String, dynamic> headers) {
-    final maskedHeaders = Map<String, dynamic>.from(headers);
-
+  /// Log full API request and response
+  void logApi({
+    required RequestOptions requestOptions,
+    Response? response,
+    DioException? error,
+  }) {
+    final buffer = StringBuffer();
+    final date = DateTime.now().toString().split('.')[0];
+    
+    buffer.writeln('┌────────────────────────────────────────────────────────────────────────');
+    buffer.writeln('│  $date');
+    buffer.writeln('├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄');
+    buffer.writeln('│  ━━  REQUEST');
+    buffer.writeln('│');
+    buffer.writeln('│  [${requestOptions.method.toUpperCase()}]  ${requestOptions.path}');
+    buffer.writeln('│');
+    buffer.writeln('│  📑  HEADERS');
+    
+    final maskedHeaders = Map<String, dynamic>.from(requestOptions.headers);
     if (maskedHeaders.containsKey('Authorization')) {
       final auth = maskedHeaders['Authorization'].toString();
       final token = auth.replaceFirst('Bearer ', '');
       final masked = token.length > 12
           ? 'Bearer ${token.substring(0, 6)}...${token.substring(token.length - 6)}'
           : auth;
-
       maskedHeaders['Authorization'] = masked;
     }
-
-    _logger.i('📑 [HEADERS] => $maskedHeaders');
-  }
-
-  /// Log HTTP payload (request body or form data)
-  void logPayload(dynamic payload) {
-    if (payload == null) {
-      _logger.i('📦 [PAYLOAD] => <empty>');
-      return;
-    }
-
-    // Pretty-print JSON-like maps/lists
-    if (payload is Map || payload is List) {
+    
+    maskedHeaders.forEach((key, value) {
+      buffer.writeln('│     $key $value');
+    });
+    
+    buffer.writeln('│');
+    buffer.writeln('│  📦  BODY');
+    
+    final data = requestOptions.data;
+    if (data == null) {
+      buffer.writeln('│     <empty>');
+    } else if (data is Map || data is List) {
       try {
-        _logger.i(
-          '📦 [PAYLOAD] => \n${const JsonEncoder.withIndent('  ').convert(payload)}',
-        );
+        final jsonString = const JsonEncoder.withIndent('  ').convert(data);
+        final lines = jsonString.split('\n');
+        for (var line in lines) {
+          buffer.writeln('│     $line');
+        }
       } catch (_) {
-        _logger.i('📦 [PAYLOAD] => $payload');
+        buffer.writeln('│     $data');
       }
-      return;
-    }
-
-    // Expand Dio FormData (fields + files)
-    if (payload is FormData) {
-      final fields = <String, String>{
-        for (final e in payload.fields) e.key: e.value,
-      };
-
-      // Don't dump raw bytes; summarize each file safely
-      final files = payload.files.map((e) {
-        final f = e.value;
-        return {
-          'key': e.key,
-          'filename': f.filename,
-          'contentType': f.contentType?.toString(),
-          // length may be null or expensive; include if available
-          'length': (() {
-            try {
-              return f.length;
-            } catch (_) {
-              return null;
-            }
-          })(),
-        };
-      }).toList();
-
-      final summarized = {'fields': fields, 'files': files};
-
-      _logger.i(
-        '📦 [PAYLOAD] => ${const JsonEncoder.withIndent('  ').convert(summarized)}',
-      );
-      return;
-    }
-
-    // Fallback
-    _logger.i('📦 [PAYLOAD] => $payload');
-  }
-
-  /// Log HTTP response status code and data
-  void logResponse(int? statusCode, dynamic data) {
-    if (statusCode != null && statusCode >= 200 && statusCode < 300) {
-      _logger.i('✅ [RESPONSE $statusCode] => $data');
-    } else if (statusCode != null && statusCode < 400) {
-      _logger.w('⚠️ [RESPONSE $statusCode] => $data');
+    } else if (data is FormData) {
+      buffer.writeln('│     [FormData]');
+      for (var field in data.fields) {
+        buffer.writeln('│       ${field.key}: ${field.value}');
+      }
+      for (var file in data.files) {
+        buffer.writeln('│       ${file.key}: [File] ${file.value.filename}');
+      }
     } else {
-      _logger.e('❌ [RESPONSE $statusCode] => $data');
+      buffer.writeln('│     $data');
     }
+    
+    buffer.writeln('├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄');
+    
+    final statusCode = response?.statusCode ?? error?.response?.statusCode ?? -1;
+    buffer.writeln('│  ━━  RESPONSE  $statusCode');
+    buffer.writeln('│');
+    buffer.writeln('│  📄  BODY');
+    
+    final resData = response?.data ?? error?.response?.data;
+    if (resData == null) {
+      buffer.writeln('│     <empty>');
+    } else if (resData is Map || resData is List) {
+      try {
+        final jsonString = const JsonEncoder.withIndent('  ').convert(resData);
+        final lines = jsonString.split('\n');
+        for (var line in lines) {
+          buffer.writeln('│     $line');
+        }
+      } catch (_) {
+        buffer.writeln('│     $resData');
+      }
+    } else {
+      buffer.writeln('│     $resData');
+    }
+    
+    buffer.writeln('└────────────────────────────────────────────────────────────────────────');
+    
+    debugPrint(buffer.toString());
   }
 }
 
@@ -299,16 +300,14 @@ class ApiService {
     publicClient.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          logger.logRequest(options.method, options.uri);
-          logger.logHeaders(options.headers);
-          logger.logPayload(options.data);
           handler.next(options);
         },
         onResponse: (response, handler) {
-          logger.logResponse(response.statusCode, response.data);
+          logger.logApi(requestOptions: response.requestOptions, response: response);
           handler.next(response);
         },
         onError: (e, handler) {
+          logger.logApi(requestOptions: e.requestOptions, error: e);
           if (e.type == DioExceptionType.connectionError ||
               e.message?.toLowerCase().contains('failed host lookup') == true) {
             logger.error('[PUBLIC API ERROR] Connection Error');
@@ -340,13 +339,10 @@ class ApiService {
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          logger.logRequest(options.method, options.uri);
-          logger.logHeaders(options.headers);
-          logger.logPayload(options.data);
           handler.next(options);
         },
         onResponse: (response, handler) {
-          logger.logResponse(response.statusCode, response.data);
+          logger.logApi(requestOptions: response.requestOptions, response: response);
           if (response.statusCode == 401 ||
               (response.statusCode == 403 &&
                   isUnauthorizedError(response.data))) {
@@ -356,6 +352,7 @@ class ApiService {
           handler.next(response);
         },
         onError: (e, handler) {
+          logger.logApi(requestOptions: e.requestOptions, error: e);
           if (e.response?.statusCode == 401 ||
               (e.response?.statusCode == 403 &&
                   isUnauthorizedError(e.response?.data))) {
