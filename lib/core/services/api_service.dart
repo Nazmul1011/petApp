@@ -34,16 +34,11 @@ class LoggerService {
   factory LoggerService() => _instance;
   LoggerService._internal();
 
-  // Create logger with PrettyPrinter config
+  // Create logger with a cleaner SimplePrinter configuration to avoid massive ASCII boxes
   final Logger _logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 0,
-      errorMethodCount: 0,
-      lineLength: 40,
+    printer: SimplePrinter(
       colors: true,
-      levelColors: PrettyPrinter.defaultLevelColors,
-      printEmojis: true,
-      dateTimeFormat: DateTimeFormat.dateAndTime,
+      printTime: false,
     ),
   );
 
@@ -105,7 +100,7 @@ class LoggerService {
     if (payload is Map || payload is List) {
       try {
         _logger.i(
-          '📦 [PAYLOAD] => ${const JsonEncoder.withIndent('  ').convert(payload)}',
+          '📦 [PAYLOAD] => \n${const JsonEncoder.withIndent('  ').convert(payload)}',
         );
       } catch (_) {
         _logger.i('📦 [PAYLOAD] => $payload');

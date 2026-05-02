@@ -77,7 +77,8 @@ class OnboardingThreeController extends GetxController {
 
     try {
       await _player.stop();
-      await _player.play(AssetSource(sound));
+      // Temporarily disabled sound on tab switch as requested
+      // await _player.play(AssetSource(sound));
     } catch (e) {
       print('[Onboarding] Error playing sound: $e');
     }

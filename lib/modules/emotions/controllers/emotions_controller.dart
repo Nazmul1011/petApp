@@ -86,7 +86,7 @@ class EmotionsController extends GetxController with BaseController {
       return;
     }
 
-    // Play Sound (using local assets to bypass internet issues)
+    // Play Sound
     try {
       if (isPlayingSound.value) {
         await _audioPlayer.stop();
@@ -94,46 +94,61 @@ class EmotionsController extends GetxController with BaseController {
 
       isPlayingSound.value = true;
 
-  String _getAudioFileForEmotion(String emotionName, String petType) {
-    final lowerName = emotionName.toLowerCase();
-    
-    if (petType == 'CAT') {
-      if (lowerName == 'happy') return 'cat-purring.mp3';
-      if (lowerName == 'attention') return 'cat-hungry.mp3';
-      if (lowerName == 'angry') return 'cat-arngry.mp3';
-      if (lowerName == 'love') return 'cat-cute-cat.mp3';
-      if (lowerName == 'sleep') return 'cat-kitten.mp3';
-      return 'meow_1.wav';
-    } else {
-      if (lowerName == 'happy') return 'dog-barking.mp3';
-      if (lowerName == 'attention') return 'dog-barking.mp3';
-      if (lowerName == 'angry') return 'angry-pitbull-dog-barking-aggressive-guard-dog-sound-effect-313317.mp3';
-      if (lowerName == 'love') return 'puppy_howl.mp3';
-      if (lowerName == 'sleep') return 'old-dog-howl.mp3';
-      if (lowerName == 'grumpy') return 'dog-unhappy.mp3';
-      if (lowerName == 'scared') return 'dog-yelp.mp3';
-      if (lowerName == 'neutral') return 'bark_1.wav';
-      return 'bark_1.wav';
-    }
-  }
-
-      // Safe lookup for active pet type
-      String petType = 'DOG';
-      final user = AuthController.to.user.value;
-      if (user != null && user.activePetId != null) {
-        final activePet = user.pets.firstWhereOrNull(
-          (p) => p['id'] == user.activePetId,
-        );
-        if (activePet != null && activePet['type'] == 'CAT') {
-          petType = 'CAT';
+      // Helper function for local fallback
+      Future<void> playLocalFallback() async {
+        String getAudioFileForEmotion(String emotionName, String petType) {
+          final lowerName = emotionName.toLowerCase();
+          if (petType == 'CAT') {
+            if (lowerName == 'happy') return 'cat-purring.mp3';
+            if (lowerName == 'attention') return 'cat-hungry.mp3';
+            if (lowerName == 'angry') return 'cat-arngry.mp3';
+            if (lowerName == 'love') return 'cat-cute-cat.mp3';
+            if (lowerName == 'sleep') return 'cat-kitten.mp3';
+            return 'meow_1.wav';
+          } else {
+            if (lowerName == 'happy') return 'dog-barking.mp3';
+            if (lowerName == 'attention') return 'dog-barking.mp3';
+            if (lowerName == 'angry') return 'angry-pitbull-dog-barking-aggressive-guard-dog-sound-effect-313317.mp3';
+            if (lowerName == 'love') return 'puppy_howl.mp3';
+            if (lowerName == 'sleep') return 'old-dog-howl.mp3';
+            if (lowerName == 'grumpy') return 'dog-unhappy.mp3';
+            if (lowerName == 'scared') return 'dog-yelp.mp3';
+            if (lowerName == 'neutral') return 'bark_1.wav';
+            return 'bark_1.wav';
+          }
         }
+
+        // Safe lookup for active pet type
+        String petType = 'DOG';
+        final user = AuthController.to.user.value;
+        if (user != null && user.activePetId != null) {
+          final activePet = user.pets.firstWhereOrNull(
+            (p) => p['id'] == user.activePetId,
+          );
+          if (activePet != null && activePet['type'] == 'CAT') {
+            petType = 'CAT';
+          }
+        }
+
+        final fileName = getAudioFileForEmotion(item.name, petType);
+        await _audioPlayer.play(AssetSource('audio/$fileName'));
       }
 
-      final fileName = _getAudioFileForEmotion(item.name, petType);
-      await _audioPlayer.play(AssetSource('audio/$fileName'));
+      // Prefer backend URL if available
+      if (item.audioUrl != null && item.audioUrl!.isNotEmpty && item.audioUrl!.startsWith('http')) {
+        try {
+          await _audioPlayer.play(UrlSource(item.audioUrl!));
+        } catch (e) {
+          print("Network audio failed, falling back to local: $e");
+          await playLocalFallback();
+        }
+      } else {
+        // Fallback to local assets immediately if no valid absolute URL
+        await playLocalFallback();
+      }
     } catch (e) {
-      print("Error playing sound: $e");
       // Silently fail or show a more descriptive error if local assets are missing
+      // print("Error playing sound: $e");
     } finally {
       isPlayingSound.value = false;
     }
