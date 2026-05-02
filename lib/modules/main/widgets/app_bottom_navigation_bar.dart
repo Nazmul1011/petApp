@@ -23,22 +23,54 @@ class AppBottomNavigationBar extends GetView<MainController> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Expanded(
-              child: _buildNavItem(0, "Talk", Icons.chat_bubble_outline),
+              child: _buildNavItem(
+                0,
+                "Talk",
+                "assets/images/bottom_navigation/message-multiple.png",
+              ),
             ),
-            Expanded(child: _buildNavItem(1, "Emotions", Icons.pets)),
-            Expanded(child: _buildNavItem(2, "Whistle", Icons.settings_voice)),
-            Expanded(child: _buildNavItem(3, "Training", Icons.fitness_center)),
             Expanded(
-              child: _buildNavItem(4, "Notification", Icons.notifications_none),
+              child: _buildNavItem(
+                1,
+                "Emotions",
+                "assets/images/bottom_navigation/emotions.png",
+              ),
             ),
-            Expanded(child: _buildNavItem(5, "More", Icons.grid_view)),
+            Expanded(
+              child: _buildNavItem(
+                2,
+                "Whistle",
+                "assets/images/bottom_navigation/whistle.png",
+              ),
+            ),
+            Expanded(
+              child: _buildNavItem(
+                3,
+                "Training",
+                "assets/images/bottom_navigation/frisbee.png",
+              ),
+            ),
+            Expanded(
+              child: _buildNavItem(
+                4,
+                "Notification",
+                "assets/images/bottom_navigation/notification.png",
+              ),
+            ),
+            Expanded(
+              child: _buildNavItem(
+                5,
+                "More",
+                "assets/images/bottom_navigation/more.png",
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon) {
+  Widget _buildNavItem(int index, String label, String assetPath) {
     final isSelected = controller.currentIndex.value == index;
     final color = isSelected ? const Color(0xFF7F67CB) : Colors.grey;
 
@@ -48,7 +80,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 28),
+          ImageIcon(AssetImage(assetPath), color: color, size: 24),
           SizedBox(height: R.height(4)),
           Text(
             label,

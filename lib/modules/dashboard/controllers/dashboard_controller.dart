@@ -208,6 +208,7 @@ class DashboardController extends GetxController with BaseController {
           inputType: 'PET_VOICE',
           direction: 'PET_TO_HUMAN',
           inputAudioUrl: 'file://$path',
+          inputText: resultText.value,
         );
         if (translation != null) {
           _translationId = translation.id;
@@ -246,6 +247,18 @@ class DashboardController extends GetxController with BaseController {
     }
   }
 
+  String _mapMoodToBackend(String? localMood) {
+    if (localMood == null) return 'NEUTRAL';
+    switch (localMood.toLowerCase()) {
+      case 'happy': return 'EXCITED';
+      case 'hungry': return 'HUNGRY';
+      case 'playful': return 'PLAYFUL';
+      case 'angry': return 'ANGRY';
+      case 'sad': return 'SLEEPY';
+      default: return 'NEUTRAL';
+    }
+  }
+
   Future<void> saveVoice() async {
     final name = voiceLabel.value.trim();
     if (name.isEmpty) {
@@ -264,7 +277,7 @@ class DashboardController extends GetxController with BaseController {
       final saved = await _talkApi.saveTranslation(
         translationId: _translationId!,
         savedName: name,
-        mood: _detectedMood,
+        mood: _mapMoodToBackend(_detectedMood),
       );
 
       if (saved != null) {

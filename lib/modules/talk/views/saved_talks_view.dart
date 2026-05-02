@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import '../../talk/models/translation_model.dart';
 import '../../talk/services/talk_api_service.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class SavedTalksController extends GetxController {
   final TalkApiService _api = TalkApiService();
@@ -14,11 +15,36 @@ class SavedTalksController extends GetxController {
   final isLoading = false.obs;
   final RxBool showHumanToPet = true.obs; // true = human→pet view active
   final RxInt playingIndex = (-1).obs;
+  final RxString petIcon = 'assets/images/dogwave.png'.obs;
 
   @override
   void onInit() {
     super.onInit();
+    _updatePetIcon();
     fetchSaved();
+  }
+
+  void _updatePetIcon() {
+    try {
+      final user = AuthController.to.user.value;
+      if (user != null) {
+        final activePetId = user.activePetId;
+        final pets = user.pets;
+        if (activePetId != null && pets != null) {
+          final activePet = pets.firstWhere(
+            (p) => p['id'] == activePetId,
+            orElse: () => pets.first,
+          );
+          if (activePet['type'] == 'CAT') {
+            petIcon.value = 'assets/images/catwave.png';
+          } else {
+            petIcon.value = 'assets/images/dogwave.png';
+          }
+        }
+      }
+    } catch (e) {
+      print('[SavedTalks] Error updating pet icon: $e');
+    }
   }
 
   Future<void> fetchSaved() async {
@@ -218,7 +244,7 @@ class SavedTalksView extends StatelessWidget {
                   child: _AvatarBadge(
                     isActive: !controller.showHumanToPet.value,
                     child: Image.asset(
-                      'assets/images/dog_happy_face.png',
+                      controller.petIcon.value,
                       width: 18,
                       height: 18,
                       fit: BoxFit.contain,

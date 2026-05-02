@@ -103,7 +103,7 @@ class DashboardView extends GetView<DashboardController> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: R.width(24)),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Spacer(),
 
@@ -114,27 +114,21 @@ class DashboardView extends GetView<DashboardController> {
               textAlign: TextAlign.center,
             )
           else
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  controller.selectedPet.value == PetType.dog
-                      ? 'assets/images/dog_happy_face.png'
-                      : 'assets/images/play cat 1.png',
-                  height: R.height(100),
-                ),
-                SizedBox(width: R.width(10)),
-                Icon(
-                  Icons.waves,
-                  color: Colors.yellow.shade700,
-                  size: R.width(40),
-                ),
-              ],
+            Image.asset(
+              controller.selectedPet.value == PetType.dog
+                  ? 'assets/images/dogwave.png'
+                  : 'assets/images/catwave.png',
+              height: R.height(100),
             ),
 
           SizedBox(height: R.height(40)),
 
-          Opacity(opacity: 0.3, child: _buildAudioVisualizer(active: false)),
+          Obx(
+            () => Opacity(
+              opacity: controller.isPlaying.value ? 1.0 : 0.3,
+              child: _buildAudioVisualizer(active: controller.isPlaying.value),
+            ),
+          ),
 
           SizedBox(height: R.height(30)),
 
@@ -276,28 +270,69 @@ class DashboardView extends GetView<DashboardController> {
 
   Widget _buildAudioVisualizer({required bool active}) {
     return SizedBox(
-      height: R.height(50),
+      height: R.height(60),
       child: Obx(() {
-        // Tie to amplitude stream -> fake visualizer effect
+        // Tie to amplitude stream -> real visualizer effect
         double amp = controller.amplitude.value;
-        double normalized = (amp + 160) / 160;
+        // Normalize: mapping -60dB (quiet) to 0dB (loud) for better visual range
+        double normalized = (amp + 60) / 60;
         normalized = normalized.clamp(0.0, 1.0);
+
+        // If active but amp is silent (e.g. during playback), use a default "active" level
+        if (active && normalized < 0.1) {
+          normalized = 0.5;
+        }
+
+        // Predefined wave shape multipliers to create a professional look
+        final List<double> multipliers = [
+          0.2,
+          0.3,
+          0.5,
+          0.8,
+          1.2,
+          1.5,
+          1.3,
+          0.9,
+          0.7,
+          1.1,
+          1.4,
+          1.6,
+          1.5,
+          1.2,
+          0.8,
+          0.6,
+          1.0,
+          1.3,
+          1.5,
+          1.2,
+          0.8,
+          0.5,
+          0.3,
+          0.2,
+        ];
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: List.generate(24, (index) {
-            // For a wavy look, use sine/random math
-            double baseHeight = active
-                ? max(6.0, 50 * normalized * Random().nextDouble())
-                : 6.0 + (sin(index) * 4).abs();
+            // Calculate height based on amplitude and the wave multiplier
+            double baseH = active ? 40.0 : 8.0;
+            double h = 6.0 + (multipliers[index] * baseH * normalized);
+
+            // Add slight randomness only when active to simulate real-time vibration
+            if (active && normalized > 0.1) {
+              h += Random().nextDouble() * 5 * normalized;
+            }
 
             return AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 60),
               width: 4,
-              height: active ? baseHeight : (index % 2 == 0 ? 10 : 4),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
+              height: h.clamp(6.0, 60.0),
+              margin: const EdgeInsets.symmetric(horizontal: 2.5),
               decoration: BoxDecoration(
-                color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
+                color: const Color(
+                  0xFF7F67CB,
+                ).withValues(alpha: active ? 1.0 : 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             );
@@ -360,7 +395,9 @@ class DashboardView extends GetView<DashboardController> {
       );
     } else {
       return Image.asset(
-        'assets/images/dog_happy_face.png',
+        controller.selectedPet.value == PetType.dog
+            ? 'assets/images/dogwave.png'
+            : 'assets/images/catwave.png',
         width: R.width(28),
         height: R.width(28),
         fit: BoxFit.contain,
