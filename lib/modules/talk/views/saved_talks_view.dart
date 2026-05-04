@@ -6,6 +6,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import '../../talk/models/translation_model.dart';
 import '../../talk/services/talk_api_service.dart';
 import '../../auth/controllers/auth_controller.dart';
+import '../../../shared/widgets/snack_bar/app_snack_bar.dart';
 
 class SavedTalksController extends GetxController {
   final TalkApiService _api = TalkApiService();
@@ -89,6 +90,30 @@ class SavedTalksController extends GetxController {
     playingIndex.value = -1;
   }
 
+  Future<void> deleteTalk(int index) async {
+    try {
+      final list = filtered;
+      if (index < 0 || index >= list.length) return;
+      final item = list[index];
+      
+      final success = await _api.deleteSaved(item.id);
+      if (success) {
+        talks.removeWhere((t) => t.id == item.id);
+        showSnack(
+          content: 'Talk deleted successfully',
+          status: SnackBarStatus.success,
+        );
+      } else {
+        showSnack(
+          content: 'Failed to delete talk',
+          status: SnackBarStatus.error,
+        );
+      }
+    } catch (e) {
+      print('[SavedTalks] Error deleting talk: $e');
+    }
+  }
+
   @override
   void onClose() {
     _player.dispose();
@@ -161,14 +186,35 @@ class SavedTalksView extends StatelessWidget {
                   separatorBuilder: (_, __) => SizedBox(height: R.height(10)),
                   itemBuilder: (context, index) {
                     final item = list[index];
-                    return Obx(
-                      () => _TalkCard(
-                        item: item,
-                        index: index,
-                        isPlaying: controller.playingIndex.value == index,
-                        onPlay: () {
-                          controller.togglePlay(index, item.inputAudioUrl);
-                        },
+                    return Dismissible(
+                      key: Key(item.id),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (direction) {
+                        controller.deleteTalk(index);
+                      },
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.symmetric(horizontal: R.width(20)),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFEAEA),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Image.asset(
+                          'assets/images/delete.png',
+                          width: 24,
+                          height: 24,
+                          color: Colors.red,
+                        ),
+                      ),
+                      child: Obx(
+                        () => _TalkCard(
+                          item: item,
+                          index: index,
+                          isPlaying: controller.playingIndex.value == index,
+                          onPlay: () {
+                            controller.togglePlay(index, item.inputAudioUrl);
+                          },
+                        ),
                       ),
                     );
                   },

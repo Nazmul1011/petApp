@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:petapp/core/routes/app_routes.dart';
 
 class EmotionData {
   final String title;
@@ -99,8 +100,6 @@ class OnboardingThreeController extends GetxController {
   }
 
   void completeOnboarding() {
-    // Instead of direct navigation, we tell the AuthController onboarding is done
-    // This will hit the backend API and then trigger the correct routing
-    AuthController.to.completeOnboarding();
+    Get.toNamed(AppRoutes.onboardingFour);
   }
 }

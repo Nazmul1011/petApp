@@ -111,4 +111,15 @@ class TalkApiService {
       return [];
     }
   }
+
+  /// Step 5 — Delete a saved translation.
+  Future<bool> deleteSaved(String id) async {
+    try {
+      final response = await _apiService.delete('/talk/saved/$id');
+      return response.statusCode == 200;
+    } catch (e) {
+      print('[TalkApiService] deleteSaved error: $e');
+      return false;
+    }
+  }
 }

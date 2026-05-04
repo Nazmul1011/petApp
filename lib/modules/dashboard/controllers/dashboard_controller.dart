@@ -34,6 +34,7 @@ class DashboardController extends GetxController with BaseController {
   final RxString voiceLabel = ''.obs;
   final RxBool isSaving = false.obs;
   final RxBool isPlaying = false.obs;
+  final RxDouble detectedFrequency = 0.0.obs;
 
   // ----- Backend session & translation IDs -----
   String? _sessionId;
@@ -90,7 +91,26 @@ class DashboardController extends GetxController with BaseController {
     // Sync isPlaying with audio player state
     audioPlayer.onPlayerStateChanged.listen((state) {
       isPlaying.value = state == PlayerState.playing;
+      if (isPlaying.value) {
+        _startPlaybackAnimation();
+      } else {
+        _stopPlaybackAnimation();
+      }
     });
+  }
+
+  Timer? _playbackTimer;
+  void _startPlaybackAnimation() {
+    _playbackTimer?.cancel();
+    _playbackTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      amplitude.value = -20.0 + Random().nextDouble() * 20.0;
+    });
+  }
+
+  void _stopPlaybackAnimation() {
+    _playbackTimer?.cancel();
+    _playbackTimer = null;
+    amplitude.value = -160.0;
   }
 
   // ---------------------------------------------------------------------------
@@ -195,14 +215,27 @@ class DashboardController extends GetxController with BaseController {
   Future<void> _processPetToHuman(String path) async {
     setLoading(true);
     try {
-      // Local ML first for immediate result
-      final localMood = await classifierService.classify(path);
-      resultMood.value = localMood;
-      resultText.value = phrases.getPhraseFromMood(localMood);
-      _detectedMood = localMood;
+      final expectedPetType = selectedPet.value == PetType.dog ? 'dog' : 'cat';
+      
+      // Local ML with frequency analysis and strict check
+      final result = await classifierService.classify(path, expectedPetType);
+      
+      detectedFrequency.value = result.frequency;
 
-      // Then send to backend to store the translation record
-      if (_sessionId != null) {
+      if (result.isMatch && result.mood != null) {
+        resultMood.value = result.mood!;
+        resultText.value = phrases.getPhraseFromMood(result.mood!);
+        _detectedMood = result.mood;
+        print('[Dashboard] Match found! Mood: ${result.mood}, Freq: ${result.frequency}');
+      } else {
+        // No match found - "give nothing" as per user request
+        resultText.value = ""; 
+        _detectedMood = null;
+        print('[Dashboard] No match or invalid frequency for $expectedPetType');
+      }
+
+      // Then send to backend to store the translation record if a match was found
+      if (_sessionId != null && result.isMatch) {
         final translation = await _talkApi.createTranslation(
           sessionId: _sessionId!,
           inputType: 'PET_VOICE',
@@ -212,9 +245,7 @@ class DashboardController extends GetxController with BaseController {
         );
         if (translation != null) {
           _translationId = translation.id;
-          // Use backend mood/text if richer
-          if (translation.outputText != null &&
-              translation.outputText!.isNotEmpty) {
+          if (translation.outputText != null && translation.outputText!.isNotEmpty) {
             resultText.value = translation.outputText!;
           }
           if (translation.mood != null) {
@@ -223,7 +254,8 @@ class DashboardController extends GetxController with BaseController {
         }
       }
     } catch (e) {
-      resultText.value = 'Translation error. Try again!';
+      print('[Dashboard] PetToHuman error: $e');
+      resultText.value = 'Error processing sound.';
     } finally {
       setLoading(false);
     }
@@ -339,6 +371,7 @@ class DashboardController extends GetxController with BaseController {
     _recordSub?.cancel();
     _amplitudeSub?.cancel();
     _recordingTimer?.cancel();
+    _playbackTimer?.cancel();
     audioRecorder.dispose();
     audioPlayer.dispose();
     classifierService.dispose();

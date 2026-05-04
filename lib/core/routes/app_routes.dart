@@ -13,6 +13,7 @@ abstract class AppRoutes {
   static const trainingViewAll = '/trainingViewAll';
   static const welcomeSplash = '/welcomeSplash';
   static const petProfileSetup = '/petProfileSetup';
+  static const onboardingFour = '/onboardingFour';
   // Add your routes here
 
   // Home

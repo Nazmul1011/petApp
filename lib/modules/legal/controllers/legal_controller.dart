@@ -11,6 +11,17 @@ class LegalSection {
 class LegalController extends GetxController with BaseController {
   // 0 -> Privacy Policy, 1 -> Terms and conditions
   final RxInt selectedTabIndex = 0.obs;
+  
+  @override
+  void onInit() {
+    super.onInit();
+    if (Get.arguments != null && Get.arguments is Map) {
+      final tab = Get.arguments['tab'];
+      if (tab != null && tab is int) {
+        selectedTabIndex.value = tab;
+      }
+    }
+  }
 
   void setTab(int index) {
     selectedTabIndex.value = index;

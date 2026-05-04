@@ -108,10 +108,30 @@ class DashboardView extends GetView<DashboardController> {
           const Spacer(),
 
           if (!controller.isHumanToDog.value)
-            Text(
-              controller.resultText.value,
-              style: AppTypography.h4.copyWith(fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center,
+            Column(
+              children: [
+                if (controller.detectedFrequency.value > 0)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: R.height(8)),
+                    child: Text(
+                      "${controller.detectedFrequency.value.toStringAsFixed(0)} Hz",
+                      style: AppTypography.labelXs.copyWith(
+                        color: const Color(0xFF7F67CB),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                Text(
+                  controller.resultText.value.isEmpty
+                      ? "No ${controller.selectedPet.value == PetType.dog ? 'Dog' : 'Cat'} sound detected"
+                      : controller.resultText.value,
+                  style: AppTypography.h4.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: controller.resultText.value.isEmpty ? Colors.grey : Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             )
           else
             Image.asset(
@@ -278,11 +298,6 @@ class DashboardView extends GetView<DashboardController> {
         double normalized = (amp + 60) / 60;
         normalized = normalized.clamp(0.0, 1.0);
 
-        // If active but amp is silent (e.g. during playback), use a default "active" level
-        if (active && normalized < 0.1) {
-          normalized = 0.5;
-        }
-
         // Predefined wave shape multipliers to create a professional look
         final List<double> multipliers = [
           0.2,
@@ -309,30 +324,41 @@ class DashboardView extends GetView<DashboardController> {
           0.5,
           0.3,
           0.2,
+          0.4,
+          0.7,
+          1.1,
+          1.4,
+          1.2,
+          0.8,
+          0.5,
+          0.3,
         ];
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(24, (index) {
-            // Calculate height based on amplitude and the wave multiplier
-            double baseH = active ? 40.0 : 8.0;
-            double h = 6.0 + (multipliers[index] * baseH * normalized);
+          children: List.generate(32, (index) {
+            // Base height from multipliers for the "wave" look even when silent
+            double h = 12.0 + (multipliers[index] * 18.0);
 
-            // Add slight randomness only when active to simulate real-time vibration
-            if (active && normalized > 0.1) {
-              h += Random().nextDouble() * 5 * normalized;
+            // If active, scale based on normalized amplitude
+            if (active) {
+              h += multipliers[index] * 20.0 * normalized;
+              // Add slight randomness only when active to simulate real-time vibration
+              if (normalized > 0.1) {
+                h += Random().nextDouble() * 5 * normalized;
+              }
             }
 
             return AnimatedContainer(
               duration: const Duration(milliseconds: 60),
-              width: 4,
+              width: 2.5,
               height: h.clamp(6.0, 60.0),
-              margin: const EdgeInsets.symmetric(horizontal: 2.5),
+              margin: const EdgeInsets.symmetric(horizontal: 1.5),
               decoration: BoxDecoration(
-                color: const Color(
-                  0xFF7F67CB,
-                ).withValues(alpha: active ? 1.0 : 0.3),
+                color: active
+                    ? const Color(0xFF7F67CB)
+                    : const Color.fromARGB(255, 148, 144, 144),
                 borderRadius: BorderRadius.circular(2),
               ),
             );

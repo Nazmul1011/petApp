@@ -64,12 +64,19 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                     height: R.height(440),
                     child: PageView.builder(
                       controller: controller.pageController,
-                      itemCount: controller.emotions.length,
+                      itemCount: controller.emotions.length + 1,
                       onPageChanged: (index) {
+                        if (index == controller.emotions.length) {
+                          controller.completeOnboarding();
+                          return;
+                        }
                         controller.currentPage.value = index;
                         controller.playPetSound();
                       },
                       itemBuilder: (context, index) {
+                        if (index == controller.emotions.length) {
+                          return const SizedBox.shrink();
+                        }
                         return _buildEmotionCard(context, index);
                       },
                     ),
@@ -96,32 +103,6 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                   ),
 
                   const Spacer(flex: 2),
-
-                  // Continue Button
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-                    child: AnimatedOpacity(
-                      opacity:
-                          controller.currentPage.value ==
-                              controller.emotions.length - 1
-                          ? 1.0
-                          : 0.0,
-                      duration: const Duration(milliseconds: 300),
-                      child: IgnorePointer(
-                        ignoring:
-                            controller.currentPage.value !=
-                            controller.emotions.length - 1,
-                        child: AppMaterialButton(
-                          label: "Continue",
-                          onPressed: () => controller.completeOnboarding(),
-                          borderRadius: 30,
-                          height: R.height(64),
-                          backgroundColor: Colors.white,
-                          textColor: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
                   SizedBox(height: R.height(24)),
                 ],
               ),

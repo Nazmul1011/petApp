@@ -10,6 +10,7 @@ import 'package:petapp/modules/legal/views/legal_view.dart';
 import 'package:petapp/modules/pet_setup/views/welcome_splash_view.dart';
 import 'package:petapp/modules/subscription/views/subscription_view.dart';
 import 'package:petapp/modules/training/views/training_detail_view.dart';
+import 'package:petapp/modules/onboarding/views/onboarding_four_view.dart';
 import 'package:petapp/modules/training/views/training_view_all_view.dart';
 
 import 'package:petapp/modules/auth/views/splash_view.dart';
@@ -64,5 +65,9 @@ class AppPages {
       binding: PetProfileBinding(),
     ),
     GetPage(name: AppRoutes.addPet, page: () => const AddPetView()),
+    GetPage(
+      name: AppRoutes.onboardingFour,
+      page: () => const OnboardingFourView(),
+    ),
   ];
 }
