@@ -12,10 +12,7 @@ mixin BaseController on GetxController {
   void setInternetStatus(bool isOnline) => hasInternet.value = isOnline;
 
   void showError(String message) {
-    showSnack(
-      content: message,
-      status: SnackBarStatus.error,
-    );
+    showSnack(content: message, status: SnackBarStatus.error);
   }
 
   bool validateForm(GlobalKey<FormState> formKey) {

@@ -1,6 +1,10 @@
 import '../widgets/text_form_field/app_text_form_field.dart';
 
-String? validateField(String? value, FormFieldType type, [String? originalPassword]) {
+String? validateField(
+  String? value,
+  FormFieldType type, [
+  String? originalPassword,
+]) {
   final trimmed = value?.trim() ?? '';
   const int passwordLen = 8;
 
@@ -8,7 +12,8 @@ String? validateField(String? value, FormFieldType type, [String? originalPasswo
     if (type == FormFieldType.email) return 'Email is required';
     if (type == FormFieldType.phone) return 'Phone is required';
     if (type == FormFieldType.password) return 'Password is required';
-    if (type == FormFieldType.confirmPassword) return 'Confirm password is required';
+    if (type == FormFieldType.confirmPassword)
+      return 'Confirm password is required';
     if (type == FormFieldType.number) return 'Number is required';
     if (type == FormFieldType.name) return 'Name is required';
     if (type == FormFieldType.dob) return 'Date of birth is required';
@@ -22,12 +27,17 @@ String? validateField(String? value, FormFieldType type, [String? originalPasswo
     final phoneRegex = RegExp(r'^(1|3|9)\d{8}$');
     if (!phoneRegex.hasMatch(trimmed)) return 'Invalid phone number';
   } else if (type == FormFieldType.password) {
-    if (trimmed.length < passwordLen) return 'Password must be at least $passwordLen characters';
-    if (!RegExp(r'[a-zA-Z]').hasMatch(trimmed)) return 'Password must contain at least one letter';
-    if (!RegExp(r'[0-9]').hasMatch(trimmed)) return 'Password must contain at least one number';
-    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(trimmed)) return 'Password must contain at least one special character';
+    if (trimmed.length < passwordLen)
+      return 'Password must be at least $passwordLen characters';
+    if (!RegExp(r'[a-zA-Z]').hasMatch(trimmed))
+      return 'Password must contain at least one letter';
+    if (!RegExp(r'[0-9]').hasMatch(trimmed))
+      return 'Password must contain at least one number';
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(trimmed))
+      return 'Password must contain at least one special character';
   } else if (type == FormFieldType.confirmPassword) {
-    if (originalPassword != null && trimmed != originalPassword.trim()) return 'Passwords do not match';
+    if (originalPassword != null && trimmed != originalPassword.trim())
+      return 'Passwords do not match';
   } else if (type == FormFieldType.number) {
     if (double.tryParse(trimmed) == null) return 'Invalid number';
   }

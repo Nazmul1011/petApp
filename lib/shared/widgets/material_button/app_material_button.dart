@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../progress_loader/progress_loader.dart';
+import '../../helpers/responsive.dart';
 
 enum IconPosition { left, right }
 
@@ -19,6 +20,7 @@ class AppMaterialButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? disabledColor;
   final Color? textColor;
+  final TextStyle? textStyle;
   final Widget? child;
 
   final Widget? icon;
@@ -40,6 +42,7 @@ class AppMaterialButton extends StatelessWidget {
     this.backgroundColor,
     this.disabledColor,
     this.textColor = Colors.white,
+    this.textStyle,
     this.child,
     this.icon,
     this.iconPosition = IconPosition.left,
@@ -64,6 +67,7 @@ class AppMaterialButton extends StatelessWidget {
     Color? backgroundColor,
     Color? disabledColor,
     Color? textColor = Colors.white,
+    TextStyle? textStyle,
     LoadingStyle loadingStyle = LoadingStyle.morphing,
   }) {
     return AppMaterialButton(
@@ -83,6 +87,7 @@ class AppMaterialButton extends StatelessWidget {
       backgroundColor: backgroundColor,
       disabledColor: disabledColor,
       textColor: textColor,
+      textStyle: textStyle,
       loadingStyle: loadingStyle,
     );
   }
@@ -105,19 +110,21 @@ class AppMaterialButton extends StatelessWidget {
 
     final labelWidget = Text(
       label,
-      style: TextStyle(
-        fontFamily: 'NationalPark',
-        color: textColor,
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.34,
-      ),
+      style:
+          textStyle ??
+          TextStyle(
+            fontFamily: 'NationalPark',
+            color: textColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.34,
+          ),
     );
 
     final content = isLoading
         ? SizedBox(
-            width: 24,
-            height: 24,
+            width: R.width(24),
+            height: R.width(24),
             child: showLoader(progressColor: Colors.white),
           )
         : _buildAlignedContent(labelWidget);
@@ -201,8 +208,8 @@ class AppMaterialButton extends StatelessWidget {
                   child: isLoading
                       ? SizedBox(
                           key: const ValueKey('loader'),
-                          width: 24,
-                          height: 24,
+                          width: R.width(24),
+                          height: R.width(24),
                           child: showLoader(progressColor: Colors.white),
                         )
                       : SizedBox(

@@ -90,7 +90,11 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
       oldWidget.controller?.removeListener(_syncSelectedItemWithController);
       itemController = widget.controller ?? TextEditingController();
       itemController.addListener(_syncSelectedItemWithController);
-      setState(() => selectedItem = itemController.text.isNotEmpty ? itemController.text : null);
+      setState(
+        () => selectedItem = itemController.text.isNotEmpty
+            ? itemController.text
+            : null,
+      );
       WidgetsBinding.instance.addPostFrameCallback((_) => _notifyFormField());
     }
   }
@@ -146,7 +150,10 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
         actions: [
           TextButton(
             onPressed: () {
-              setState(() { selectedItem = null; itemController.clear(); });
+              setState(() {
+                selectedItem = null;
+                itemController.clear();
+              });
               newItemController.clear();
               menuFocusNode.unfocus();
               Navigator.pop(context);
@@ -191,7 +198,11 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
   Widget build(BuildContext context) {
     final List<DropdownMenuEntry<String>> baseEntries = [
       if (widget.allowNewItemAddition)
-        const DropdownMenuEntry(value: "new", label: "Add New Item", leadingIcon: Icon(Icons.add)),
+        const DropdownMenuEntry(
+          value: "new",
+          label: "Add New Item",
+          leadingIcon: Icon(Icons.add),
+        ),
       ...items.map((value) => DropdownMenuEntry(value: value, label: value)),
     ];
 
@@ -239,56 +250,80 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
                 filterCallback: (entries, filter) {
                   final trimmed = filter.trim().toLowerCase();
                   final filtered = entries
-                      .where((entry) => entry.value != "new" && entry.label.toLowerCase().contains(trimmed))
+                      .where(
+                        (entry) =>
+                            entry.value != "new" &&
+                            entry.label.toLowerCase().contains(trimmed),
+                      )
                       .toList();
 
                   if (trimmed.isEmpty) return entries;
 
                   if (filtered.isEmpty) {
                     return [
-                      if (widget.allowNewItemAddition) entries.firstWhere((e) => e.value == "new"),
-                      const DropdownMenuEntry<String>(value: "no-match", label: "No match found", enabled: false),
+                      if (widget.allowNewItemAddition)
+                        entries.firstWhere((e) => e.value == "new"),
+                      const DropdownMenuEntry<String>(
+                        value: "no-match",
+                        label: "No match found",
+                        enabled: false,
+                      ),
                     ];
                   }
 
                   return [
-                    if (widget.allowNewItemAddition) entries.firstWhere((e) => e.value == "new"),
+                    if (widget.allowNewItemAddition)
+                      entries.firstWhere((e) => e.value == "new"),
                     ...filtered,
                   ];
                 },
                 inputDecorationTheme: InputDecorationTheme(
                   filled: false,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 20,
+                  ),
                   hintStyle: widget.hintTextStyle,
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: field.hasError ? Theme.of(context).colorScheme.error : const Color(0xFFD8D9DD),
+                      color: field.hasError
+                          ? Theme.of(context).colorScheme.error
+                          : const Color(0xFFD8D9DD),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: field.hasError ? Theme.of(context).colorScheme.error : const Color(0xFFD8D9DD),
+                      color: field.hasError
+                          ? Theme.of(context).colorScheme.error
+                          : const Color(0xFFD8D9DD),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: field.hasError ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor,
+                      color: field.hasError
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).primaryColor,
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: 1),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                      width: 1,
+                    ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
                 menuStyle: MenuStyle(
                   elevation: WidgetStateProperty.all(0),
-                  maximumSize: WidgetStateProperty.all(const Size.fromHeight(200)),
+                  maximumSize: WidgetStateProperty.all(
+                    const Size.fromHeight(200),
+                  ),
                   alignment: Alignment.bottomLeft,
                   shape: WidgetStateProperty.all(
                     RoundedRectangleBorder(
@@ -312,7 +347,9 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
                     widget.onChanged?.call(item);
                   }
                 },
-                leadingIcon: widget.leadingIcon ?? (widget.showLeadingIcon ? const Icon(Icons.search) : null),
+                leadingIcon:
+                    widget.leadingIcon ??
+                    (widget.showLeadingIcon ? const Icon(Icons.search) : null),
                 trailingIcon: (itemController.text.isNotEmpty)
                     ? GestureDetector(
                         onTap: () {
@@ -324,7 +361,10 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
                           menuFocusNode.unfocus();
                           widget.onChanged?.call(null);
                         },
-                        child: Icon(Icons.remove_circle_outline, color: widget.clearIconColor),
+                        child: Icon(
+                          Icons.remove_circle_outline,
+                          color: widget.clearIconColor,
+                        ),
                       )
                     : widget.trailingIcon,
                 selectedTrailingIcon: widget.expandedTrailingIcon,
@@ -336,7 +376,13 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 12, top: 4),
                   child: field.errorText != null
-                      ? Text(field.errorText!, style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12))
+                      ? Text(
+                          field.errorText!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                            fontSize: 12,
+                          ),
+                        )
                       : null,
                 ),
               ),

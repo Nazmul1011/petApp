@@ -10,9 +10,7 @@ ThemeData appTheme(BuildContext context) {
     colorScheme: ColorScheme.fromSwatch().copyWith(
       primary: AppColors.primaryColor,
     ),
-    appBarTheme: const AppBarTheme(
-      surfaceTintColor: AppColors.primaryColor,
-    ),
+    appBarTheme: const AppBarTheme(surfaceTintColor: AppColors.primaryColor),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
@@ -28,22 +26,22 @@ ThemeData appTheme(BuildContext context) {
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
     ),
 
-
-    
-    textTheme: const TextTheme().apply(
-      fontFamily: 'NationalPark',
-      displayColor: AppColors.headingText,
-      bodyColor: AppColors.bodyText,
-    ).copyWith(
-      titleLarge: AppTypography.h4.copyWith(color: AppColors.headingText),
-      titleMedium: AppTypography.subtitleLg.copyWith(
-        color: AppColors.headingText,
-      ),
-      bodyMedium: AppTypography.bodyMd.copyWith(color: AppColors.bodyText),
-      bodySmall: AppTypography.bodySm.copyWith(color: AppColors.lightText),
-      labelLarge: AppTypography.labelMd.copyWith(
-        color: AppColors.headingText,
-      ),
-    ),
+    textTheme: const TextTheme()
+        .apply(
+          fontFamily: 'NationalPark',
+          displayColor: AppColors.headingText,
+          bodyColor: AppColors.bodyText,
+        )
+        .copyWith(
+          titleLarge: AppTypography.h4.copyWith(color: AppColors.headingText),
+          titleMedium: AppTypography.subtitleLg.copyWith(
+            color: AppColors.headingText,
+          ),
+          bodyMedium: AppTypography.bodyMd.copyWith(color: AppColors.bodyText),
+          bodySmall: AppTypography.bodySm.copyWith(color: AppColors.lightText),
+          labelLarge: AppTypography.labelMd.copyWith(
+            color: AppColors.headingText,
+          ),
+        ),
   );
 }
