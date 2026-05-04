@@ -33,6 +33,9 @@ class ClassifierService {
     'Growling': 'angry',
     'Whimper (dog)': 'sad',
     'Canidae, dogs, wolves': 'playful',
+    'Whimper': 'sad',
+    'Domestic animals, pets': 'happy',
+    'Animal': 'happy',
   };
 
   static const Map<String, String> _catLabels = {
@@ -41,7 +44,25 @@ class ClassifierService {
     'Meow': 'hungry',
     'Caterwaul': 'angry',
     'Roaring cats (lions, tigers)': 'angry',
+    'Whimper': 'sad',
+    'Domestic animals, pets': 'happy',
+    'Animal': 'happy',
+    'Crying, sobbing': 'sad',
   };
+
+  static const List<String> _humanLabels = [
+    'Speech',
+    'Child speech, kid speaking',
+    'Conversation',
+    'Narration, monologue',
+    'Babbling',
+    'Whispering',
+    'Human voice',
+    'Shouting',
+    'Screaming',
+    'Laughter',
+    'Cough',
+  ];
 
   static const List<String> _fallbackMoods = [
     'happy',
@@ -108,35 +129,52 @@ class ClassifierService {
       String? detectedMood;
       bool isMatch = false;
       String? detectedPetType;
+      bool isHumanDetected = false;
 
-      // check if any top label matches the expected pet
-      for (final item in top5) {
-        final idx = item[0] as int;
+      // 2. Check for Human Speech first in top 3 results
+      for (int i = 0; i < min(3, top5.length); i++) {
+        final idx = top5[i][0] as int;
+        final score = top5[i][1] as double;
         if (idx < _labels.length) {
           final label = _labels[idx];
-          
-          if (expectedPet == 'dog' && _dogLabels.containsKey(label)) {
-            detectedMood = _dogLabels[label];
-            isMatch = true;
-            detectedPetType = 'dog';
-            break;
-          } else if (expectedPet == 'cat' && _catLabels.containsKey(label)) {
-            detectedMood = _catLabels[label];
-            isMatch = true;
-            detectedPetType = 'cat';
+          if (_humanLabels.contains(label) && score > 0.15) {
+            isHumanDetected = true;
+            print('[ClassifierService] Human detected: $label (score: $score). Blocking pet match.');
             break;
           }
         }
       }
 
-      // 3. Strict Frequency Check (Secondary validation)
+      // 3. If no human speech, check if any top label matches the expected pet
+      if (!isHumanDetected) {
+        for (final item in top5) {
+          final idx = item[0] as int;
+          if (idx < _labels.length) {
+            final label = _labels[idx];
+            
+            if (expectedPet == 'dog' && _dogLabels.containsKey(label)) {
+              detectedMood = _dogLabels[label];
+              isMatch = true;
+              detectedPetType = 'dog';
+              break;
+            } else if (expectedPet == 'cat' && _catLabels.containsKey(label)) {
+              detectedMood = _catLabels[label];
+              isMatch = true;
+              detectedPetType = 'cat';
+              break;
+            }
+          }
+        }
+      }
+
+      // 4. Strict Frequency Check (Secondary validation)
       // Dogs usually 300-2500Hz, Cats usually 700-2000Hz (meow)
       // This is broad but helps filter out very low hums or very high whistles
       if (isMatch) {
-        if (expectedPet == 'dog' && (estimatedFreq < 100 || estimatedFreq > 4000)) {
+        if (expectedPet == 'dog' && (estimatedFreq < 80 || estimatedFreq > 4000)) {
           isMatch = false; // Outside realistic dog range
         }
-        if (expectedPet == 'cat' && (estimatedFreq < 300 || estimatedFreq > 5000)) {
+        if (expectedPet == 'cat' && (estimatedFreq < 100 || estimatedFreq > 4500)) {
           isMatch = false; // Outside realistic cat range
         }
       }
