@@ -5,7 +5,8 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 class TrainingView extends GetView<TrainingController> {
   const TrainingView({super.key});
 
@@ -119,7 +120,26 @@ class TrainingView extends GetView<TrainingController> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(R.width(8)),
-                    child: Image.asset(item.imagePath, fit: BoxFit.contain),
+                    child: item.isNetworkImage
+                        ? CachedNetworkImage(
+                            imageUrl: '${dotenv.env['BASE_URL'] ?? ''}${item.fullImageUrl}'
+                                .replaceAll(' ', '%20'),
+                            fit: BoxFit.contain,
+                            placeholder: (context, url) => const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            errorWidget: (context, url, error) => const Icon(
+                              Icons.broken_image,
+                              color: Colors.grey,
+                              size: 40,
+                            ),
+                          )
+                        : Image.asset(
+                            item.imageUrl ?? 'assets/images/play dog 1.png',
+                            fit: BoxFit.contain,
+                          ),
                   ),
                   if (controller.isItemLocked(item))
                     Container(

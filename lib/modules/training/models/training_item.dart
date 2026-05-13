@@ -11,6 +11,7 @@ class TrainingItem {
   final String confirmation;
   final bool isPremium;
   final int sortOrder;
+  final String petType;
 
   TrainingItem({
     required this.id,
@@ -23,6 +24,7 @@ class TrainingItem {
     required this.confirmation,
     this.isPremium = false,
     this.sortOrder = 0,
+    required this.petType,
   });
 
   factory TrainingItem.fromJson(Map<String, dynamic> json) {
@@ -37,10 +39,24 @@ class TrainingItem {
       confirmation: json['confirmation'] ?? '',
       isPremium: json['isPremium'] ?? false,
       sortOrder: json['sortOrder'] ?? 0,
+      petType: json['petType'] ?? '',
     );
   }
 
   // Helper for UI consistency
   String get name => title;
-  String get imagePath => imageUrl ?? 'assets/images/play dog 1.png';
+  
+  String get fullImageUrl {
+    if (imageUrl == null) return '';
+    if (imageUrl!.startsWith('assets/')) return imageUrl!;
+    
+    // Remove any existing public/ or leading slashes to avoid duplicates
+    var cleanPath = imageUrl!;
+    if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
+    if (cleanPath.startsWith('public/')) cleanPath = cleanPath.substring(7);
+    
+    return '/public/$cleanPath';
+  }
+
+  bool get isNetworkImage => imageUrl != null && !imageUrl!.startsWith('assets/');
 }

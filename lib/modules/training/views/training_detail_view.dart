@@ -4,6 +4,8 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TrainingDetailView extends GetView<TrainingController> {
   const TrainingDetailView({super.key});
@@ -63,10 +65,20 @@ class TrainingDetailView extends GetView<TrainingController> {
                       child: Center(
                         child: Padding(
                           padding: EdgeInsets.all(R.width(20)),
-                          child: Image.asset(
-                            item.imagePath,
-                            fit: BoxFit.contain,
-                          ),
+                          child: item.isNetworkImage
+                              ? CachedNetworkImage(
+                                  imageUrl: '${dotenv.env['BASE_URL'] ?? ''}${item.fullImageUrl}'
+                                      .replaceAll(' ', '%20'),
+                                  fit: BoxFit.contain,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                                )
+                              : Image.asset(
+                                  item.imageUrl ?? 'assets/images/play dog 1.png',
+                                  fit: BoxFit.contain,
+                                ),
                         ),
                       ),
                     ),

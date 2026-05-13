@@ -13,16 +13,16 @@ class TrainingController extends GetxController with BaseController {
   final basicCommands = <TrainingItem>[].obs;
   final tricks = <TrainingItem>[].obs;
   final isLoading = false.obs;
+  final _allItems = <TrainingItem>[];
 
   @override
   void onInit() {
     super.onInit();
     fetchTraining();
 
-    // Refresh UI when user state changes (e.g., premium upgrade)
+    // Refresh UI when user state changes (e.g., premium upgrade or pet switch)
     ever(_authController.user, (_) {
-      basicCommands.refresh();
-      tricks.refresh();
+      _applyFilters();
     });
   }
 
@@ -45,15 +45,12 @@ class TrainingController extends GetxController with BaseController {
           dataList = rawData;
         }
 
-        final items = dataList
+        _allItems.clear();
+        _allItems.addAll(dataList
             .map((json) => TrainingItem.fromJson(json))
-            .toList();
+            .toList());
 
-        // Filter by category
-        basicCommands.assignAll(
-          items.where((e) => e.category == 'BASIC').toList(),
-        );
-        tricks.assignAll(items.where((e) => e.category == 'TRICK').toList());
+        _applyFilters();
       }
     } catch (e) {
       showSnack(
@@ -83,5 +80,31 @@ class TrainingController extends GetxController with BaseController {
 
   void goToViewAll(String category) {
     Get.toNamed(AppRoutes.trainingViewAll, arguments: category);
+  }
+
+  void _applyFilters() {
+    final activePetType = _activePetType;
+    if (activePetType == null) return;
+
+    basicCommands.assignAll(
+      _allItems
+          .where((e) => e.category == 'BASIC' && e.petType == activePetType)
+          .toList(),
+    );
+    tricks.assignAll(
+      _allItems
+          .where((e) => e.category == 'TRICK' && e.petType == activePetType)
+          .toList(),
+    );
+  }
+
+  String? get _activePetType {
+    final user = _authController.user.value;
+    if (user == null || user.activePetId == null) return null;
+
+    final activePet = user.pets.firstWhereOrNull(
+      (p) => p['id'] == user.activePetId,
+    );
+    return activePet?['type'];
   }
 }
