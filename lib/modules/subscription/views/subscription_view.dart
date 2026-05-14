@@ -272,8 +272,9 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         ],
                       ),
                       SizedBox(height: R.height(24)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           _buildFooterLink("PRIVACY POLICY", () {
                             Get.toNamed('/legal', arguments: {'tab': 0});
@@ -282,10 +283,10 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           _buildFooterLink("TERMS AND CONDITIONS", () {
                             Get.toNamed('/legal', arguments: {'tab': 1});
                           }),
-                          _buildDot(),
-                          _buildFooterLink("RESTORE", () {
-                            // Handle restore
-                          }),
+                          // _buildDot(),
+                          // _buildFooterLink("RESTORE", () {
+                          //   // Handle restore
+                          // }),
                         ],
                       ),
                       SizedBox(height: R.height(34)),

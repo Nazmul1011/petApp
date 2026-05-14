@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/api_service.dart';
 import '../model/user_model.dart';
@@ -13,6 +14,7 @@ class AuthController extends GetxController {
   final AuthApiService _authApi = AuthApiService();
   final GetStorage _storage = GetStorage();
   final AuthTokenService _tokenService = AuthTokenService();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   static const String _gameIdKey = 'device_game_id';
 
@@ -27,12 +29,24 @@ class AuthController extends GetxController {
   }
 
   /// Get or create a unique gameId for this device
-  String getOrCreateGameId() {
-    String? gameId = _storage.read<String>(_gameIdKey);
+  Future<String> getOrCreateGameId() async {
+    // 1. Try reading from Secure Storage (Persistent across uninstalls on iOS)
+    String? gameId = await _secureStorage.read(key: _gameIdKey);
+
+    // 2. If not found in Secure Storage, check GetStorage (for migration/existing users)
+    if (gameId == null) {
+      gameId = _storage.read<String>(_gameIdKey);
+    }
+
+    // 3. If still not found, generate a new random ID
     if (gameId == null) {
       gameId = const Uuid().v4();
-      _storage.write(_gameIdKey, gameId);
     }
+
+    // 4. Ensure it's saved in both places for reliability
+    await _secureStorage.write(key: _gameIdKey, value: gameId);
+    _storage.write(_gameIdKey, gameId);
+
     return gameId;
   }
 
@@ -78,7 +92,7 @@ class AuthController extends GetxController {
   Future<bool> loginWithDevice() async {
     isLoading.value = true;
     try {
-      final gameId = getOrCreateGameId();
+      final gameId = await getOrCreateGameId();
       final response = await _authApi.loginWithDevice(gameId);
 
       if (response.success && response.data != null) {
