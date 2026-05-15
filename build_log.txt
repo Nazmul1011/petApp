@@ -1,0 +1,26 @@
+Warning: Building for device with codesigning disabled. You will have to manually codesign before deploying to device.
+Building com.nazmul.petapp1 for device (ios-release)...
+Running Xcode build...                                          
+Xcode build done.                                            8.4s
+Failed to build iOS app
+Error output from Xcode build:
+↳
+    ** BUILD FAILED **
+
+
+Xcode's output:
+↳
+    Writing result bundle at path:
+    	/var/folders/j3/qyfmm_sn1x1brhy92jpcg3wm0000gn/T/flutter_tools.l18REC/flutter_ios_build_temp_dirVlbN7C/temporary_xcresult_bundle
+
+    No file or variants found for asset: assets/yamnet.tflite.
+
+    Target release_ios_bundle_flutter_assets failed: Exception: Failed to bundle asset files.
+    Failed to package /Users/nazmul/Desktop/OfficeProject/petAppMain/petApp.
+    Command PhaseScriptExecution failed with a nonzero exit code
+    warning: no rule to process file '/Users/nazmul/.pub-cache/hosted/pub.dev/flutter_soloud-3.5.4/ios/Classes/libogg_iOS.a' of type 'archive.ar' for architecture 'arm64' (in target 'flutter_soloud' from project 'Pods')
+    warning: no rule to process file '/Users/nazmul/.pub-cache/hosted/pub.dev/flutter_soloud-3.5.4/ios/Classes/libopus_iOS.a' of type 'archive.ar' for architecture 'arm64' (in target 'flutter_soloud' from project 'Pods')
+    note: Run script build phase 'Run Script' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'Runner' from project 'Runner')
+    note: Run script build phase 'Thin Binary' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'Runner' from project 'Runner')
+
+Encountered error while building for device.

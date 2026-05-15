@@ -216,22 +216,42 @@ class DashboardController extends GetxController with BaseController {
     setLoading(true);
     try {
       final expectedPetType = selectedPet.value == PetType.dog ? 'dog' : 'cat';
-      
+
+      // Ensure the AI model is actually loaded before trying to use it
+      if (!classifierService.isReady) {
+        print('[Dashboard] Model not ready, attempting to initialize...');
+        await classifierService.init().timeout(const Duration(seconds: 5), onTimeout: () {
+          print('[Dashboard] Model initialization timed out.');
+        });
+      }
+
       // Local ML with frequency analysis and strict check
       final result = await classifierService.classify(path, expectedPetType);
-      
+
       detectedFrequency.value = result.frequency;
+      print('[Dashboard] Classification complete. Freq: ${result.frequency} Hz, Match: ${result.isMatch}');
 
       if (result.isMatch && result.mood != null) {
         resultMood.value = result.mood!;
         resultText.value = phrases.getPhraseFromMood(result.mood!);
         _detectedMood = result.mood;
-        print('[Dashboard] Match found! Mood: ${result.mood}, Freq: ${result.frequency}');
+        print(
+          '[Dashboard] Match found! Mood: ${result.mood}, Freq: ${result.frequency}',
+        );
       } else {
-        // No match found - "give nothing" as per user request
-        resultText.value = ""; 
+        // No match found - explain why for diagnostics
+        if (classifierService.hasError) {
+          resultText.value = "AI Model Error: ${classifierService.initError?.split('\n').first}";
+        } else if (result.frequency == 0) {
+          resultText.value = "Silence detected";
+        } else if (result.detectedPet == 'human') {
+          resultText.value = "Human voice blocked";
+        } else {
+          resultText.value = "No ${expectedPetType} sound detected";
+        }
+        
         _detectedMood = null;
-        print('[Dashboard] No match or invalid frequency for $expectedPetType');
+        print('[Dashboard] No match. Status: ${resultText.value}');
       }
 
       // Then send to backend to store the translation record if a match was found
@@ -245,7 +265,8 @@ class DashboardController extends GetxController with BaseController {
         );
         if (translation != null) {
           _translationId = translation.id;
-          if (translation.outputText != null && translation.outputText!.isNotEmpty) {
+          if (translation.outputText != null &&
+              translation.outputText!.isNotEmpty) {
             resultText.value = translation.outputText!;
           }
           if (translation.mood != null) {
@@ -282,12 +303,18 @@ class DashboardController extends GetxController with BaseController {
   String _mapMoodToBackend(String? localMood) {
     if (localMood == null) return 'NEUTRAL';
     switch (localMood.toLowerCase()) {
-      case 'happy': return 'EXCITED';
-      case 'hungry': return 'HUNGRY';
-      case 'playful': return 'PLAYFUL';
-      case 'angry': return 'ANGRY';
-      case 'sad': return 'SLEEPY';
-      default: return 'NEUTRAL';
+      case 'happy':
+        return 'EXCITED';
+      case 'hungry':
+        return 'HUNGRY';
+      case 'playful':
+        return 'PLAYFUL';
+      case 'angry':
+        return 'ANGRY';
+      case 'sad':
+        return 'SLEEPY';
+      default:
+        return 'NEUTRAL';
     }
   }
 

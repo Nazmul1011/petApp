@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
 
 /// Represents the result of a pet sound classification
 class ClassificationResult {
@@ -19,90 +18,60 @@ class ClassificationResult {
   });
 }
 
-/// Real on-device pet sound classifier using YAMNet TFLite model.
+/// Real on-device pet sound classifier using Apple's native Sound Analysis framework.
 class ClassifierService {
-  Interpreter? _interpreter;
-  List<String> _labels = [];
+  static const _channel = MethodChannel('com.nazmul.petapp1/sound_classifier');
+  
+  bool _isInitializing = false;
+  String? initError;
+
+  // SoundAnalysis is always ready on iOS 13+
+  bool get isReady => true;
+  bool get hasError => initError != null;
 
   // -----------------------------------------------------------------------
-  // Label → mood mapping
+  // Label → mood mapping (Apple SoundAnalysis Labels)
   // -----------------------------------------------------------------------
   static const Map<String, String> _dogLabels = {
-    'Dog': 'playful',
-    'Bark': 'playful',
-    'Growling': 'angry',
-    'Whimper (dog)': 'sad',
-    'Canidae, dogs, wolves': 'playful',
-    'Whimper': 'sad',
-    'Domestic animals, pets': 'happy',
-    'Animal': 'happy',
+    'bark': 'playful',
+    'dog_barking': 'playful',
+    'howl': 'sad',
+    'growl': 'angry',
+    'whimper': 'sad',
+    'dog': 'playful',
   };
 
   static const Map<String, String> _catLabels = {
-    'Cat': 'happy',
-    'Purr': 'happy',
-    'Meow': 'hungry',
-    'Caterwaul': 'angry',
-    'Roaring cats (lions, tigers)': 'angry',
-    'Whimper': 'sad',
-    'Domestic animals, pets': 'happy',
-    'Animal': 'happy',
-    'Crying, sobbing': 'sad',
+    'meow': 'hungry',
+    'cat_meow': 'hungry',
+    'purr': 'happy',
+    'hiss': 'angry',
+    'cat': 'happy',
   };
 
   static const List<String> _humanLabels = [
-    'Speech',
-    'Child speech, kid speaking',
-    'Conversation',
-    'Narration, monologue',
-    'Babbling',
-    'Whispering',
-    'Human voice',
-    'Shouting',
-    'Screaming',
-    'Laughter',
-    'Cough',
+    'speech',
+    'laughter',
+    'shouting',
+    'screaming',
+    'human_voice',
+    'conversation',
+    'babbling',
+    'whispering',
   ];
-
-  static const List<String> _fallbackMoods = [
-    'happy',
-    'playful',
-    'hungry',
-    'sad',
-    'calm',
-  ];
-
-  static const int _inputLength = 15600; // 0.975 s @ 16 kHz
 
   Future<void> init() async {
-    try {
-      _interpreter = await Interpreter.fromAsset('assets/yamnet.tflite');
-      _labels = await _loadLabels();
-      print('[ClassifierService] YAMNet loaded. Labels: ${_labels.length}');
-    } catch (e) {
-      print('[ClassifierService] Failed to load YAMNet: $e');
-      _interpreter = null;
-    }
-  }
-
-  Future<List<String>> _loadLabels() async {
-    final raw = await rootBundle.loadString('assets/labels.txt');
-    return raw
-        .split('\n')
-        .map((l) => l.trim())
-        .where((l) => l.isNotEmpty)
-        .toList();
+    // No explicit initialization needed for native framework
+    print('[ClassifierService] Using Apple Native Sound Analysis');
+    return;
   }
 
   /// Main classification entry point.
-  /// [expectedPet] can be 'dog' or 'cat'.
-  Future<ClassificationResult> classify(String filePath, String expectedPet) async {
+  Future<ClassificationResult> classify(
+    String filePath,
+    String expectedPet,
+  ) async {
     double estimatedFreq = 0.0;
-
-    if (_interpreter == null) {
-      print('[ClassifierService] No interpreter');
-      return ClassificationResult(frequency: 0, isMatch: false);
-    }
 
     try {
       final pcm = await _readWavAsPcmFloat(filePath);
@@ -110,73 +79,72 @@ class ClassifierService {
         return ClassificationResult(frequency: 0, isMatch: false);
       }
 
-      // 1. Estimate Frequency (Hz)
+      // 1. Volume Check (Silence Filter)
+      double sumSquares = 0.0;
+      for (final sample in pcm) {
+        sumSquares += sample * sample;
+      }
+      final double rms = sqrt(sumSquares / pcm.length);
+      if (rms < 0.005) {
+        print('[ClassifierService] Silence detected (RMS: $rms)');
+        return ClassificationResult(frequency: 0, isMatch: false);
+      }
+
+      // 2. Estimate Frequency
       estimatedFreq = _estimateFrequency(pcm);
-      print('[ClassifierService] Estimated Frequency: ${estimatedFreq.toStringAsFixed(2)} Hz');
 
-      // 2. AI Pattern Recognition
-      final input = _prepareInput(pcm);
-      final output = List.generate(1, (_) => List<double>.filled(521, 0.0));
-      _interpreter!.run(input, output);
+      // 3. Apple Native AI Classification
+      final Map<dynamic, dynamic>? nativeResults = await _channel.invokeMethod(
+        'classifyAudio',
+        {'filePath': filePath},
+      );
 
-      final scores = output[0];
-      
-      // Find top-5 indices
-      final indexed = List.generate(scores.length, (i) => [i, scores[i]]);
-      indexed.sort((a, b) => (b[1] as double).compareTo(a[1] as double));
-      final top5 = indexed.take(5).toList();
+      if (nativeResults == null || nativeResults.isEmpty) {
+        print('[ClassifierService] Native analysis returned no results');
+        return ClassificationResult(frequency: estimatedFreq, isMatch: false);
+      }
+
+      print('[ClassifierService] Native Results: $nativeResults');
 
       String? detectedMood;
       bool isMatch = false;
       String? detectedPetType;
       bool isHumanDetected = false;
 
-      // 2. Check for Human Speech first in top 3 results
-      for (int i = 0; i < min(3, top5.length); i++) {
-        final idx = top5[i][0] as int;
-        final score = top5[i][1] as double;
-        if (idx < _labels.length) {
-          final label = _labels[idx];
-          if (_humanLabels.contains(label) && score > 0.15) {
-            isHumanDetected = true;
-            print('[ClassifierService] Human detected: $label (score: $score). Blocking pet match.');
-            break;
-          }
+      // 4. Check for Human Speech First
+      for (var label in _humanLabels) {
+        if (nativeResults.containsKey(label) && (nativeResults[label] as double) > 0.4) {
+          isHumanDetected = true;
+          print('[ClassifierService] Human detected: $label. Blocking.');
+          break;
         }
       }
 
-      // 3. If no human speech, check if any top label matches the expected pet
+      // 5. Match Pet Sounds
       if (!isHumanDetected) {
-        for (final item in top5) {
-          final idx = item[0] as int;
-          if (idx < _labels.length) {
-            final label = _labels[idx];
-            
-            if (expectedPet == 'dog' && _dogLabels.containsKey(label)) {
-              detectedMood = _dogLabels[label];
+        // Find highest confidence pet label
+        double bestScore = 0.0;
+        
+        nativeResults.forEach((label, score) {
+          final String labelStr = label.toString().toLowerCase();
+          final double scoreVal = score as double;
+
+          if (expectedPet == 'dog' && _dogLabels.containsKey(labelStr)) {
+            if (scoreVal > bestScore && scoreVal > 0.3) {
+              bestScore = scoreVal;
+              detectedMood = _dogLabels[labelStr];
               isMatch = true;
               detectedPetType = 'dog';
-              break;
-            } else if (expectedPet == 'cat' && _catLabels.containsKey(label)) {
-              detectedMood = _catLabels[label];
+            }
+          } else if (expectedPet == 'cat' && _catLabels.containsKey(labelStr)) {
+            if (scoreVal > bestScore && scoreVal > 0.3) {
+              bestScore = scoreVal;
+              detectedMood = _catLabels[labelStr];
               isMatch = true;
               detectedPetType = 'cat';
-              break;
             }
           }
-        }
-      }
-
-      // 4. Strict Frequency Check (Secondary validation)
-      // Dogs usually 300-2500Hz, Cats usually 700-2000Hz (meow)
-      // This is broad but helps filter out very low hums or very high whistles
-      if (isMatch) {
-        if (expectedPet == 'dog' && (estimatedFreq < 80 || estimatedFreq > 4000)) {
-          isMatch = false; // Outside realistic dog range
-        }
-        if (expectedPet == 'cat' && (estimatedFreq < 100 || estimatedFreq > 4500)) {
-          isMatch = false; // Outside realistic cat range
-        }
+        });
       }
 
       return ClassificationResult(
@@ -185,14 +153,12 @@ class ClassifierService {
         isMatch: isMatch,
         detectedPet: detectedPetType,
       );
-
     } catch (e) {
-      print('[ClassifierService] Inference error: $e');
+      print('[ClassifierService] Analysis error: $e');
       return ClassificationResult(frequency: 0, isMatch: false);
     }
   }
 
-  /// Simple Zero-Crossing Rate (ZCR) frequency estimation
   double _estimateFrequency(List<double> pcm) {
     int signChanges = 0;
     for (int i = 1; i < pcm.length; i++) {
@@ -200,20 +166,7 @@ class ClassifierService {
         signChanges++;
       }
     }
-    // For 16000Hz sampling rate:
-    // duration = samples / 16000
-    // frequency = (signChanges / 2) / duration
-    // simplified: (signChanges * 16000) / (2 * samples)
     return (signChanges * 8000.0) / pcm.length;
-  }
-
-  List<List<double>> _prepareInput(List<double> pcm) {
-    final result = List<double>.filled(_inputLength, 0.0);
-    final copyLen = min(pcm.length, _inputLength);
-    for (int i = 0; i < copyLen; i++) {
-      result[i] = pcm[i];
-    }
-    return [result];
   }
 
   Future<List<double>?> _readWavAsPcmFloat(String filePath) async {
@@ -221,8 +174,9 @@ class ClassifierService {
       final file = File(filePath);
       if (!file.existsSync()) return null;
       final bytes = await file.readAsBytes();
-      final data = ByteData.sublistView(bytes);
       if (bytes.length < 44) return null;
+      
+      // Simple WAV parser
       int dataOffset = 44;
       for (int i = 12; i < bytes.length - 8; i++) {
         if (bytes[i] == 0x64 && bytes[i + 1] == 0x61 && bytes[i + 2] == 0x74 && bytes[i + 3] == 0x61) {
@@ -230,23 +184,21 @@ class ClassifierService {
           break;
         }
       }
+      
+      final data = ByteData.sublistView(bytes);
       final numSamples = (bytes.length - dataOffset) ~/ 2;
       final samples = List<double>.filled(numSamples, 0.0);
       for (int i = 0; i < numSamples; i++) {
         final rawOffset = dataOffset + i * 2;
         if (rawOffset + 1 >= bytes.length) break;
-        final sample = data.getInt16(rawOffset, Endian.little);
-        samples[i] = sample / 32768.0;
+        samples[i] = data.getInt16(rawOffset, Endian.little) / 32768.0;
       }
       return samples;
     } catch (e) {
-      print('[ClassifierService] WAV read error: $e');
       return null;
     }
   }
 
-  void dispose() {
-    _interpreter?.close();
-    _interpreter = null;
-  }
+  void dispose() {}
 }
+
