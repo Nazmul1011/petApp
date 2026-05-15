@@ -32,6 +32,8 @@ class TalkApiService {
     required String direction, // 'HUMAN_TO_PET' | 'PET_TO_HUMAN'
     String? inputText,
     String? inputAudioUrl,
+    String? outputText,
+    String? outputAudioUrl,
   }) async {
     try {
       final body = <String, dynamic>{
@@ -41,6 +43,8 @@ class TalkApiService {
       };
       if (inputText != null) body['inputText'] = inputText;
       if (inputAudioUrl != null) body['inputAudioUrl'] = inputAudioUrl;
+      if (outputText != null) body['outputText'] = outputText;
+      if (outputAudioUrl != null) body['outputAudioUrl'] = outputAudioUrl;
 
       final response = await _apiService.post('/talk/translate', data: body);
       final raw = response.data;

@@ -42,7 +42,13 @@ class PetProfileView extends GetView<PetProfileController> {
                     return _buildPetDetails(pet);
                   }),
                 ),
-                _buildHomeIndicator(),
+                Obx(() {
+                  if (controller.pets.isEmpty || controller.isLoading.value)
+                    return const SizedBox.shrink();
+                  final pet =
+                      controller.selectedPet.value ?? controller.pets.first;
+                  return _buildActionButtons(pet);
+                }),
               ],
             ),
           ),
@@ -140,43 +146,36 @@ class PetProfileView extends GetView<PetProfileController> {
     return Form(
       key: controller.profileFormKey,
       child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+        padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: R.height(20)),
             Center(child: _buildImagePicker(pet)),
             SizedBox(height: R.height(30)),
-            _buildLabel("Name"),
-            SizedBox(height: R.height(8)),
             AppTextFormField(
+              label: "Name",
               controller: controller.profileNameController,
               hintText: "Tommy",
               showPrefixIcon: false,
-              borderRadius: 30, // Pill shaped as per screenshot
               type: FormFieldType.name,
             ),
             SizedBox(height: R.height(20)),
-            _buildLabel("Age in human year"),
-            SizedBox(height: R.height(8)),
             AppTextFormField(
+              label: "Age in human year",
               controller: controller.profileAgeController,
               hintText: "3",
               showPrefixIcon: false,
-              borderRadius: 30,
               type: FormFieldType.number,
             ),
             SizedBox(height: R.height(20)),
-            _buildLabel("Breed"),
-            SizedBox(height: R.height(8)),
             Obx(
               () => AppDropdownSearch(
                 key: ValueKey(
                   controller.profileSelectedType.value +
                       (controller.selectedPet.value?.id ?? ''),
                 ),
-                labelText: "", // We use external label
-                showLabelText: false,
+                labelText: "Breed",
                 initialItems: controller.profileSelectedType.value == 'DOG'
                     ? controller.dogBreeds
                     : controller.catBreeds,
@@ -189,38 +188,45 @@ class PetProfileView extends GetView<PetProfileController> {
                 ),
               ),
             ),
-            SizedBox(height: R.height(60)),
-            Row(
-              children: [
-                Expanded(
-                  child: AppMaterialButton(
-                    label: "Delete profile",
-                    backgroundColor: const Color(
-                      0xFFF05151,
-                    ), // Red from screenshot
-                    textColor: Colors.white,
-                    onPressed: () => _showDeleteConfirmation(pet),
-                    borderRadius: 30,
-                    height: R.height(56),
-                  ),
-                ),
-                SizedBox(width: R.width(16)),
-                Expanded(
-                  child: AppMaterialButton(
-                    label: "Update",
-                    backgroundColor: const Color(0xFF8B78E6),
-                    textColor: Colors.white,
-                    onPressed: () =>
-                        controller.savePet(isUpdating: true, id: pet.id),
-                    borderRadius: 30,
-                    height: R.height(56),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: R.height(40)),
+            SizedBox(height: R.height(20)),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(PetModel pet) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: AppMaterialButton(
+                  label: "Delete profile",
+                  backgroundColor: const Color(
+                    0xFFF05151,
+                  ), // Red from screenshot
+                  textColor: Colors.white,
+                  onPressed: () => _showDeleteConfirmation(pet),
+                  borderRadius: 28,
+                  height: R.height(56),
+                ),
+              ),
+              SizedBox(width: R.width(16)),
+              Expanded(
+                child: AppMaterialButton(
+                  label: "Update",
+                  onPressed: () =>
+                      controller.savePet(isUpdating: true, id: pet.id),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: R.height(58.0)),
+        ],
       ),
     );
   }
@@ -267,14 +273,11 @@ class PetProfileView extends GetView<PetProfileController> {
                         ? Image.file(File(localImage.path), fit: BoxFit.cover)
                         : pet.imageUrl != null
                         ? Image.network(pet.imageUrl!, fit: BoxFit.cover)
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              pet.type == PetType.DOG
-                                  ? "assets/images/dog image.png"
-                                  : "assets/images/cat image.png",
-                              fit: BoxFit.contain,
-                            ),
+                        : Image.asset(
+                            pet.type == PetType.DOG
+                                ? "assets/images/dog image.png"
+                                : "assets/images/cat image.png",
+                            fit: BoxFit.cover,
                           ),
                   ),
                 ),
@@ -324,24 +327,6 @@ class PetProfileView extends GetView<PetProfileController> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildHomeIndicator() {
-    return Column(
-      children: [
-        Center(
-          child: Container(
-            width: R.width(134),
-            height: R.height(5),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-        SizedBox(height: R.height(8)),
-      ],
     );
   }
 }

@@ -104,18 +104,16 @@ class AppMaterialButton extends StatelessWidget {
   }
 
   Widget _buildSimpleButton(BuildContext context) {
-    final effectiveOnPressed = _isEffectivelyDisabled
-        ? null
-        : (onPressed ?? () {});
+    final effectiveOnPressed = _isEffectivelyDisabled ? null : (onPressed ?? () {});
 
     final labelWidget = Text(
       label,
-      style:
-          textStyle ??
-          TextStyle(
+      style: textStyle ??
+          const TextStyle(
             fontFamily: 'NationalPark',
-            color: textColor,
-            fontSize: 15,
+            color: Colors.white,
+            fontSize: 16,
+            height: 20 / 16, // Label/md line height
             fontWeight: FontWeight.w600,
             letterSpacing: -0.34,
           ),
@@ -129,33 +127,51 @@ class AppMaterialButton extends StatelessWidget {
           )
         : _buildAlignedContent(labelWidget);
 
-    return MaterialButton(
-      onPressed: effectiveOnPressed,
-      elevation: elevation,
-      color: backgroundColor ?? Theme.of(context).primaryColor,
-      disabledColor: disabledColor ?? Theme.of(context).primaryColor,
-      shape:
-          shape ??
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
+    return Container(
       height: height,
-      minWidth: width,
-      child: child ?? content,
+      width: width,
+      decoration: BoxDecoration(
+        color: backgroundColor ?? const Color(0xFF7F67CB),
+        borderRadius: BorderRadius.circular(borderRadius > 50 ? 999 : borderRadius),
+        border: Border.all(
+          color: const Color(0xFFBFB3E5),
+          width: 0.5,
+        ),
+        boxShadow: [
+          // Subtle outer shadow for depth
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: effectiveOnPressed,
+          borderRadius: BorderRadius.circular(borderRadius > 50 ? 999 : borderRadius),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: R.width(16)),
+              child: child ?? content,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildMorphingButton(BuildContext context) {
-    final effectiveOnPressed = _isEffectivelyDisabled
-        ? null
-        : (onPressed ?? () {});
+    final effectiveOnPressed = _isEffectivelyDisabled ? null : (onPressed ?? () {});
 
     final labelWidget = Text(
       label,
       style: TextStyle(
         fontFamily: 'NationalPark',
         color: textColor,
-        fontSize: 15,
+        fontSize: 16,
+        height: 20 / 16,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.34,
       ),
@@ -165,58 +181,47 @@ class AppMaterialButton extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final actualWidth = width == double.infinity
-            ? constraints.maxWidth
-            : width;
+        final actualWidth = width == double.infinity ? constraints.maxWidth : width;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           width: isLoading ? height : actualWidth,
           height: height,
-          child: MaterialButton(
-            onPressed: effectiveOnPressed,
-            elevation: elevation,
-            color: backgroundColor ?? Theme.of(context).primaryColor,
-            disabledColor: disabledColor ?? Theme.of(context).primaryColor,
-            shape:
-                shape ??
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    isLoading ? height / 2 : borderRadius,
-                  ),
-                ),
-            padding: EdgeInsets.zero,
-            minWidth: 0,
-            height: height,
-            child:
-                child ??
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  switchInCurve: Curves.easeInOut,
-                  switchOutCurve: Curves.easeInOut,
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: ScaleTransition(
-                            scale: animation,
-                            child: child,
-                          ),
-                        );
-                      },
-                  child: isLoading
-                      ? SizedBox(
-                          key: const ValueKey('loader'),
-                          width: R.width(24),
-                          height: R.width(24),
-                          child: showLoader(progressColor: Colors.white),
-                        )
-                      : SizedBox(
-                          key: const ValueKey('content'),
-                          child: content,
-                        ),
-                ),
+          decoration: BoxDecoration(
+            color: backgroundColor ?? const Color(0xFF7F67CB),
+            borderRadius: BorderRadius.circular(isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius)),
+            border: Border.all(
+              color: const Color(0xFFBFB3E5),
+              width: 0.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: effectiveOnPressed,
+              borderRadius: BorderRadius.circular(isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius)),
+              child: Center(
+                child: isLoading
+                    ? SizedBox(
+                        key: const ValueKey('loader'),
+                        width: R.width(24),
+                        height: R.width(24),
+                        child: showLoader(progressColor: Colors.white),
+                      )
+                    : AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: content,
+                      ),
+              ),
+            ),
           ),
         );
       },
@@ -226,7 +231,7 @@ class AppMaterialButton extends StatelessWidget {
   Widget _buildAlignedContent(Widget labelWidget) {
     if (icon == null) return labelWidget;
 
-    final spacing = spacerWidth ?? 8;
+    final spacing = spacerWidth ?? 4; // Design spec gap is 4
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -214,25 +214,25 @@ class PaymentView extends GetView<PaymentController> {
                         alignment: WrapAlignment.center,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          _buildFooterLink("PRIVACY POLICY"),
+                          _buildFooterLink("PRIVACY POLICY", onTap: controller.openPrivacyPolicy),
                           _buildDot(),
-                          _buildFooterLink("TERMS AND CONDITIONS"),
+                          _buildFooterLink("TERMS AND CONDITIONS", onTap: controller.openTermsConditions),
                           _buildDot(),
-                          _buildFooterLink("RESTORE"),
+                          _buildFooterLink("RESTORE", onTap: controller.restorePurchase),
                         ],
                       ),
                       SizedBox(height: R.height(34)),
                       // Home Indicator Handle
-                      Center(
-                        child: Container(
-                          width: R.width(134),
-                          height: R.height(5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
+                      // Center(
+                      //   child: Container(
+                      //     width: R.width(134),
+                      //     height: R.height(5),
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.white,
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(height: R.height(8)),
                     ],
                   ),
@@ -245,13 +245,19 @@ class PaymentView extends GetView<PaymentController> {
     );
   }
 
-  Widget _buildFooterLink(String text) {
-    return Text(
-      text,
-      style: AppTypography.overlineXxs.copyWith(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 0.2,
+  Widget _buildFooterLink(String text, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: R.height(4)),
+        child: Text(
+          text,
+          style: AppTypography.overlineXxs.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.2,
+          ),
+        ),
       ),
     );
   }

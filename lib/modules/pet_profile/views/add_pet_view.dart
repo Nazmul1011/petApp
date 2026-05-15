@@ -31,18 +31,15 @@ class AddPetView extends GetView<PetProfileController> {
                   child: Form(
                     key: controller.addFormKey,
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                      padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: R.height(10)),
+                          SizedBox(height: R.height(0)),
                           Center(child: _buildImagePicker()),
                           SizedBox(height: R.height(16)),
-                          _buildLabel("Type"),
-                          SizedBox(height: R.height(6)),
                           AppDropdownSearch(
-                            labelText: "",
-                            showLabelText: false,
+                            labelText: "Type",
                             initialItems: controller.petTypes,
                             showLeadingIcon: false,
                             onChanged: (val) {
@@ -56,33 +53,26 @@ class AddPetView extends GetView<PetProfileController> {
                             },
                           ),
                           SizedBox(height: R.height(16)),
-                          _buildLabel("Name"),
-                          SizedBox(height: R.height(6)),
                           AppTextFormField(
+                            label: "Name",
                             controller: controller.addNameController,
                             hintText: "Tommy",
                             showPrefixIcon: false,
-                            borderRadius: 30, // Pill shaped
                             type: FormFieldType.name,
                           ),
                           SizedBox(height: R.height(16)),
-                          _buildLabel("Age in human year"),
-                          SizedBox(height: R.height(6)),
                           AppTextFormField(
+                            label: "Age in human year",
                             controller: controller.addAgeController,
                             hintText: "3",
                             showPrefixIcon: false,
-                            borderRadius: 30,
                             type: FormFieldType.number,
                           ),
                           SizedBox(height: R.height(16)),
-                          _buildLabel("Breed"),
-                          SizedBox(height: R.height(6)),
                           Obx(
                             () => AppDropdownSearch(
                               key: ValueKey(controller.addSelectedType.value),
-                              labelText: "",
-                              showLabelText: false,
+                              labelText: "Breed",
                               initialItems:
                                   controller.addSelectedType.value == 'DOG'
                                   ? controller.dogBreeds
@@ -98,22 +88,19 @@ class AddPetView extends GetView<PetProfileController> {
                             ),
                           ),
                           SizedBox(height: R.height(30)),
-                          AppMaterialButton(
-                            label: "Create",
-                            backgroundColor: const Color(0xFF8B78E6),
-                            textColor: Colors.white,
-                            onPressed: () =>
-                                controller.savePet(isUpdating: false),
-                            borderRadius: 30,
-                            height: R.height(56),
-                          ),
-                          SizedBox(height: R.height(16)),
                         ],
                       ),
                     ),
                   ),
                 ),
-                _buildHomeIndicator(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+                  child: AppMaterialButton(
+                    label: "Create",
+                    onPressed: () => controller.savePet(isUpdating: false),
+                  ),
+                ),
+                SizedBox(height: R.height(58.0)),
               ],
             ),
           ),
@@ -142,8 +129,7 @@ class AddPetView extends GetView<PetProfileController> {
         horizontal: R.width(20),
         vertical: R.height(10),
       ),
-      child: Stack(
-        alignment: Alignment.center,
+      child: Column(
         children: [
           Align(
             alignment: Alignment.centerLeft,
@@ -152,13 +138,22 @@ class AddPetView extends GetView<PetProfileController> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
+                  color: Colors.white,
                   shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: const Icon(Icons.close, color: Colors.black, size: 24),
               ),
             ),
           ),
+          SizedBox(height: R.height(16)),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -211,14 +206,11 @@ class AddPetView extends GetView<PetProfileController> {
                   child: ClipOval(
                     child: localImage != null
                         ? Image.file(File(localImage.path), fit: BoxFit.cover)
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              controller.addSelectedType.value == 'DOG'
-                                  ? "assets/images/dog image.png"
-                                  : "assets/images/cat image.png",
-                              fit: BoxFit.contain,
-                            ),
+                        : Image.asset(
+                            controller.addSelectedType.value == 'DOG'
+                                ? "assets/images/dog image.png"
+                                : "assets/images/cat image.png",
+                            fit: BoxFit.cover,
                           ),
                   ),
                 ),
@@ -235,24 +227,6 @@ class AddPetView extends GetView<PetProfileController> {
             fontWeight: FontWeight.w500,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildHomeIndicator() {
-    return Column(
-      children: [
-        Center(
-          child: Container(
-            width: R.width(134),
-            height: R.height(5),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-        SizedBox(height: R.height(8)),
       ],
     );
   }

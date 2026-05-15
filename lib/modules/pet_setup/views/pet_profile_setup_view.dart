@@ -23,7 +23,7 @@ class PetProfileSetupView extends GetView<PetSetupController> {
     return AppScaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: R.width(24.0)),
+          padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -73,23 +73,15 @@ class PetProfileSetupView extends GetView<PetSetupController> {
                                         File(controller.imageFile.value!.path),
                                         fit: BoxFit.cover,
                                       )
-                                    : CachedNetworkImage(
-                                        imageUrl:
-                                            "https://ui-avatars.com/api/?name=${controller.petNameController.text.isEmpty ? 'Pet' : controller.petNameController.text}&background=E9E4F8&color=7F67CB",
-                                        placeholder: (context, url) =>
-                                            const Center(
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                              ),
-                                            ),
-                                        errorWidget: (context, url, error) =>
-                                            Center(
-                                              child: Image.asset(
-                                                'assets/images/dog_happy_face.png',
-                                                width: R.width(60),
-                                              ),
-                                            ),
-                                        fit: BoxFit.cover,
+                                    : Center(
+                                        child: Image.asset(
+                                          controller.selectedType.value == 'DOG'
+                                              ? 'assets/images/dog image.png'
+                                              : 'assets/images/cat image.png',
+                                          width: R.width(70),
+                                          height: R.height(52),
+                                          fit: BoxFit.contain,
+                                        ),
                                       ),
                               ),
                             ),
@@ -163,19 +155,13 @@ class PetProfileSetupView extends GetView<PetSetupController> {
                   ),
                 ),
               ),
-              Obx(
-                () => AppMaterialButton(
-                  label: "Lets begin",
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : () => controller.createPetProfile(),
-                  height: R.height(56),
-                  backgroundColor: AppColors.primaryColor,
-                  textColor: Colors.white,
-                  borderRadius: 28,
-                ),
+              AppMaterialButton(
+                label: "Lets begin",
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () => controller.createPetProfile(),
               ),
-              SizedBox(height: R.height(24)),
+              SizedBox(height: R.height(24.0)),
             ],
           ),
         ),

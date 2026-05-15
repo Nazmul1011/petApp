@@ -14,6 +14,7 @@ class OnboardingTwoController extends GetxController with BaseController {
   final Rx<VoiceState> voiceState = VoiceState.idle.obs;
   final Rx<PetType> selectedPet = PetType.none.obs;
   final AudioPlayer _player = AudioPlayer();
+  final RxBool isPlaying = false.obs;
 
   // Waveform data
   final RxList<double> waveformValues = RxList<double>.filled(75, 0.1);
@@ -28,6 +29,13 @@ class OnboardingTwoController extends GetxController with BaseController {
     super.onInit();
     // Get pet from previous screen or default to dog
     selectedPet.value = Get.arguments as PetType? ?? PetType.dog;
+    
+    // Listen for player completion to stop animation
+    _player.onPlayerComplete.listen((event) {
+      isPlaying.value = false;
+      _waveformTimer?.cancel();
+      _soundWaveTimer?.cancel();
+    });
   }
 
   @override
@@ -44,7 +52,8 @@ class OnboardingTwoController extends GetxController with BaseController {
     voiceState.value = VoiceState.listening;
     HapticFeedback.mediumImpact();
 
-    // Start waveform animation
+    // Start waveform animation (Live Mic look)
+    _waveformTimer?.cancel();
     _waveformTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       final random = Random();
       waveformValues.value = List.generate(
@@ -68,7 +77,13 @@ class OnboardingTwoController extends GetxController with BaseController {
     });
   }
 
+  void replayVoice() {
+    if (isPlaying.value) return;
+    _playPetResult();
+  }
+
   void _playPetResult() async {
+    isPlaying.value = true;
     HapticFeedback.heavyImpact();
 
     // Play real pet sound
@@ -79,10 +94,10 @@ class OnboardingTwoController extends GetxController with BaseController {
       await _player.stop();
       await _player.play(AssetSource(sound));
     } catch (e) {
-      print("[Onboarding Step 2] Error playing sound: $e");
+      // Log error silently
     }
 
-    // Start yellow sound wave animation
+    // Start yellow sound wave animation (Top pet head)
     _soundWaveTimer?.cancel();
     _soundWaveTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
       soundWaveAnimation.value += 0.05;
@@ -91,12 +106,16 @@ class OnboardingTwoController extends GetxController with BaseController {
       }
     });
 
-    // Reset waveform to fixed bars for the result container
-    // About 15 groups of 5
-    waveformValues.value = List.generate(
-      75,
-      (i) => 0.4 + Random().nextDouble() * 0.5,
-    );
+    // Start "Flowing" waveform animation (Bottom bar)
+    _waveformTimer?.cancel();
+    _waveformTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      final random = Random();
+      // Shift values to the left to create 'flow'
+      final newList = List<double>.from(waveformValues);
+      newList.removeAt(0);
+      newList.add(0.3 + random.nextDouble() * 0.6);
+      waveformValues.value = newList;
+    });
   }
 
   String get titleText {

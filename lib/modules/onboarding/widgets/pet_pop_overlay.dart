@@ -23,41 +23,51 @@ class _PetPopOverlayState extends State<PetPopOverlay>
   @override
   void initState() {
     super.initState();
+    // 2 seconds total — the 'Medium' sweet spot
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000),
     );
 
+    // More gradual pop in (40% of time) and stay (60% of time)
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(
           begin: 0.0,
-          end: 1.25,
+          end: 1.15,
         ).chain(CurveTween(curve: Curves.easeOutBack)),
-        weight: 70,
+        weight: 40, // 0.8 seconds to pop in — feels 'Medium' and smooth
+      ),
+      TweenSequenceItem(
+        tween: ConstantTween<double>(1.15),
+        weight: 60, // Stay for the rest
+      ),
+    ]).animate(_controller);
+
+    // Smooth fade transitions matched to the scale
+    _opacityAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeIn)),
+        weight: 20, // Fade in
+      ),
+      TweenSequenceItem(
+        tween: ConstantTween<double>(1.0),
+        weight: 60, // Stay
       ),
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: 1.25,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 30,
+          begin: 1.0,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.easeOut)),
+        weight: 20, // Fade out
       ),
     ]).animate(_controller);
 
-    _opacityAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween<double>(begin: 0.0, end: 1.0), weight: 20),
-      TweenSequenceItem(tween: ConstantTween<double>(1.0), weight: 60),
-      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.0), weight: 20),
-    ]).animate(_controller);
-
     _controller.forward().then((_) {
-      // Small pause at the end before dismissing
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) {
-          widget.onFinish();
-        }
-      });
+      widget.onFinish();
     });
   }
 
@@ -77,13 +87,11 @@ class _PetPopOverlayState extends State<PetPopOverlay>
           child: ScaleTransition(
             scale: _scaleAnimation,
             child: Container(
-              padding: const EdgeInsets.all(
-                20,
-              ), // Reduced padding for better scale
+              padding: const EdgeInsets.all(20),
               child: Image.asset(
                 widget.imagePath,
-                width: 240, // Increased size slightly
-                height: 240,
+                width: 260, // Slightly larger for more impact
+                height: 260,
                 fit: BoxFit.contain,
               ),
             ),

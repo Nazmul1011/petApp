@@ -66,6 +66,21 @@ class ClassifierService {
     return;
   }
 
+  /// Uses Apple's native SFSpeechRecognizer to transcribe audio
+  Future<String?> recognizeSpeech(String filePath) async {
+    try {
+      final String? text = await _channel.invokeMethod(
+        'recognizeSpeech',
+        {'filePath': filePath},
+      );
+      print('[ClassifierService] Recognized Text: $text');
+      return text;
+    } catch (e) {
+      print('[ClassifierService] Speech recognition error: $e');
+      return null;
+    }
+  }
+
   /// Main classification entry point.
   Future<ClassificationResult> classify(
     String filePath,

@@ -62,6 +62,10 @@ class PetSetupController extends GetxController with BaseController {
         "type": selectedType.value,
         "name": name,
         "breed": selectedBreed.value,
+        "imageUrl": imageFile.value?.path ??
+            (selectedType.value == 'DOG'
+                ? 'assets/images/dog image.png'
+                : 'assets/images/cat image.png'),
       };
       if (age != null) payload["age"] = age;
 

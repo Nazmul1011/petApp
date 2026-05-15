@@ -34,21 +34,21 @@ class OnboardingThreeController extends GetxController {
     EmotionData(
       title: "I'm hungry",
       description: "I need food or a treat right now",
-      baseColor: const Color(0xFFFFCCBC), // Peach
+      baseColor: const Color(0xFFFF9361), // Exact Deep Peach from screenshot
       dogImage: 'assets/images/hungry dog 1.png',
       catImage: 'assets/images/hungry cat 1.png',
     ),
     EmotionData(
       title: "Let's play",
       description: "I have energy and want your attention",
-      baseColor: const Color(0xFFC8E6C9), // Light Green
+      baseColor: const Color(0xFFA5D6A7), // Richer Green
       dogImage: 'assets/images/play dog 1.png',
       catImage: 'assets/images/play cat 1.png',
     ),
     EmotionData(
       title: "I'm anxious",
       description: "Something feels off and I need comfort",
-      baseColor: const Color(0xFFD1C4E9), // Light Purple
+      baseColor: const Color(0xFFB39DDB), // Richer Purple
       dogImage: 'assets/images/anxious dog 1.png',
       catImage: 'assets/images/anixious image cat.png',
     ),

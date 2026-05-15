@@ -39,6 +39,8 @@
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs microphone access to translate your pet's sounds and your voice.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app needs speech recognition to translate your voice into pet sounds and learn your common phrases.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to take photos for your pet profile.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

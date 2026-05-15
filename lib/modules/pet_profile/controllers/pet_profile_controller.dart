@@ -128,15 +128,25 @@ class PetProfileController extends GetxController with BaseController {
 
     try {
       setLoading(true);
+      final type = isUpdating ? profileSelectedType.value : addSelectedType.value;
       final data = {
         'name': name,
-        'type': isUpdating ? profileSelectedType.value : addSelectedType.value,
+        'type': type,
         'breed': isUpdating
             ? profileSelectedBreed.value
             : addSelectedBreed.value,
         'age': int.tryParse(
           isUpdating ? profileAgeController.text : addAgeController.text,
         ),
+        'imageUrl': imageFile.value?.path ??
+            (isUpdating
+                ? (selectedPet.value?.imageUrl ??
+                    (type == 'DOG'
+                        ? 'assets/images/dog image.png'
+                        : 'assets/images/cat image.png'))
+                : (type == 'DOG'
+                    ? 'assets/images/dog image.png'
+                    : 'assets/images/cat image.png')),
       };
 
       if (isUpdating && id != null) {

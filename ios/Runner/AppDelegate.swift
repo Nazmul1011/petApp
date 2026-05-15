@@ -2,6 +2,7 @@ import Flutter
 import UIKit
 import SoundAnalysis
 import AVFoundation
+import Speech
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -40,10 +41,42 @@ import AVFoundation
         } else {
             result([:])
         }
+      } else if call.method == "recognizeSpeech" {
+          guard let args = call.arguments as? [String: Any],
+                let filePath = args["filePath"] as? String else {
+            result(FlutterError(code: "INVALID_ARGS", message: "FilePath missing", details: nil))
+            return
+          }
+          
+          let audioURL = URL(fileURLWithPath: filePath)
+          self.recognizeSpeech(url: audioURL) { text in
+              result(text)
+          }
       } else {
         result(FlutterMethodNotImplemented)
       }
     })
+  }
+
+  private func recognizeSpeech(url: URL, completion: @escaping (String?) -> Void) {
+      let recognizer = SFSpeechRecognizer()
+      let request = SFSpeechURLRecognitionRequest(url: url)
+      
+      recognizer?.recognitionTask(with: request) { (result, error) in
+          if let error = error {
+              print("Speech recognition error: \(error)")
+              completion(nil)
+              return
+          }
+          
+          if let result = result {
+              if result.isFinal {
+                  completion(result.bestTranscription.formattedString)
+              }
+          } else {
+              completion(nil)
+          }
+      }
   }
 }
 

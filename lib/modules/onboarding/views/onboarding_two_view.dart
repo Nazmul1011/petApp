@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
+import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_two_controller.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
@@ -21,12 +22,29 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
     return AppScaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: R.width(24.0),
-          vertical: R.height(40.0),
+          horizontal: R.width(2.0), // Updated to 10px
         ),
         child: Column(
           children: [
-            SizedBox(height: R.height(60)), // Space from top
+            SizedBox(height: R.height(80)), // Match top spacing
+            // Top Heading & Sub-heading (Synced with Screen One)
+            Obx(
+              () => Text(
+                controller.titleText,
+                style: AppTypography.h5.copyWith(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: R.height(12)),
+            Text(
+              "Tap. Speak. Hear them reply",
+              style: AppTypography.bodySm.copyWith(color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+
             // Main Interactive Area
             Expanded(
               child: Obx(() {
@@ -40,7 +58,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
               }),
             ),
 
-            // Bottom Button
+            // Bottom Button (Synced with Screen One)
             Obx(() {
               final state = controller.voiceState.value;
               final isResult = state == VoiceState.result;
@@ -53,15 +71,9 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                     : (isResult
                           ? () => controller.completeOnboarding()
                           : () => controller.skipDemo()),
-                borderRadius: 30,
-                height: R.height(64),
-                backgroundColor: isResult
-                    ? AppColors.primaryColor
-                    : Colors.white,
-                textColor: isResult ? Colors.white : AppColors.primaryColor,
               );
             }),
-            SizedBox(height: R.height(20)),
+            SizedBox(height: R.height(54.0)), // Updated to 54px bottom margin
           ],
         ),
       ),
@@ -215,7 +227,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
     return AnimatedFadeIn(
       child: Column(
         children: [
-          // Pet Head with Sound Waves (Aligned top-left as per screenshot)
+          // Pet Head with Sound Waves (Aligned top-left)
           Align(
             alignment: Alignment.topLeft,
             child: SizedBox(
@@ -223,33 +235,40 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
               height: R.height(180),
               child: Stack(
                 children: [
-                  // Pet Image
+                  // Pet Image (Using the new Wave versions)
                   Positioned(
                     left: 0,
                     top: R.height(20),
                     child: Image.asset(
-                      controller.petImagePath,
-                      width: R.width(140),
+                      controller.selectedPet.value == PetType.dog
+                          ? 'assets/images/dogwave.png'
+                          : 'assets/images/catwave.png',
+                      width: R.width(260), // Increased width for the wave image
                       height: R.width(140),
                       fit: BoxFit.contain,
                     ),
                   ),
-                  // Animated Sound Waves (Golden Pulse)
+                  // Animated Sound Waves (Commented out as per request)
+                  /*
                   Positioned(
                     left: R.width(125),
                     top: R.height(60),
-                    // t
                     child: Obx(() {
                       final animValue = controller.soundWaveAnimation.value;
-                      return CustomPaint(
-                        size: Size(R.width(60), R.width(60)),
-                        painter: SoundWavePainter(
-                          color: const Color(0xFFFFD700), // Golden/Yellow
-                          animationValue: animValue,
+                      // Only show pulse if playing
+                      return Opacity(
+                        opacity: controller.isPlaying.value ? 1.0 : 0.0,
+                        child: CustomPaint(
+                          size: Size(R.width(60), R.width(60)),
+                          painter: SoundWavePainter(
+                            color: const Color(0xFFFFD700),
+                            animationValue: animValue,
+                          ),
                         ),
                       );
                     }),
                   ),
+                  */
                 ],
               ),
             ),
@@ -257,43 +276,61 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
 
           SizedBox(height: R.height(10)),
 
-          // Waveform Container (Specific dimensions from user)
-          Container(
-            width: R.width(361),
-            height: R.height(48),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(R.width(12)), // radius-12
-              border: Border.all(
-                color: Colors.grey.withValues(alpha: 0.1),
-                width: 1.0, // stroke-sm
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: R.width(20)),
-                child: Obx(() {
-                  // Explicit trigger
-                  final vals = controller.waveformValues.toList();
-                  return CustomPaint(
-                    size: Size(double.infinity, R.height(24)),
-                    painter: WaveformPainter(
-                      values: vals,
-                      color: AppColors.primaryColor,
-                      secondaryColor: Colors.grey.withValues(alpha: 0.2),
+          // Replay Button will be part of the morphing bar below
+          SizedBox(height: R.height(24)),
+
+          // Morphing Waveform Button
+          Obx(() {
+            final isPlaying = controller.isPlaying.value;
+            return GestureDetector(
+              onTap: () => controller.replayVoice(),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                width: R.width(361),
+                height: R.height(48),
+                decoration: BoxDecoration(
+                  color: isPlaying ? Colors.white : const Color(0xFFF7F4FF),
+                  borderRadius: BorderRadius.circular(999), // Pill shape
+                  border: Border.all(
+                    color: AppColors.primaryColor.withValues(
+                      alpha: isPlaying ? 0.1 : 1.0,
                     ),
-                  );
-                }),
+                    width: 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: isPlaying
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: R.width(24),
+                          ),
+                          child: CustomPaint(
+                            size: Size(double.infinity, R.height(24)),
+                            painter: WaveformPainter(
+                              values: controller.waveformValues.toList(),
+                              color: AppColors.primaryColor,
+                              secondaryColor: Colors.grey.withValues(
+                                alpha: 0.1,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          Icons.refresh,
+                          color: AppColors.primaryColor,
+                          size: R.width(28),
+                        ),
+                ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );

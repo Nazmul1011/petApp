@@ -17,4 +17,16 @@ class PaymentController extends GetxController with BaseController {
     // Proceed directly to the Pet Profile setup via Welcome Splash.
     Get.offNamed(AppRoutes.welcomeSplash);
   }
+
+  void openPrivacyPolicy() {
+    Get.toNamed(AppRoutes.legal, arguments: {'tab': 0});
+  }
+
+  void openTermsConditions() {
+    Get.toNamed(AppRoutes.legal, arguments: {'tab': 1});
+  }
+
+  void restorePurchase() {
+    // Logic for restoring purchase
+  }
 }

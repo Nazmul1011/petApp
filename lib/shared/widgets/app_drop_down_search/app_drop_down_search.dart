@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:petapp/shared/helpers/responsive.dart';
 
 class AppDropdownSearch extends StatefulWidget {
   final List<String> initialItems;
@@ -278,57 +279,50 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
                   ];
                 },
                 inputDecorationTheme: InputDecorationTheme(
-                  filled: false,
+                  filled: true,
+                  fillColor: const Color(0xFFF9FAFB),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 20,
+                    vertical: 16,
                   ),
-                  hintStyle: widget.hintTextStyle,
+                  hintStyle: widget.hintTextStyle ??
+                      TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 14,
+                      ),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: field.hasError
-                          ? Theme.of(context).colorScheme.error
-                          : const Color(0xFFD8D9DD),
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(6),
+                    borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: field.hasError
-                          ? Theme.of(context).colorScheme.error
-                          : const Color(0xFFD8D9DD),
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(6),
+                    borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: field.hasError
-                          ? Theme.of(context).colorScheme.error
-                          : Theme.of(context).primaryColor,
-                      width: 1,
+                    borderSide: const BorderSide(
+                      color: Color(0xFF8B78E6),
+                      width: 1.5,
                     ),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Theme.of(context).colorScheme.error,
                       width: 1,
                     ),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 menuStyle: MenuStyle(
-                  elevation: WidgetStateProperty.all(0),
+                  elevation: WidgetStateProperty.all(8),
+                  backgroundColor: WidgetStateProperty.all(Colors.white),
                   maximumSize: WidgetStateProperty.all(
-                    const Size.fromHeight(200),
+                    Size(R.width(280), R.height(300)),
                   ),
                   alignment: Alignment.bottomLeft,
                   shape: WidgetStateProperty.all(
                     RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                      side: const BorderSide(color: Colors.black),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -363,11 +357,21 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
                         },
                         child: Icon(
                           Icons.remove_circle_outline,
-                          color: widget.clearIconColor,
+                          color:
+                              widget.clearIconColor ?? const Color(0xFF737373),
                         ),
                       )
-                    : widget.trailingIcon,
-                selectedTrailingIcon: widget.expandedTrailingIcon,
+                    : (widget.trailingIcon ??
+                          const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Color(0xFF737373),
+                          )),
+                selectedTrailingIcon:
+                    widget.expandedTrailingIcon ??
+                    const Icon(
+                      Icons.keyboard_arrow_up_rounded,
+                      color: Color(0xFF8B78E6),
+                    ),
                 dropdownMenuEntries: baseEntries,
                 enabled: widget.enabled,
               ),

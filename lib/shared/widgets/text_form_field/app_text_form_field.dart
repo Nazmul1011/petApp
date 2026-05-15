@@ -89,7 +89,7 @@ class AppTextFormField extends StatefulWidget {
     this.textCapitalization = TextCapitalization.none,
     this.prefixIconColor = AppColors.primaryColor,
     this.suffixIconColor = AppColors.primaryColor,
-    this.borderRadius = 14,
+    this.borderRadius = 12,
 
     /// NEW defaults
     this.showPrefixIcon = true,
@@ -158,16 +158,22 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
     // ===== Your spec =====
     const padX = 12.0;
     const padY = 8.0;
-    const gap = 0.0; // handle gap between the the label text and the hint text
+    const fieldHeight = 58.0;
+    const gap = 0.0;
 
-    const labelColor = Color(0xFF0A0A0A);
+    const labelColor = Color(0xFF737373);
     const hintColor = Color(0xFFA1A1A1);
+    const fillColor = Color(0xFFF9FAFB);
 
-    final labelStyle = AppTypography.bodyXs.copyWith(color: labelColor);
+    final labelStyle = AppTypography.bodyXs.copyWith(
+      color: labelColor,
+      fontWeight: FontWeight.w500,
+    );
     final hintStyle =
         widget.hintStyle ?? AppTypography.bodySm.copyWith(color: hintColor);
     final valueStyle = AppTypography.bodySm.copyWith(
       color: Theme.of(context).colorScheme.onSurface,
+      fontWeight: FontWeight.w600,
     );
 
     const borderColor = Color(0xFFD8D9DD);
@@ -175,12 +181,11 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
     final isFocused = _focusNode.hasFocus;
     final border = Border.all(
       color: isFocused ? AppColors.primaryColor : borderColor,
-      width: isFocused ? 2 : 1,
+      width: isFocused ? 1.5 : 1,
     );
 
     final radius = BorderRadius.circular(widget.borderRadius);
 
-    /// NEW: prefix icon can be turned off
     final Widget? prefix = widget.showPrefixIcon
         ? (widget.prefixIcon ??
               getDefaultPrefixIcon(widget.type, widget.prefixIconColor))
@@ -199,15 +204,17 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
         : widget.suffixIcon;
 
     return Container(
+      constraints: const BoxConstraints(minHeight: fieldHeight),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: fillColor,
         border: border,
         borderRadius: radius,
       ),
+      alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: padX, vertical: padY),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (prefix != null) ...[
               Padding(padding: const EdgeInsets.only(top: 2), child: prefix),

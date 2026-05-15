@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
@@ -179,33 +182,93 @@ class DashboardController extends GetxController with BaseController {
   // ---------------------------------------------------------------------------
   // Human → Pet (user's voice → pet sound translation)
   // ---------------------------------------------------------------------------
-  Future<void> _processHumanToPet(String path) async {
-    final isDog = selectedPet.value == PetType.dog;
-    resultText.value = isDog
-        ? 'Dog translation sent!'
-        : 'Cat translation sent!';
-    playRecording();
+  static const List<String> _dogRandomSounds = [
+    'audio/dog-barking.mp3',
+    'audio/dog-angry.mp3',
+    'audio/dog-howl.mp3',
+    'audio/dog-unhappy.mp3',
+    'audio/dog-yelp.mp3',
+    'audio/bark_1.wav',
+  ];
 
-    // Post to backend in background
-    if (_sessionId != null) {
-      try {
-        final translation = await _talkApi.createTranslation(
-          sessionId: _sessionId!,
-          inputType: 'HUMAN_VOICE',
-          direction: 'HUMAN_TO_PET',
-          inputAudioUrl: 'file://$path',
-        );
-        if (translation != null) {
-          _translationId = translation.id;
-          // If backend returned proper pet sound, use it
-          if (translation.outputText != null &&
-              translation.outputText!.isNotEmpty) {
-            resultText.value = translation.outputText!;
-          }
+  static const List<String> _catRandomSounds = [
+    'audio/cat-cute-cat.mp3',
+    'audio/cat-excited.mp3',
+    'audio/cat-hungry.mp3',
+    'audio/cat-purring.mp3',
+    'audio/meow_1.wav',
+  ];
+
+  final RxString recognizedText = ''.obs;
+
+  Future<void> _processHumanToPet(String path) async {
+    setLoading(true);
+    try {
+      final isDog = selectedPet.value == PetType.dog;
+      
+      // 1. Recognize what the human said
+      final text = await classifierService.recognizeSpeech(path);
+      recognizedText.value = text?.toLowerCase().trim() ?? '';
+      
+      if (recognizedText.value.isNotEmpty) {
+        resultText.value = 'You said: "${recognizedText.value}"';
+        
+        // 2. Check if we have a LEARNED translation for this specific phrase
+        final box = GetStorage();
+        final String storageKey = 'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
+        final savedAsset = box.read<String>(storageKey);
+        
+        if (savedAsset != null) {
+          print('[Dashboard] Learned phrase detected! Playing saved sound: $savedAsset');
+          responseAssetPath.value = savedAsset;
+        } else {
+          // 3. No learned phrase? Pick a random sound
+          final randomList = isDog ? _dogRandomSounds : _catRandomSounds;
+          responseAssetPath.value = randomList[Random().nextInt(randomList.length)];
+          print('[Dashboard] New phrase. Playing random sound: ${responseAssetPath.value}');
         }
-      } catch (e) {
-        print('[Dashboard] Backend translate error (human→pet): $e');
+      } else {
+        // Fallback if no speech recognized
+        resultText.value = isDog ? 'Barking...' : 'Meowing...';
+        final randomList = isDog ? _dogRandomSounds : _catRandomSounds;
+        responseAssetPath.value = randomList[Random().nextInt(randomList.length)];
       }
+
+      // 4. Play the resulting pet sound
+      playResponse();
+
+      // 5. Prepare the Pet Sound file to be saved to the backend (replacing human voice)
+      String uploadPath = path;
+      try {
+        final byteData = await rootBundle.load('assets/${responseAssetPath.value}');
+        final buffer = byteData.buffer;
+        final tempDir = await getTemporaryDirectory();
+        final tempPetSoundFile = File('${tempDir.path}/temp_pet_sound.mp3');
+        await tempPetSoundFile.writeAsBytes(
+            buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+        uploadPath = tempPetSoundFile.path;
+        print('[Dashboard] Prepared pet sound for upload: $uploadPath');
+      } catch (e) {
+        print('[Dashboard] Error preparing pet sound asset for upload: $e');
+      }
+
+      // 6. Background backend logging - Sending the PET sound as the main audio
+      if (_sessionId != null) {
+        _talkApi.createTranslation(
+          sessionId: _sessionId!,
+          inputType: 'PET_VOICE', // Switch to PET_VOICE so the backend knows
+          direction: 'HUMAN_TO_PET',
+          inputAudioUrl: 'file://$uploadPath', // Upload the bark/meow instead of your voice!
+          inputText: recognizedText.value,
+          outputText: responseAssetPath.value,
+        ).then((translation) {
+          if (translation != null) _translationId = translation.id;
+        });
+      }
+    } catch (e) {
+      print('[Dashboard] HumanToPet error: $e');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -261,7 +324,8 @@ class DashboardController extends GetxController with BaseController {
           inputType: 'PET_VOICE',
           direction: 'PET_TO_HUMAN',
           inputAudioUrl: 'file://$path',
-          inputText: resultText.value,
+          inputText: 'Pet sound detected',
+          outputText: resultText.value, // The english phrase
         );
         if (translation != null) {
           _translationId = translation.id;
@@ -294,8 +358,12 @@ class DashboardController extends GetxController with BaseController {
   }
 
   Future<void> playRecording() async {
-    // Both modes now play the original recorded sound as per user request
-    if (currentRecordingPath.value.isNotEmpty) {
+    // If we have a translated pet sound, play that!
+    if (responseAssetPath.value.isNotEmpty) {
+      await audioPlayer.play(AssetSource(responseAssetPath.value));
+    } 
+    // Otherwise play the original recording (for Pet-to-Human mode)
+    else if (currentRecordingPath.value.isNotEmpty) {
       await audioPlayer.play(DeviceFileSource(currentRecordingPath.value));
     }
   }
@@ -325,24 +393,36 @@ class DashboardController extends GetxController with BaseController {
       return;
     }
 
-    if (_translationId == null) {
-      print('[Dashboard] No translation record found to save');
-      reset();
-      return;
-    }
-
     isSaving.value = true;
     try {
-      final saved = await _talkApi.saveTranslation(
-        translationId: _translationId!,
-        savedName: name,
-        mood: _mapMoodToBackend(_detectedMood),
-      );
-
-      if (saved != null) {
-        print('[Dashboard] Voice saved successfully');
-        Get.toNamed(AppRoutes.savedTalks);
+      // 1. Voice Learning (Local save)
+      if (isHumanToDog.value && recognizedText.value.isNotEmpty && responseAssetPath.value.isNotEmpty) {
+        final isDog = selectedPet.value == PetType.dog;
+        final box = GetStorage();
+        final String storageKey = 'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
+        
+        await box.write(storageKey, responseAssetPath.value);
+        print('[Dashboard] Learned phrase saved locally: ${recognizedText.value} -> ${responseAssetPath.value}');
       }
+
+      // 2. Backend Save (Cloud)
+      if (_translationId != null) {
+        final saved = await _talkApi.saveTranslation(
+          translationId: _translationId!,
+          savedName: name,
+          mood: _mapMoodToBackend(_detectedMood),
+        );
+
+        if (saved != null) {
+          print('[Dashboard] Voice saved to backend successfully');
+          Get.toNamed(AppRoutes.savedTalks);
+          return;
+        }
+      }
+      
+      // If we got here, we saved locally but maybe not to backend, or vice versa
+      Get.snackbar('Success', 'Voice translation saved!');
+      reset();
     } catch (e) {
       print('[Dashboard] saveVoice error: $e');
       reset();
@@ -372,6 +452,7 @@ class DashboardController extends GetxController with BaseController {
   void reset() {
     uiState.value = TranslationUIState.idle;
     resultText.value = '';
+    recognizedText.value = '';
     voiceLabel.value = '';
     currentRecordingPath.value = '';
     responseAssetPath.value = '';

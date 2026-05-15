@@ -18,22 +18,24 @@ class OnboardingView extends GetView<OnboardingController> {
     return AppScaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: R.width(24.0),
-          vertical: R.height(40.0),
+          horizontal: R.width(2.0), // 16px Side Margins
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: R.height(40)),
+            SizedBox(height: R.height(80)), // Adjusted top spacing
             Text(
               "Choose your companion",
-              style: AppTypography.h5.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.h5.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: R.height(12)),
             Text(
               "Select the pet you want to communicate with.\nThe experience, sounds, and translations will be tailored specifically to them.",
-              style: AppTypography.bodyMd.copyWith(color: Colors.grey[600]),
+              style: AppTypography.bodySm.copyWith(color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const Spacer(),
@@ -65,11 +67,9 @@ class OnboardingView extends GetView<OnboardingController> {
                 onPressed: controller.selectedPet.value != PetType.none
                     ? () => controller.completeOnboarding()
                     : null,
-                borderRadius: 30,
-                height: R.height(64),
               ),
             ),
-            SizedBox(height: R.height(20)),
+            SizedBox(height: R.height(54.0)), // 74px Bottom Margin
           ],
         ),
       ),
