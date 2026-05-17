@@ -19,6 +19,8 @@ import 'app_routes.dart';
 
 import 'package:petapp/modules/pet_setup/views/pet_profile_setup_view.dart';
 import 'package:petapp/modules/talk/views/saved_talks_view.dart';
+import 'package:petapp/modules/talk/views/talk_result_view.dart';
+import 'package:petapp/modules/talk/views/talk_human_to_pet_view.dart';
 import 'package:petapp/modules/pet_profile/views/pet_profile_view.dart';
 import 'package:petapp/modules/pet_profile/views/add_pet_view.dart';
 import 'package:petapp/modules/pet_profile/bindings/pet_profile_binding.dart';
@@ -59,6 +61,8 @@ class AppPages {
       page: () => const PetProfileSetupView(),
     ),
     GetPage(name: AppRoutes.savedTalks, page: () => const SavedTalksView()),
+    GetPage(name: AppRoutes.talkResult, page: () => const TalkResultView()),
+    GetPage(name: AppRoutes.talkHumanToPet, page: () => const TalkHumanToPetView()),
     GetPage(
       name: AppRoutes.petProfile,
       page: () => const PetProfileView(),

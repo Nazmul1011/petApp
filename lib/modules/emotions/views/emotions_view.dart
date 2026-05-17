@@ -61,7 +61,7 @@ class EmotionsView extends GetView<EmotionsController> {
                                   crossAxisCount: 3,
                                   mainAxisSpacing: R.height(16),
                                   crossAxisSpacing: R.width(16),
-                                  childAspectRatio: 0.85,
+                                  childAspectRatio: 110 / 106,
                                 ),
                             itemBuilder: (context, index) {
                               return _buildEmotionCard(
@@ -83,11 +83,21 @@ class EmotionsView extends GetView<EmotionsController> {
   Widget _buildEmotionCard(EmotionItem item) {
     return GestureDetector(
       onTap: () => controller.selectEmotion(item),
-      child: Column(
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: R.width(8),
+          vertical: R.height(6),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE8E8E8), width: 1),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: R.width(94),
+              height: R.height(60),
               decoration: BoxDecoration(
                 color: item.isLocked
                     ? Colors.grey.shade400
@@ -98,7 +108,7 @@ class EmotionsView extends GetView<EmotionsController> {
                 alignment: Alignment.center,
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(R.width(8)),
+                    padding: EdgeInsets.all(R.width(1)),
                     child: Opacity(
                       opacity: item.isLocked ? 0.5 : 1.0,
                       child: Image.asset(item.imagePath, fit: BoxFit.contain),
@@ -106,24 +116,25 @@ class EmotionsView extends GetView<EmotionsController> {
                   ),
                   if (item.isLocked)
                     const Center(
-                      child: Icon(Icons.lock, color: Colors.white, size: 28),
+                      child: Icon(Icons.lock, color: Colors.white, size: 20),
                     ),
                 ],
               ),
             ),
-          ),
-          SizedBox(height: R.height(8)),
-          Text(
-            item.name,
-            style: AppTypography.bodyXs.copyWith(
-              fontWeight: FontWeight.w600,
-              color: item.isLocked ? Colors.black45 : Colors.black87,
+            const Spacer(),
+            Text(
+              item.name,
+              style: AppTypography.bodyXs.copyWith(
+                fontWeight: FontWeight.w600,
+                color: item.isLocked ? Colors.black45 : Colors.black87,
+                fontSize: 11,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

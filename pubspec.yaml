@@ -54,6 +54,7 @@ dependencies:
   share_plus: ^12.0.2
   pretty_dio_logger: ^1.4.0
   audio_session: ^0.2.3
+  flutter_tts: ^4.2.5
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,8 @@ flutter:
     - assets/images/onbarding-4/
     - assets/images/onboarding_four/
     - assets/images/onboarding_3/
+    - assets/images/audio_button/
+    - assets/images/whistel folder/
     - assets/audio/
     - assets/fonts/
     - assets/envs/

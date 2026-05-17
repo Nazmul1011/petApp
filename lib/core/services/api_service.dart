@@ -388,6 +388,7 @@ class ApiService {
     if (status >= 400) {
       final data = response.data;
       String message = 'Unexpected error';
+      bool isLimitReached = false;
 
       if (data is Map<String, dynamic>) {
         message =
@@ -397,8 +398,27 @@ class ApiService {
                 ? (data['errors'] as Map).values.first?.first?.toString() ??
                       'Invalid data'
                 : 'Something went wrong');
+
+        // Check if the response body indicates a feature limit reached
+        final err = data['error'];
+        if (err is Map) {
+          if (err['code'] == 'FEATURE_LIMIT_REACHED' ||
+              err['code'] == 'FORBIDDEN' ||
+              err['message']?.toString().toLowerCase().contains('limit reached') == true) {
+            isLimitReached = true;
+          }
+        }
+        if (data['message']?.toString().toLowerCase().contains('limit reached') == true ||
+            data['error']?.toString().toLowerCase().contains('limit reached') == true) {
+          isLimitReached = true;
+        }
       } else if (data != null) {
         message = data.toString();
+      }
+
+      // If status is 403 Forbidden or we detected a limit reached, redirect directly to payment/paywall view
+      if (status == 403 || isLimitReached) {
+        Get.toNamed(AppRoutes.payment);
       }
 
       throw AppException(message, statusCode: status, body: data);

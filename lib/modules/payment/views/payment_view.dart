@@ -9,12 +9,15 @@ import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/payment_controller.dart';
 import '../widgets/feature_list.dart';
 import '../widgets/subscription_card.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../subscription/controllers/subscription_controller.dart';
 
 class PaymentView extends GetView<PaymentController> {
   const PaymentView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final subController = Get.find<SubscriptionModuleController>();
     return AppScaffold(
       horizontalPadding: 0,
       useSafeArea: false,
@@ -105,57 +108,61 @@ class PaymentView extends GetView<PaymentController> {
 
                           // Subscriptions
                           Obx(
-                            () => Column(
-                              children: [
-                                SubscriptionCard(
-                                  title: "3 days free trial",
-                                  subtitle: "\$00.00",
-                                  rightText: "Access to limited features",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
-                                      SubscriptionPlan.trial,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.trial,
-                                  ),
-                                ),
-                                SubscriptionCard(
-                                  title: "Weekly",
-                                  subtitle: "\$1.99 per week",
-                                  rightText:
-                                      "Short-term access to all Pro features",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
+                            () {
+                              final isLimitReached = (AuthController.to.user.value?.pets.length ?? 0) >= 1;
+                              return Column(
+                                children: [
+                                  if (!isLimitReached)
+                                    SubscriptionCard(
+                                      title: "3 days free trial",
+                                      subtitle: "\$00.00",
+                                      rightText: "Access to limited features",
+                                      isSelected:
+                                          controller.selectedPlan.value ==
+                                          SubscriptionPlan.trial,
+                                      onTap: () => controller.selectPlan(
+                                        SubscriptionPlan.trial,
+                                      ),
+                                    ),
+                                  SubscriptionCard(
+                                    title: "Weekly",
+                                    subtitle: "\$1.99 per week",
+                                    rightText:
+                                        "Short-term access to all Pro features",
+                                    isSelected:
+                                        controller.selectedPlan.value ==
+                                        SubscriptionPlan.weekly,
+                                    onTap: () => controller.selectPlan(
                                       SubscriptionPlan.weekly,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.weekly,
+                                    ),
                                   ),
-                                ),
-                                SubscriptionCard(
-                                  title: "Monthly",
-                                  subtitle: "\$2.99 per month",
-                                  rightText:
-                                      "Full Pro access with better value",
-                                  badgeText: "Best value",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
+                                  SubscriptionCard(
+                                    title: "Monthly",
+                                    subtitle: "\$2.99 per month",
+                                    rightText:
+                                        "Full Pro access with better value",
+                                    badgeText: "Best value",
+                                    isSelected:
+                                        controller.selectedPlan.value ==
+                                        SubscriptionPlan.monthly,
+                                    onTap: () => controller.selectPlan(
                                       SubscriptionPlan.monthly,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.monthly,
+                                    ),
                                   ),
-                                ),
-                                SubscriptionCard(
-                                  title: "Yearly",
-                                  subtitle: "\$12.99 per year",
-                                  rightText: "Full Pro access",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
+                                  SubscriptionCard(
+                                    title: "Yearly",
+                                    subtitle: "\$12.99 per year",
+                                    rightText: "Full Pro access",
+                                    isSelected:
+                                        controller.selectedPlan.value ==
+                                        SubscriptionPlan.yearly,
+                                    onTap: () => controller.selectPlan(
                                       SubscriptionPlan.yearly,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.yearly,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -172,42 +179,50 @@ class PaymentView extends GetView<PaymentController> {
                     children: [
                       SizedBox(height: R.height(8)),
                       Obx(
-                        () => AppMaterialButton(
-                          label: "Continue with free trial",
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () => controller.continueWithTrial(),
-                          height: R.height(58),
-                          borderRadius: R.width(40),
-                          backgroundColor: Colors.white,
-                          textColor: Colors.black,
-                          textStyle: AppTypography.labelMd.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          isLoading: controller.isLoading.value,
-                        ),
+                        () {
+                          final isLimitReached = (AuthController.to.user.value?.pets.length ?? 0) >= 1;
+                          final isLoading = controller.isLoading.value || subController.isLoading.value;
+                          final label = isLimitReached ? "Subscribe Now" : "Continue with free trial";
+                          return AppMaterialButton(
+                            label: label,
+                            onPressed: isLoading
+                                ? null
+                                : () => controller.handleButtonTap(),
+                            height: R.height(58),
+                            borderRadius: R.width(40),
+                            backgroundColor: Colors.white,
+                            textColor: Colors.black,
+                            textStyle: AppTypography.labelMd.copyWith(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            isLoading: isLoading,
+                          );
+                        },
                       ),
                       SizedBox(height: R.height(14)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.security,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          SizedBox(width: R.width(8)),
-                          Text(
-                            "Cancel anytime",
-                            style: AppTypography.labelXs.copyWith(
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.security,
                               color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                              size: 20,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: R.width(8)),
+                            Text(
+                              "Cancel anytime",
+                              style: AppTypography.labelXs.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: R.height(24)),
                       Wrap(
@@ -238,6 +253,40 @@ class PaymentView extends GetView<PaymentController> {
                   ),
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: R.width(20),
+                  vertical: R.height(10),
+                ),
+                child: GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.8),
+                      border: Border.all(color: Colors.grey.shade200),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.black,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],

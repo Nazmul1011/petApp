@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -7,6 +9,7 @@ class WhistleController extends GetxController
     with GetSingleTickerProviderStateMixin, BaseController {
   final RxBool isPlaying = false.obs;
   final RxDouble frequency = 8740.0.obs;
+  final Rx<ui.Image?> thumbImage = Rx<ui.Image?>(null);
 
   AudioSource? _waveformSource;
   SoundHandle? _currentHandle;
@@ -21,6 +24,20 @@ class WhistleController extends GetxController
       duration: const Duration(seconds: 1),
     );
     _initAudioEngine();
+    _loadThumbImage();
+  }
+
+  Future<void> _loadThumbImage() async {
+    try {
+      final ByteData data = await rootBundle.load('assets/images/whistel folder/whistel_level.png');
+      final ui.Codec codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(),
+      );
+      final ui.FrameInfo fi = await codec.getNextFrame();
+      thumbImage.value = fi.image;
+    } catch (e) {
+      Get.log("Failed to load thumb image: $e");
+    }
   }
 
   Future<void> _initAudioEngine() async {

@@ -10,19 +10,23 @@ import 'material_app.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Configure Audio Session for iOS (fixes record/play conflicts)
-  final session = await AudioSession.instance;
-  await session.configure(AudioSessionConfiguration(
-    avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
-    avAudioSessionCategoryOptions:
-        AVAudioSessionCategoryOptions.allowBluetooth |
-            AVAudioSessionCategoryOptions.defaultToSpeaker,
-    avAudioSessionMode: AVAudioSessionMode.spokenAudio,
-    avAudioSessionRouteSharingPolicy:
-        AVAudioSessionRouteSharingPolicy.defaultPolicy,
-    avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
-  ));
+  try {
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions:
+          AVAudioSessionCategoryOptions.allowBluetooth |
+              AVAudioSessionCategoryOptions.defaultToSpeaker,
+      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionRouteSharingPolicy:
+          AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+    ));
+  } catch (e) {
+    debugPrint("Error configuring AudioSession: $e");
+  }
 
   // Initialize connectivity listener
   ConnectivityService();
@@ -39,8 +43,8 @@ Future<void> bootstrap() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  runApp(const Petapp());
+
   // Remove native splash screen
   FlutterNativeSplash.remove();
-
-  runApp(const Petapp());
 }

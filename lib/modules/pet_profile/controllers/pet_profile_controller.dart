@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../models/pet_model.dart';
 import '../services/pet_api_service.dart';
 
@@ -124,6 +125,15 @@ class PetProfileController extends GetxController with BaseController {
     if (name.isEmpty) {
       showError("Please enter pet name");
       return;
+    }
+
+    // Enforce 1-pet limit on creation for non-premium accounts
+    if (!isUpdating) {
+      final isPremium = AuthController.to.user.value?.isPremium ?? false;
+      if (pets.length >= 1 && !isPremium) {
+        Get.toNamed(AppRoutes.payment);
+        return;
+      }
     }
 
     try {

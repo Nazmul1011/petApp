@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/services/api_service.dart';
 import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../main/controllers/main_controller.dart';
 import '../models/emotion_item.dart';
@@ -79,10 +80,7 @@ class EmotionsController extends GetxController with BaseController {
 
   Future<void> selectEmotion(EmotionItem item) async {
     if (item.isLocked) {
-      showSnack(
-        content: "This emotion is premium. Upgrade to unlock!",
-        status: SnackBarStatus.warning,
-      );
+      Get.toNamed(AppRoutes.payment);
       return;
     }
 

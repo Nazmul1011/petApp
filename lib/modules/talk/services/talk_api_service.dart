@@ -1,4 +1,6 @@
+import 'package:get/get.dart';
 import 'package:petapp/core/services/api_service.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../models/talk_session_model.dart';
 import '../models/translation_model.dart';
 
@@ -56,6 +58,10 @@ class TalkApiService {
       }
     } catch (e) {
       print('[TalkApiService] createTranslation error: $e');
+      if (e is AppException && (e.statusCode == 403 || e.message.toLowerCase().contains('limit reached'))) {
+        Get.toNamed(AppRoutes.payment);
+      }
+      rethrow;
     }
     return null;
   }
@@ -83,6 +89,10 @@ class TalkApiService {
       }
     } catch (e) {
       print('[TalkApiService] saveTranslation error: $e');
+      if (e is AppException && (e.statusCode == 403 || e.message.toLowerCase().contains('limit reached'))) {
+        Get.toNamed(AppRoutes.payment);
+      }
+      rethrow;
     }
     return null;
   }

@@ -5,6 +5,7 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
+import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
@@ -12,361 +13,140 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          const AppHeader(),
-          Expanded(
-            child: Obx(() {
-              switch (controller.uiState.value) {
-                case TranslationUIState.idle:
-                  return _buildIdleState();
-                case TranslationUIState.recording:
-                  return _buildRecordingState();
-                case TranslationUIState.result:
-                  return _buildResultState();
-              }
-            }),
-          ),
-        ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        top: false, // Handle top spacing manually for Figma accuracy
+        child: Column(
+          children: [
+            const AppHeader(),
+            Expanded(
+              child: _buildInteractiveState(),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildIdleState() {
+  Widget _buildInteractiveState() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: controller.startRecording,
-          child: Container(
-            width: R.width(180),
-            height: R.width(180),
+        // Space to reach waveform position (approx 135 from top)
+        SizedBox(height: R.height(135 - 80)), // Subtracting header height
+        // Waveform Animation
+        Obx(() => _buildTopAnimation()),
+
+        // 40px gap as requested
+        SizedBox(height: R.height(40)),
+
+        _buildMicButton(),
+
+        SizedBox(height: R.height(20)),
+
+        // Mode Toggle
+        Obx(() {
+          final isIdle = controller.uiState.value == TranslationUIState.idle;
+          return AnimatedOpacity(
+            opacity: isIdle ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 200),
+            child: IgnorePointer(ignoring: !isIdle, child: _buildModeToggle()),
+          );
+        }),
+
+        const Spacer(),
+      ],
+    );
+  }
+
+  Widget _buildMicButton() {
+    return Obx(() {
+      final isRecording =
+          controller.uiState.value == TranslationUIState.recording;
+
+      return Center(
+        child: Listener(
+          onPointerDown: (_) => controller.startRecording(),
+          onPointerUp: (_) => controller.stopRecording(),
+          onPointerMove: (event) {
+            // Cancel if finger leaves the 173x173 area
+            if (event.localPosition.dx < 0 ||
+                event.localPosition.dx > R.width(173) ||
+                event.localPosition.dy < 0 ||
+                event.localPosition.dy > R.height(173)) {
+              controller.stopRecording();
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: R.width(173),
+            height: R.width(173),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-            ),
-            child: Container(
-              margin: EdgeInsets.all(R.width(20)),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
+              color: isRecording
+                  ? const Color(0xFF7F67CB).withValues(alpha: 0.1)
+                  : Colors.white,
+              border: Border.all(
+                color: isRecording
+                    ? const Color(0xFF7F67CB).withValues(alpha: 0.2)
+                    : Colors.grey.withValues(alpha: 0.1),
               ),
-              child: const Center(
-                child: Icon(Icons.mic, color: Colors.grey, size: 40),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: R.height(80)),
-        _buildModeToggle(),
-      ],
-    );
-  }
-
-  Widget _buildRecordingState() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildAudioVisualizer(active: true),
-        SizedBox(height: R.height(40)),
-        GestureDetector(
-          onTap: controller.stopRecording,
-          child: Container(
-            width: R.width(140),
-            height: R.width(140),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF7F67CB), // Purple
-            ),
-            child: const Center(
-              child: Icon(Icons.mic, color: Colors.white, size: 50),
-            ),
-          ),
-        ),
-        SizedBox(height: R.height(80)),
-        // Placeholder to keep spacing identical
-        SizedBox(height: R.height(56)),
-      ],
-    );
-  }
-
-  Widget _buildResultState() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Spacer(),
-
-          if (!controller.isHumanToDog.value)
-            Column(
-              children: [
-                if (controller.detectedFrequency.value > 0)
-                  Padding(
-                    padding: EdgeInsets.only(bottom: R.height(8)),
-                    child: Text(
-                      "${controller.detectedFrequency.value.toStringAsFixed(0)} Hz",
-                      style: AppTypography.labelXs.copyWith(
-                        color: const Color(0xFF7F67CB),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                Text(
-                  controller.resultText.value.isEmpty
-                      ? "No ${controller.selectedPet.value == PetType.dog ? 'Dog' : 'Cat'} sound detected"
-                      : controller.resultText.value,
-                  style: AppTypography.h4.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: controller.resultText.value.isEmpty ? Colors.grey : Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  spreadRadius: 5,
                 ),
               ],
-            )
-          else
-            Image.asset(
-              controller.selectedPet.value == PetType.dog
-                  ? 'assets/images/dogwave.png'
-                  : 'assets/images/catwave.png',
-              height: R.height(100),
             ),
-
-          SizedBox(height: R.height(40)),
-
-          Obx(
-            () => Opacity(
-              opacity: controller.isPlaying.value ? 1.0 : 0.3,
-              child: _buildAudioVisualizer(active: controller.isPlaying.value),
-            ),
-          ),
-
-          SizedBox(height: R.height(30)),
-
-          _buildResultIcons(),
-
-          const Spacer(flex: 2),
-
-          // Save Voice Input
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Save voice",
-              style: AppTypography.labelXs.copyWith(
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ),
-          SizedBox(height: R.height(8)),
-          TextFormField(
-            onChanged: (val) => controller.voiceLabel.value = val,
-            decoration: InputDecoration(
-              hintText: controller.isHumanToDog.value
-                  ? "ie. Hello boy"
-                  : "Snack",
-              hintStyle: AppTypography.bodyMd.copyWith(
-                color: Colors.grey.shade400,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(R.width(30)),
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(R.width(30)),
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(R.width(30)),
-                borderSide: const BorderSide(color: Color(0xFF7F67CB)),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: R.width(20),
-                vertical: R.height(16),
-              ),
-            ),
-          ),
-
-          SizedBox(height: R.height(16)),
-
-          Obx(() {
-            final isLabelEmpty = controller.voiceLabel.value.isEmpty;
-            final isSaving = controller.isSaving.value;
-            return AppMaterialButton(
-              label: isSaving
-                  ? "Saving…"
-                  : isLabelEmpty
-                  ? "Talk again"
-                  : "Save and continue",
-              onPressed: isSaving
-                  ? null
-                  : () {
-                      if (isLabelEmpty) {
-                        controller.reset();
-                      } else {
-                        controller.saveVoice();
-                      }
-                    },
-              height: R.height(56),
-              borderRadius: 30,
-              backgroundColor: const Color(0xFF7F67CB),
-              textColor: Colors.white,
-            );
-          }),
-
-          SizedBox(height: R.height(40)), // Padding for bottom nav visual
-        ],
-      ),
-    );
-  }
-
-  Widget _buildResultIcons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _circleIconButton(icon: Icons.refresh, onTap: () => controller.reset()),
-        SizedBox(width: R.width(20)),
-        _circleIconButton(
-          icon: Icons.stop,
-          onTap: () => controller.stopAudio(),
-          isSolid: true,
-        ),
-        SizedBox(width: R.width(20)),
-        Obx(
-          () => _circleIconButton(
-            icon: controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
-            onTap: () => controller.isPlaying.value
-                ? controller.pauseAudio()
-                : controller.playRecording(),
-            isSolid: true,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _circleIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    bool isSolid = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: R.width(72),
-        height: R.width(72),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.grey.withValues(alpha: 0.1),
-            width: 1,
-          ),
-        ),
-        child: Center(
-          child: isSolid
-              ? Container(
-                  width: R.width(48),
-                  height: R.width(48),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black87,
+            child: Center(
+              child: Container(
+                width: R.width(130),
+                height: R.width(130),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isRecording ? const Color(0xFF7F67CB) : Colors.white,
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.mic,
+                    color: isRecording ? Colors.white : Colors.black87,
+                    size: R.width(44),
                   ),
-                  child: Icon(icon, color: Colors.white, size: R.width(20)),
-                )
-              : Icon(icon, color: Colors.black54, size: R.width(28)),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildTopAnimation() {
+    final isRecording =
+        controller.uiState.value == TranslationUIState.recording;
+    return AnimatedOpacity(
+      opacity: isRecording ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 300),
+      child: Container(
+        height: R.height(60),
+        padding: EdgeInsets.symmetric(vertical: R.height(5)),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: R.width(20)),
+            child: CustomPaint(
+              size: Size(double.infinity, R.height(48)),
+              painter: WaveformPainter(
+                values: controller.waveformValues.toList(),
+                color: const Color(0xFF7F67CB),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildAudioVisualizer({required bool active}) {
-    return SizedBox(
-      height: R.height(60),
-      child: Obx(() {
-        // Tie to amplitude stream -> real visualizer effect
-        double amp = controller.amplitude.value;
-        // Normalize: mapping -60dB (quiet) to 0dB (loud) for better visual range
-        double normalized = (amp + 60) / 60;
-        normalized = normalized.clamp(0.0, 1.0);
-
-        // Predefined wave shape multipliers to create a professional look
-        final List<double> multipliers = [
-          0.2,
-          0.3,
-          0.5,
-          0.8,
-          1.2,
-          1.5,
-          1.3,
-          0.9,
-          0.7,
-          1.1,
-          1.4,
-          1.6,
-          1.5,
-          1.2,
-          0.8,
-          0.6,
-          1.0,
-          1.3,
-          1.5,
-          1.2,
-          0.8,
-          0.5,
-          0.3,
-          0.2,
-          0.4,
-          0.7,
-          1.1,
-          1.4,
-          1.2,
-          0.8,
-          0.5,
-          0.3,
-        ];
-
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(32, (index) {
-            // Base height from multipliers for the "wave" look even when silent
-            double h = 12.0 + (multipliers[index] * 18.0);
-
-            // If active, scale based on normalized amplitude
-            if (active) {
-              h += multipliers[index] * 20.0 * normalized;
-              // Add slight randomness only when active to simulate real-time vibration
-              if (normalized > 0.1) {
-                h += Random().nextDouble() * 5 * normalized;
-              }
-            }
-
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 60),
-              width: 2.5,
-              height: h.clamp(6.0, 60.0),
-              margin: const EdgeInsets.symmetric(horizontal: 1.5),
-              decoration: BoxDecoration(
-                color: active
-                    ? const Color(0xFF7F67CB)
-                    : const Color.fromARGB(255, 148, 144, 144),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            );
-          }),
-        );
-      }),
-    );
-  }
 
   Widget _buildModeToggle() {
     return GestureDetector(

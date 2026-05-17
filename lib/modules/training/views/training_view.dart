@@ -7,6 +7,7 @@ import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 class TrainingView extends GetView<TrainingController> {
   const TrainingView({super.key});
 
@@ -93,7 +94,7 @@ class TrainingView extends GetView<TrainingController> {
             crossAxisCount: 3,
             mainAxisSpacing: R.height(16),
             crossAxisSpacing: R.width(16),
-            childAspectRatio: 0.85,
+            childAspectRatio: 110 / 106,
           ),
           itemBuilder: (context, index) {
             return _buildGridItem(items[index]);
@@ -104,13 +105,24 @@ class TrainingView extends GetView<TrainingController> {
   }
 
   Widget _buildGridItem(TrainingItem item) {
+    final isLocked = controller.isItemLocked(item);
     return GestureDetector(
       onTap: () => controller.goToDetail(item),
-      child: Column(
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: R.width(8),
+          vertical: R.height(6),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE8E8E8), width: 1),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: R.width(94),
+              height: R.height(60),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF0E1).withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(12),
@@ -119,54 +131,61 @@ class TrainingView extends GetView<TrainingController> {
                 alignment: Alignment.center,
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(R.width(8)),
-                    child: item.isNetworkImage
-                        ? CachedNetworkImage(
-                            imageUrl: '${dotenv.env['BASE_URL'] ?? ''}${item.fullImageUrl}'
-                                .replaceAll(' ', '%20'),
-                            fit: BoxFit.contain,
-                            placeholder: (context, url) => const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                    padding: EdgeInsets.all(R.width(1)),
+                    child: Opacity(
+                      opacity: isLocked ? 0.5 : 1.0,
+                      child: item.isNetworkImage
+                          ? CachedNetworkImage(
+                              imageUrl:
+                                  '${dotenv.env['BASE_URL'] ?? ''}${item.fullImageUrl}'
+                                      .replaceAll(' ', '%20'),
+                              fit: BoxFit.contain,
+                              placeholder: (context, url) => const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                                size: 24,
+                              ),
+                            )
+                          : Image.asset(
+                              item.imageUrl ?? 'assets/images/play dog 1.png',
+                              fit: BoxFit.contain,
                             ),
-                            errorWidget: (context, url, error) => const Icon(
-                              Icons.broken_image,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
-                          )
-                        : Image.asset(
-                            item.imageUrl ?? 'assets/images/play dog 1.png',
-                            fit: BoxFit.contain,
-                          ),
+                    ),
                   ),
-                  if (controller.isItemLocked(item))
+                  if (isLocked)
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Center(
-                        child: Icon(Icons.lock, color: Colors.white, size: 24),
+                        child: Icon(Icons.lock, color: Colors.white, size: 20),
                       ),
                     ),
                 ],
               ),
             ),
-          ),
-          SizedBox(height: R.height(8)),
-          Text(
-            item.name,
-            style: AppTypography.bodyXs.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+            const Spacer(),
+            Text(
+              item.name,
+              style: AppTypography.bodyXs.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isLocked ? Colors.black45 : Colors.black87,
+                fontSize: 11,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

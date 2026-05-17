@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
@@ -87,8 +88,8 @@ class WhistleView extends GetView<WhistleController> {
                       // Main central button
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        width: 190,
-                        height: 190,
+                        width: 60,
+                        height: 60,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isplaying
@@ -97,12 +98,9 @@ class WhistleView extends GetView<WhistleController> {
                         ),
                         child: Center(
                           child: Image.asset(
-                            'assets/images/whistle.png',
-                            width: 80,
-                            height: 80,
-                            color: isplaying
-                                ? Colors.white
-                                : Colors.grey.withValues(alpha: 0.5),
+                            'assets/images/whistel folder/whistle.png',
+                            width: 60,
+                            height: 60,
                           ),
                         ),
                       ),
@@ -134,10 +132,12 @@ class WhistleView extends GetView<WhistleController> {
                   activeTrackColor: const Color(0xFF8B78E6),
                   inactiveTrackColor: Colors.grey.withValues(alpha: 0.15),
                   thumbColor: Colors.white,
-                  thumbShape: const RoundSliderThumbShape(
-                    enabledThumbRadius: 18.0,
-                    elevation: 4.0,
-                  ),
+                  thumbShape: controller.thumbImage.value != null
+                      ? _ImageSliderThumbShape(controller.thumbImage.value!)
+                      : const RoundSliderThumbShape(
+                          enabledThumbRadius: 18.0,
+                          elevation: 4.0,
+                        ),
                   overlayColor: const Color(0xFF8B78E6).withValues(alpha: 0.2),
                   overlayShape: const RoundSliderOverlayShape(
                     overlayRadius: 28.0,
@@ -154,6 +154,7 @@ class WhistleView extends GetView<WhistleController> {
               );
             }),
           ),
+
           const Spacer(flex: 1),
         ],
       ),
@@ -329,6 +330,51 @@ class WhistleView extends GetView<WhistleController> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ImageSliderThumbShape extends SliderComponentShape {
+  final ui.Image image;
+  const _ImageSliderThumbShape(this.image);
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return const Size(48, 38);
+  }
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {
+    final canvas = context.canvas;
+    final Rect destRect = Rect.fromCenter(
+      center: center,
+      width: 48,
+      height: 38,
+    );
+    final Rect srcRect = Rect.fromLTWH(
+      0,
+      0,
+      image.width.toDouble(),
+      image.height.toDouble(),
+    );
+    canvas.drawImageRect(
+      image,
+      srcRect,
+      destRect,
+      Paint()..filterQuality = FilterQuality.high,
     );
   }
 }

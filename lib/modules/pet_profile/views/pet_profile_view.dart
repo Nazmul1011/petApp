@@ -12,6 +12,7 @@ import '../controllers/pet_profile_controller.dart';
 import '../models/pet_model.dart';
 import '../widgets/dashed_circle_painter.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class PetProfileView extends GetView<PetProfileController> {
   const PetProfileView({super.key});
@@ -98,8 +99,13 @@ class PetProfileView extends GetView<PetProfileController> {
               ),
               GestureDetector(
                 onTap: () {
-                  controller.prepareForAdd();
-                  Get.toNamed(AppRoutes.addPet);
+                  final isPremium = AuthController.to.user.value?.isPremium ?? false;
+                  if (controller.pets.length >= 1 && !isPremium) {
+                    Get.toNamed(AppRoutes.payment);
+                  } else {
+                    controller.prepareForAdd();
+                    Get.toNamed(AppRoutes.addPet);
+                  }
                 },
                 child: Row(
                   children: [
@@ -133,8 +139,13 @@ class PetProfileView extends GetView<PetProfileController> {
           AppMaterialButton(
             label: "Create Profile",
             onPressed: () {
-              controller.prepareForAdd();
-              Get.toNamed(AppRoutes.addPet);
+              final isPremium = AuthController.to.user.value?.isPremium ?? false;
+              if (controller.pets.length >= 1 && !isPremium) {
+                Get.toNamed(AppRoutes.payment);
+              } else {
+                controller.prepareForAdd();
+                Get.toNamed(AppRoutes.addPet);
+              }
             },
           ),
         ],

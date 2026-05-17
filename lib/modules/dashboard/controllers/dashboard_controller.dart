@@ -38,6 +38,12 @@ class DashboardController extends GetxController with BaseController {
   final RxBool isSaving = false.obs;
   final RxBool isPlaying = false.obs;
   final RxDouble detectedFrequency = 0.0.obs;
+  // Waveform data for OnboardingTwo-style animation
+  final RxList<double> waveformValues = List.generate(
+    75,
+    (index) => 0.7 + (Random().nextDouble() * 0.3),
+  ).obs;
+  Timer? _waveformTimer;
 
   // ----- Backend session & translation IDs -----
   String? _sessionId;
@@ -86,7 +92,7 @@ class DashboardController extends GetxController with BaseController {
     });
 
     _amplitudeSub = audioRecorder
-        .onAmplitudeChanged(const Duration(milliseconds: 100))
+        .onAmplitudeChanged(const Duration(milliseconds: 50))
         .listen((amp) {
           amplitude.value = amp.current;
         });
@@ -107,6 +113,14 @@ class DashboardController extends GetxController with BaseController {
     _playbackTimer?.cancel();
     _playbackTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       amplitude.value = -20.0 + Random().nextDouble() * 20.0;
+
+      // Update waveform values for "up and down" movement during playback
+      final random = Random();
+      final newList = List<double>.from(waveformValues);
+      for (int i = 0; i < newList.length; i++) {
+        newList[i] = 0.2 + (random.nextDouble() * 0.7);
+      }
+      waveformValues.value = newList;
     });
   }
 
@@ -114,6 +128,12 @@ class DashboardController extends GetxController with BaseController {
     _playbackTimer?.cancel();
     _playbackTimer = null;
     amplitude.value = -160.0;
+    // Reset waveform values to a taller random static state
+    final random = Random();
+    waveformValues.value = List.generate(
+      75,
+      (index) => 0.2 + (random.nextDouble() * 0.6),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -144,6 +164,7 @@ class DashboardController extends GetxController with BaseController {
   // Recording
   // ---------------------------------------------------------------------------
   void startRecording() async {
+    if (uiState.value == TranslationUIState.recording) return;
     if (await audioRecorder.hasPermission()) {
       final directory = await getTemporaryDirectory();
       final path =
@@ -157,26 +178,75 @@ class DashboardController extends GetxController with BaseController {
       );
 
       await audioRecorder.start(config, path: path);
+      _recordingStartTime = DateTime.now();
       uiState.value = TranslationUIState.recording;
       _startRecordingTimer();
+      _startWaveformAnimation();
+      HapticFeedback.mediumImpact();
     }
   }
 
-  void stopRecording() async {
-    final path = await audioRecorder.stop();
-    uiState.value = TranslationUIState.result;
+  DateTime? _recordingStartTime;
 
+  void stopRecording() async {
+    if (uiState.value != TranslationUIState.recording) return;
+
+    final duration = DateTime.now().difference(
+      _recordingStartTime ?? DateTime.now(),
+    );
+    _stopWaveformAnimation();
+    final path = await audioRecorder.stop();
     if (path != null) {
+      if (duration.inMilliseconds < 500) {
+        uiState.value = TranslationUIState.idle;
+        print('[Dashboard] Recording too short ($duration), ignoring.');
+        return;
+      }
+
       currentRecordingPath.value = path;
       print('[Dashboard] Recording stopped, review path: $path');
 
-      // Trigger automatic ML processing/translation immediately
       if (isHumanToDog.value) {
+        // Human to Pet: Navigate to the specialized logo view
+        uiState.value = TranslationUIState.idle;
+        Get.toNamed(AppRoutes.talkHumanToPet);
         await _processHumanToPet(path);
       } else {
+        // Pet to Human: Navigate to the text/waveform result view
+        uiState.value = TranslationUIState.idle;
+        Get.toNamed(AppRoutes.talkResult);
         await _processPetToHuman(path);
       }
     }
+    HapticFeedback.lightImpact();
+  }
+
+  void _startWaveformAnimation() {
+    _waveformTimer?.cancel();
+    _waveformTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      final random = Random();
+      // Normalize amplitude for animation scaling (-60dB to 0dB range)
+      // We want high sensitivity so small changes in voice are visible
+      double normalized = (amplitude.value + 55) / 55;
+      normalized = normalized.clamp(0.0, 1.0);
+
+      // Shift values to create flow
+      final newList = List<double>.from(waveformValues);
+      newList.removeAt(0);
+
+      // New value: baseline + randomness + strong amplitude spike
+      double nextValue = 0.1 + (random.nextDouble() * 0.1) + (normalized * 0.8);
+      newList.add(nextValue.clamp(0.1, 1.0));
+
+      waveformValues.value = newList;
+    });
+  }
+
+  void _stopWaveformAnimation() {
+    _waveformTimer?.cancel();
+    _waveformTimer = null;
+    // Reset waveform to idle state slowly or immediately
+    waveformValues.value = List.generate(75, (index) => 0.1);
   }
 
   // ---------------------------------------------------------------------------
@@ -205,47 +275,49 @@ class DashboardController extends GetxController with BaseController {
     setLoading(true);
     try {
       final isDog = selectedPet.value == PetType.dog;
-      
+
       // 1. Recognize what the human said
       final text = await classifierService.recognizeSpeech(path);
       recognizedText.value = text?.toLowerCase().trim() ?? '';
-      
+
       if (recognizedText.value.isNotEmpty) {
         resultText.value = 'You said: "${recognizedText.value}"';
-        
+
         // 2. Check if we have a LEARNED translation for this specific phrase
         final box = GetStorage();
-        final String storageKey = 'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
+        final String storageKey =
+            'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
         final savedAsset = box.read<String>(storageKey);
-        
+
         if (savedAsset != null) {
-          print('[Dashboard] Learned phrase detected! Playing saved sound: $savedAsset');
           responseAssetPath.value = savedAsset;
         } else {
           // 3. No learned phrase? Pick a random sound
           final randomList = isDog ? _dogRandomSounds : _catRandomSounds;
-          responseAssetPath.value = randomList[Random().nextInt(randomList.length)];
-          print('[Dashboard] New phrase. Playing random sound: ${responseAssetPath.value}');
+          responseAssetPath.value =
+              randomList[Random().nextInt(randomList.length)];
         }
+
+        // 4. Play the resulting pet sound
+        playResponse();
       } else {
         // Fallback if no speech recognized
-        resultText.value = isDog ? 'Barking...' : 'Meowing...';
-        final randomList = isDog ? _dogRandomSounds : _catRandomSounds;
-        responseAssetPath.value = randomList[Random().nextInt(randomList.length)];
+        resultText.value = 'No voice detected';
+        responseAssetPath.value = ''; // No sound to play
       }
-
-      // 4. Play the resulting pet sound
-      playResponse();
 
       // 5. Prepare the Pet Sound file to be saved to the backend (replacing human voice)
       String uploadPath = path;
       try {
-        final byteData = await rootBundle.load('assets/${responseAssetPath.value}');
+        final byteData = await rootBundle.load(
+          'assets/${responseAssetPath.value}',
+        );
         final buffer = byteData.buffer;
         final tempDir = await getTemporaryDirectory();
         final tempPetSoundFile = File('${tempDir.path}/temp_pet_sound.mp3');
         await tempPetSoundFile.writeAsBytes(
-            buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+          buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+        );
         uploadPath = tempPetSoundFile.path;
         print('[Dashboard] Prepared pet sound for upload: $uploadPath');
       } catch (e) {
@@ -254,16 +326,19 @@ class DashboardController extends GetxController with BaseController {
 
       // 6. Background backend logging - Sending the PET sound as the main audio
       if (_sessionId != null) {
-        _talkApi.createTranslation(
+        final translation = await _talkApi.createTranslation(
           sessionId: _sessionId!,
-          inputType: 'PET_VOICE', // Switch to PET_VOICE so the backend knows
+          inputType:
+              'PET_VOICE', // Switch to PET_VOICE so the backend knows
           direction: 'HUMAN_TO_PET',
-          inputAudioUrl: 'file://$uploadPath', // Upload the bark/meow instead of your voice!
+          inputAudioUrl:
+              'file://$uploadPath', // Upload the bark/meow instead of your voice!
           inputText: recognizedText.value,
           outputText: responseAssetPath.value,
-        ).then((translation) {
-          if (translation != null) _translationId = translation.id;
-        });
+        );
+        if (translation != null) {
+          _translationId = translation.id;
+        }
       }
     } catch (e) {
       print('[Dashboard] HumanToPet error: $e');
@@ -283,16 +358,21 @@ class DashboardController extends GetxController with BaseController {
       // Ensure the AI model is actually loaded before trying to use it
       if (!classifierService.isReady) {
         print('[Dashboard] Model not ready, attempting to initialize...');
-        await classifierService.init().timeout(const Duration(seconds: 5), onTimeout: () {
-          print('[Dashboard] Model initialization timed out.');
-        });
+        await classifierService.init().timeout(
+          const Duration(seconds: 5),
+          onTimeout: () {
+            print('[Dashboard] Model initialization timed out.');
+          },
+        );
       }
 
       // Local ML with frequency analysis and strict check
       final result = await classifierService.classify(path, expectedPetType);
 
       detectedFrequency.value = result.frequency;
-      print('[Dashboard] Classification complete. Freq: ${result.frequency} Hz, Match: ${result.isMatch}');
+      print(
+        '[Dashboard] Classification complete. Freq: ${result.frequency} Hz, Match: ${result.isMatch}',
+      );
 
       if (result.isMatch && result.mood != null) {
         resultMood.value = result.mood!;
@@ -304,7 +384,8 @@ class DashboardController extends GetxController with BaseController {
       } else {
         // No match found - explain why for diagnostics
         if (classifierService.hasError) {
-          resultText.value = "AI Model Error: ${classifierService.initError?.split('\n').first}";
+          resultText.value =
+              "AI Model Error: ${classifierService.initError?.split('\n').first}";
         } else if (result.frequency == 0) {
           resultText.value = "Silence detected";
         } else if (result.detectedPet == 'human') {
@@ -312,7 +393,7 @@ class DashboardController extends GetxController with BaseController {
         } else {
           resultText.value = "No ${expectedPetType} sound detected";
         }
-        
+
         _detectedMood = null;
         print('[Dashboard] No match. Status: ${resultText.value}');
       }
@@ -324,19 +405,28 @@ class DashboardController extends GetxController with BaseController {
           inputType: 'PET_VOICE',
           direction: 'PET_TO_HUMAN',
           inputAudioUrl: 'file://$path',
-          inputText: 'Pet sound detected',
+          inputText: resultMood.value,
           outputText: resultText.value, // The english phrase
         );
         if (translation != null) {
           _translationId = translation.id;
+          /* 
           if (translation.outputText != null &&
               translation.outputText!.isNotEmpty) {
             resultText.value = translation.outputText!;
           }
+          */
           if (translation.mood != null) {
             _detectedMood = translation.mood;
           }
         }
+      }
+
+      // Auto-play the recorded pet sound when the translation finishes
+      if (result.isMatch) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          playRecording();
+        });
       }
     } catch (e) {
       print('[Dashboard] PetToHuman error: $e');
@@ -361,7 +451,7 @@ class DashboardController extends GetxController with BaseController {
     // If we have a translated pet sound, play that!
     if (responseAssetPath.value.isNotEmpty) {
       await audioPlayer.play(AssetSource(responseAssetPath.value));
-    } 
+    }
     // Otherwise play the original recording (for Pet-to-Human mode)
     else if (currentRecordingPath.value.isNotEmpty) {
       await audioPlayer.play(DeviceFileSource(currentRecordingPath.value));
@@ -395,14 +485,30 @@ class DashboardController extends GetxController with BaseController {
 
     isSaving.value = true;
     try {
+      // Check saved voices count limit on free accounts
+      final user = AuthController.to.user.value;
+      if (user != null && !user.isPremium) {
+        final savedTalks = await _talkApi.listSaved();
+        if (savedTalks.length >= 5) {
+          Get.toNamed(AppRoutes.payment);
+          reset();
+          return;
+        }
+      }
+
       // 1. Voice Learning (Local save)
-      if (isHumanToDog.value && recognizedText.value.isNotEmpty && responseAssetPath.value.isNotEmpty) {
+      if (isHumanToDog.value &&
+          recognizedText.value.isNotEmpty &&
+          responseAssetPath.value.isNotEmpty) {
         final isDog = selectedPet.value == PetType.dog;
         final box = GetStorage();
-        final String storageKey = 'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
-        
+        final String storageKey =
+            'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
+
         await box.write(storageKey, responseAssetPath.value);
-        print('[Dashboard] Learned phrase saved locally: ${recognizedText.value} -> ${responseAssetPath.value}');
+        print(
+          '[Dashboard] Learned phrase saved locally: ${recognizedText.value} -> ${responseAssetPath.value}',
+        );
       }
 
       // 2. Backend Save (Cloud)
@@ -419,7 +525,7 @@ class DashboardController extends GetxController with BaseController {
           return;
         }
       }
-      
+
       // If we got here, we saved locally but maybe not to backend, or vice versa
       Get.snackbar('Success', 'Voice translation saved!');
       reset();

@@ -69,10 +69,7 @@ class TrainingController extends GetxController with BaseController {
 
   void goToDetail(TrainingItem item) {
     if (isItemLocked(item)) {
-      showSnack(
-        content: "This training is locked. Please upgrade to premium.",
-        status: SnackBarStatus.warning,
-      );
+      Get.toNamed(AppRoutes.payment);
     } else {
       Get.toNamed(AppRoutes.trainingDetail, arguments: item);
     }
