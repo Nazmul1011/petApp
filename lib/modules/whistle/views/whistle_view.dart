@@ -72,33 +72,28 @@ class WhistleView extends GetView<WhistleController> {
                             ),
                           ),
                         ),
-                      // Outer border ring (visible when NOT playing)
-                      if (!isplaying)
-                        Container(
-                          width: 220,
-                          height: 220,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey.withValues(alpha: 0.1),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      // Main central button
+                      // Main central button (220x220 container with 60x60 centered icon)
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        width: 60,
-                        height: 60,
+                        width: 220,
+                        height: 220,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isplaying
                               ? const Color(0xFF8B78E6)
                               : Colors.transparent,
+                          border: Border.all(
+                            color: isplaying
+                                ? const Color(0xFF8B78E6)
+                                : Colors.grey.withValues(alpha: 0.1),
+                            width: 2,
+                          ),
                         ),
                         child: Center(
                           child: Image.asset(
-                            'assets/images/whistel folder/whistle.png',
+                            isplaying
+                                ? 'assets/images/whistel folder/wistel_white.png'
+                                : 'assets/images/whistel folder/whistle.png',
                             width: 60,
                             height: 60,
                           ),

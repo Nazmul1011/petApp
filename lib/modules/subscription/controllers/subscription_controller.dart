@@ -72,11 +72,15 @@ class SubscriptionModuleController extends GetxController with BaseController {
         );
       }
       setLoading(false);
-    } else if (result == false) {
+      } else if (result == false) {
       showSnack(
         content: 'Checkout cancelled.',
         status: SnackBarStatus.error, // or warning if available
       );
     }
+  }
+
+  void restorePurchase() {
+    // Logic for restoring purchase
   }
 }

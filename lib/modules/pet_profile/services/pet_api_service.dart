@@ -1,8 +1,39 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:petapp/core/services/api_service.dart';
 import '../models/pet_model.dart';
 
 class PetApiService {
   final ApiService _api = ApiService();
+
+  Future<String> uploadPetImage(File file) async {
+    try {
+      final fileName = file.path.split('/').last;
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+        ),
+      });
+
+      final response = await _api.post(
+        '/upload/image',
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      );
+
+      final dynamic dataWrapper = response.data['data'];
+      if (dataWrapper == null || dataWrapper['url'] == null) {
+        throw Exception("Invalid upload response");
+      }
+      return dataWrapper['url'].toString();
+    } catch (e) {
+      print("[PetApiService] Image upload error: $e");
+      rethrow;
+    }
+  }
 
   Future<List<PetModel>> getAllPets() async {
     try {

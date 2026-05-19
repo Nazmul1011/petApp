@@ -30,7 +30,7 @@ class EmotionsView extends GetView<EmotionsController> {
                       fontSize: 28,
                     ),
                   ),
-                  SizedBox(height: R.height(24)),
+                  SizedBox(height: R.height(12)),
                   Obx(
                     () => controller.isLoading.value
                         ? Center(
@@ -53,6 +53,7 @@ class EmotionsView extends GetView<EmotionsController> {
                             ),
                           )
                         : GridView.builder(
+                            padding: EdgeInsets.zero,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.emotions.length,
@@ -111,7 +112,18 @@ class EmotionsView extends GetView<EmotionsController> {
                     padding: EdgeInsets.all(R.width(1)),
                     child: Opacity(
                       opacity: item.isLocked ? 0.5 : 1.0,
-                      child: Image.asset(item.imagePath, fit: BoxFit.contain),
+                      child: item.imagePath.startsWith('http')
+                          ? Image.network(
+                              item.imagePath,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.image_not_supported,
+                                  color: Colors.grey,
+                                );
+                              },
+                            )
+                          : Image.asset(item.imagePath, fit: BoxFit.contain),
                     ),
                   ),
                   if (item.isLocked)

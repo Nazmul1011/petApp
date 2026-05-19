@@ -17,6 +17,7 @@ class AuthController extends GetxController {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   static const String _gameIdKey = 'device_game_id';
+  static const String _hasSeenOnboardingKey = 'has_seen_onboarding_this_install';
 
   final Rxn<UserModel> user = Rxn<UserModel>();
   final RxBool isLoading = false.obs;
@@ -75,8 +76,10 @@ class AuthController extends GetxController {
       return;
     }
 
-    if (!currentUser.onboardingCompleted) {
-      // Step 1: Force onboarding completion
+    final hasSeenOnboarding = _storage.read<bool>(_hasSeenOnboardingKey) ?? false;
+
+    if (!hasSeenOnboarding || !currentUser.onboardingCompleted) {
+      // Step 1: Force onboarding if not seen locally on this install OR not completed on backend
       Get.offAllNamed(AppRoutes.onboarding);
     } else if (currentUser.activePetId == null ||
         currentUser.activePetId!.isEmpty) {
@@ -169,13 +172,18 @@ class AuthController extends GetxController {
   }
 
   Future<void> completeOnboarding() async {
+    // Set the local flag to true so we don't show onboarding again for this installation
+    _storage.write(_hasSeenOnboardingKey, true);
+
     final response = await _authApi.updateProfile({
       'onboardingCompleted': true,
       'onboardingStep': 3,
     });
 
     if (response.success && response.data != null) {
+      final isPremium = user.value?.isPremium ?? false;
       user.value = response.data;
+      user.value!.isPremium = isPremium;
       handleRouting();
     }
   }

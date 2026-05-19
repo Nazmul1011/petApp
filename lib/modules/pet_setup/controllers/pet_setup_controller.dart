@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -5,6 +6,7 @@ import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/core/services/api_service.dart';
 import 'package:petapp/modules/auth/controllers/auth_controller.dart';
+import 'package:petapp/modules/pet_profile/services/pet_api_service.dart';
 import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
 
 class PetSetupController extends GetxController with BaseController {
@@ -58,16 +60,22 @@ class PetSetupController extends GetxController with BaseController {
     try {
       setLoading(true);
 
+      String? uploadedImageUrl;
+      if (imageFile.value != null) {
+        final File file = File(imageFile.value!.path);
+        final PetApiService petApi = PetApiService();
+        uploadedImageUrl = await petApi.uploadPetImage(file);
+      }
+
       final Map<String, dynamic> payload = {
         "type": selectedType.value,
         "name": name,
         "breed": selectedBreed.value,
-        "imageUrl": imageFile.value?.path ??
-            (selectedType.value == 'DOG'
-                ? 'assets/images/dog image.png'
-                : 'assets/images/cat image.png'),
       };
       if (age != null) payload["age"] = age;
+      if (uploadedImageUrl != null) {
+        payload["imageUrl"] = uploadedImageUrl;
+      }
 
       final response = await _api.post('/pets', data: payload);
 

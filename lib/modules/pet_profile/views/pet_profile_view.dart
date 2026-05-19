@@ -99,7 +99,8 @@ class PetProfileView extends GetView<PetProfileController> {
               ),
               GestureDetector(
                 onTap: () {
-                  final isPremium = AuthController.to.user.value?.isPremium ?? false;
+                  final isPremium =
+                      AuthController.to.user.value?.isPremium ?? false;
                   if (controller.pets.length >= 1 && !isPremium) {
                     Get.toNamed(AppRoutes.payment);
                   } else {
@@ -139,7 +140,8 @@ class PetProfileView extends GetView<PetProfileController> {
           AppMaterialButton(
             label: "Create Profile",
             onPressed: () {
-              final isPremium = AuthController.to.user.value?.isPremium ?? false;
+              final isPremium =
+                  AuthController.to.user.value?.isPremium ?? false;
               if (controller.pets.length >= 1 && !isPremium) {
                 Get.toNamed(AppRoutes.payment);
               } else {

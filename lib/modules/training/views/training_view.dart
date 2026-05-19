@@ -36,14 +36,14 @@ class TrainingView extends GetView<TrainingController> {
                   Obx(
                     () => _buildSection(
                       title: "BASIC COMMANDS",
-                      items: controller.basicCommands.take(3).toList(),
+                      items: controller.basicCommands.take(6).toList(),
                     ),
                   ),
                   SizedBox(height: R.height(32)),
                   Obx(
                     () => _buildSection(
                       title: "TRICKS",
-                      items: controller.tricks.take(3).toList(),
+                      items: controller.tricks.take(6).toList(),
                     ),
                   ),
                   SizedBox(height: R.height(40)),
@@ -87,6 +87,7 @@ class TrainingView extends GetView<TrainingController> {
         ),
         SizedBox(height: R.height(16)),
         GridView.builder(
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: items.length,

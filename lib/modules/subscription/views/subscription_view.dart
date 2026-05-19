@@ -252,29 +252,34 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         ),
                       ),
                       SizedBox(height: R.height(14)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.security,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          SizedBox(width: R.width(8)),
-                          Text(
-                            "Cancel anytime",
-                            style: AppTypography.labelXs.copyWith(
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.security,
                               color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                              size: 20,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: R.width(8)),
+                            Text(
+                              "Cancel anytime",
+                              style: AppTypography.labelXs.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: R.height(24)),
                       Wrap(
                         alignment: WrapAlignment.center,
                         crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: R.width(2),
+                        runSpacing: R.height(2),
                         children: [
                           _buildFooterLink("PRIVACY POLICY", () {
                             Get.toNamed('/legal', arguments: {'tab': 0});
@@ -283,10 +288,10 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           _buildFooterLink("TERMS AND CONDITIONS", () {
                             Get.toNamed('/legal', arguments: {'tab': 1});
                           }),
-                          // _buildDot(),
-                          // _buildFooterLink("RESTORE", () {
-                          //   // Handle restore
-                          // }),
+                          _buildDot(),
+                          _buildFooterLink("RESTORE", () {
+                            controller.restorePurchase();
+                          }),
                         ],
                       ),
                       SizedBox(height: R.height(34)),
@@ -322,6 +327,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
           color: Colors.white,
           fontWeight: FontWeight.bold,
           letterSpacing: 0.2,
+          fontSize: 10, // Small font size to prevent overflow
         ),
       ),
     );
@@ -329,10 +335,12 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
 
   Widget _buildDot() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: R.width(15.6)),
+      padding: EdgeInsets.symmetric(
+        horizontal: R.width(4),
+      ), // Reduced padding to prevent overflow
       child: Container(
-        width: 4.5,
-        height: 4.5,
+        width: 3.5, // slightly smaller dot
+        height: 3.5,
         decoration: const BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,

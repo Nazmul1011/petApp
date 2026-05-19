@@ -107,63 +107,64 @@ class PaymentView extends GetView<PaymentController> {
                           SizedBox(height: R.height(24)),
 
                           // Subscriptions
-                          Obx(
-                            () {
-                              final isLimitReached = (AuthController.to.user.value?.pets.length ?? 0) >= 1;
-                              return Column(
-                                children: [
-                                  if (!isLimitReached)
-                                    SubscriptionCard(
-                                      title: "3 days free trial",
-                                      subtitle: "\$00.00",
-                                      rightText: "Access to limited features",
-                                      isSelected:
-                                          controller.selectedPlan.value ==
-                                          SubscriptionPlan.trial,
-                                      onTap: () => controller.selectPlan(
+                          Obx(() {
+                            final isLimitReached =
+                                (AuthController.to.user.value?.pets.length ??
+                                    0) >=
+                                1;
+                            return Column(
+                              children: [
+                                if (!isLimitReached)
+                                  SubscriptionCard(
+                                    title: "3 days free trial",
+                                    subtitle: "\$00.00",
+                                    rightText: "Access to limited features",
+                                    isSelected:
+                                        controller.selectedPlan.value ==
                                         SubscriptionPlan.trial,
-                                      ),
-                                    ),
-                                  SubscriptionCard(
-                                    title: "Weekly",
-                                    subtitle: "\$1.99 per week",
-                                    rightText:
-                                        "Short-term access to all Pro features",
-                                    isSelected:
-                                        controller.selectedPlan.value ==
-                                        SubscriptionPlan.weekly,
                                     onTap: () => controller.selectPlan(
+                                      SubscriptionPlan.trial,
+                                    ),
+                                  ),
+                                SubscriptionCard(
+                                  title: "Weekly",
+                                  subtitle: "\$1.99 per week",
+                                  rightText:
+                                      "Short-term access to all Pro features",
+                                  isSelected:
+                                      controller.selectedPlan.value ==
                                       SubscriptionPlan.weekly,
-                                    ),
+                                  onTap: () => controller.selectPlan(
+                                    SubscriptionPlan.weekly,
                                   ),
-                                  SubscriptionCard(
-                                    title: "Monthly",
-                                    subtitle: "\$2.99 per month",
-                                    rightText:
-                                        "Full Pro access with better value",
-                                    badgeText: "Best value",
-                                    isSelected:
-                                        controller.selectedPlan.value ==
-                                        SubscriptionPlan.monthly,
-                                    onTap: () => controller.selectPlan(
+                                ),
+                                SubscriptionCard(
+                                  title: "Monthly",
+                                  subtitle: "\$2.99 per month",
+                                  rightText:
+                                      "Full Pro access with better value",
+                                  badgeText: "Best value",
+                                  isSelected:
+                                      controller.selectedPlan.value ==
                                       SubscriptionPlan.monthly,
-                                    ),
+                                  onTap: () => controller.selectPlan(
+                                    SubscriptionPlan.monthly,
                                   ),
-                                  SubscriptionCard(
-                                    title: "Yearly",
-                                    subtitle: "\$12.99 per year",
-                                    rightText: "Full Pro access",
-                                    isSelected:
-                                        controller.selectedPlan.value ==
-                                        SubscriptionPlan.yearly,
-                                    onTap: () => controller.selectPlan(
+                                ),
+                                SubscriptionCard(
+                                  title: "Yearly",
+                                  subtitle: "\$12.99 per year",
+                                  rightText: "Full Pro access",
+                                  isSelected:
+                                      controller.selectedPlan.value ==
                                       SubscriptionPlan.yearly,
-                                    ),
+                                  onTap: () => controller.selectPlan(
+                                    SubscriptionPlan.yearly,
                                   ),
-                                ],
-                              );
-                            },
-                          ),
+                                ),
+                              ],
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -178,29 +179,33 @@ class PaymentView extends GetView<PaymentController> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(height: R.height(8)),
-                      Obx(
-                        () {
-                          final isLimitReached = (AuthController.to.user.value?.pets.length ?? 0) >= 1;
-                          final isLoading = controller.isLoading.value || subController.isLoading.value;
-                          final label = isLimitReached ? "Subscribe Now" : "Continue with free trial";
-                          return AppMaterialButton(
-                            label: label,
-                            onPressed: isLoading
-                                ? null
-                                : () => controller.handleButtonTap(),
-                            height: R.height(58),
-                            borderRadius: R.width(40),
-                            backgroundColor: Colors.white,
-                            textColor: Colors.black,
-                            textStyle: AppTypography.labelMd.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            isLoading: isLoading,
-                          );
-                        },
-                      ),
+                      Obx(() {
+                        final isLimitReached =
+                            (AuthController.to.user.value?.pets.length ?? 0) >=
+                            1;
+                        final isLoading =
+                            controller.isLoading.value ||
+                            subController.isLoading.value;
+                        final label = isLimitReached
+                            ? "Subscribe Now"
+                            : "Continue with free trial";
+                        return AppMaterialButton(
+                          label: label,
+                          onPressed: isLoading
+                              ? null
+                              : () => controller.handleButtonTap(),
+                          height: R.height(58),
+                          borderRadius: R.width(40),
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black,
+                          textStyle: AppTypography.labelMd.copyWith(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          isLoading: isLoading,
+                        );
+                      }),
                       SizedBox(height: R.height(14)),
                       GestureDetector(
                         onTap: () => Get.back(),
@@ -228,12 +233,23 @@ class PaymentView extends GetView<PaymentController> {
                       Wrap(
                         alignment: WrapAlignment.center,
                         crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: R.width(2),
+                        runSpacing: R.height(2),
                         children: [
-                          _buildFooterLink("PRIVACY POLICY", onTap: controller.openPrivacyPolicy),
+                          _buildFooterLink(
+                            "PRIVACY POLICY",
+                            onTap: controller.openPrivacyPolicy,
+                          ),
                           _buildDot(),
-                          _buildFooterLink("TERMS AND CONDITIONS", onTap: controller.openTermsConditions),
+                          _buildFooterLink(
+                            "TERMS AND CONDITIONS",
+                            onTap: controller.openTermsConditions,
+                          ),
                           _buildDot(),
-                          _buildFooterLink("RESTORE", onTap: controller.restorePurchase),
+                          _buildFooterLink(
+                            "RESTORE",
+                            onTap: controller.restorePurchase,
+                          ),
                         ],
                       ),
                       SizedBox(height: R.height(34)),
@@ -305,6 +321,7 @@ class PaymentView extends GetView<PaymentController> {
             color: Colors.white,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.2,
+            fontSize: 10, // Small font size to prevent overflow
           ),
         ),
       ),
@@ -313,10 +330,12 @@ class PaymentView extends GetView<PaymentController> {
 
   Widget _buildDot() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: R.width(15.6)),
+      padding: EdgeInsets.symmetric(
+        horizontal: R.width(4),
+      ), // Reduced padding to prevent overflow
       child: Container(
-        width: 4.5,
-        height: 4.5,
+        width: 3.5, // slightly smaller dot
+        height: 3.5,
         decoration: const BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,

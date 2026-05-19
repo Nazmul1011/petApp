@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -138,8 +139,18 @@ class PetProfileController extends GetxController with BaseController {
 
     try {
       setLoading(true);
-      final type = isUpdating ? profileSelectedType.value : addSelectedType.value;
-      final data = {
+
+      String? uploadedImageUrl;
+      if (imageFile.value != null) {
+        final File file = File(imageFile.value!.path);
+        uploadedImageUrl = await _petApi.uploadPetImage(file);
+      }
+
+      final type = isUpdating
+          ? profileSelectedType.value
+          : addSelectedType.value;
+
+      final data = <String, dynamic>{
         'name': name,
         'type': type,
         'breed': isUpdating
@@ -148,16 +159,17 @@ class PetProfileController extends GetxController with BaseController {
         'age': int.tryParse(
           isUpdating ? profileAgeController.text : addAgeController.text,
         ),
-        'imageUrl': imageFile.value?.path ??
-            (isUpdating
-                ? (selectedPet.value?.imageUrl ??
-                    (type == 'DOG'
-                        ? 'assets/images/dog image.png'
-                        : 'assets/images/cat image.png'))
-                : (type == 'DOG'
-                    ? 'assets/images/dog image.png'
-                    : 'assets/images/cat image.png')),
       };
+
+      if (uploadedImageUrl != null) {
+        data['imageUrl'] = uploadedImageUrl;
+      } else if (isUpdating) {
+        // Retain existing image if we didn't pick a new one, but don't send local asset strings
+        final currentUrl = selectedPet.value?.imageUrl;
+        if (currentUrl != null && !currentUrl.startsWith('assets/')) {
+          data['imageUrl'] = currentUrl;
+        }
+      }
 
       if (isUpdating && id != null) {
         await _petApi.updatePet(id, data);
