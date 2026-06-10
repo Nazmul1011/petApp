@@ -15,14 +15,21 @@ class TalkHumanToPetView extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            const AppHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+      body: PopScope(
+        canPop: true,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            controller.reset();
+          }
+        },
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              const AppHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
                 child: Column(
                   children: [
                     SizedBox(height: R.height(20)),
@@ -53,8 +60,9 @@ class TalkHumanToPetView extends GetView<DashboardController> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildPetLogo() {
     return Obx(() {

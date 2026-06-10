@@ -15,6 +15,7 @@ import 'package:petapp/modules/legal/controllers/legal_controller.dart';
 import 'package:petapp/modules/legal/services/legal_service.dart';
 import 'package:petapp/modules/subscription/controllers/subscription_controller.dart';
 import 'package:petapp/modules/subscription/services/subscription_service.dart';
+import 'package:petapp/modules/pet_profile/controllers/pet_profile_controller.dart';
 
 class GlobalBindings extends Bindings {
   @override
@@ -24,9 +25,10 @@ class GlobalBindings extends Bindings {
 
     // Core Navigation & Main Shell
     Get.lazyPut<MainController>(() => MainController(), fenix: true);
-    Get.lazyPut<DashboardController>(() => DashboardController(), fenix: true);
+    Get.put<DashboardController>(DashboardController(), permanent: true);
 
     // Feature Modules
+    Get.lazyPut<PetProfileController>(() => PetProfileController(), fenix: true);
     Get.lazyPut<EmotionsController>(() => EmotionsController(), fenix: true);
     Get.lazyPut<WhistleController>(() => WhistleController(), fenix: true);
     Get.lazyPut<TrainingController>(() => TrainingController(), fenix: true);

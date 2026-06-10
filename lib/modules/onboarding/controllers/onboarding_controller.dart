@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/modules/onboarding/widgets/pet_pop_overlay.dart';
@@ -14,9 +15,10 @@ class OnboardingController extends GetxController with BaseController {
 
   void selectPet(PetType type) {
     selectedPet.value = type;
+    GetStorage().write('onboarding_selected_pet', type.name);
     HapticFeedback.lightImpact();
     _playPetSound();
-    _showPopAnimation(type);
+    // _showPopAnimation(type);
   }
 
   void _showPopAnimation(PetType type) {

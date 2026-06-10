@@ -23,6 +23,11 @@ class SavedTalksController extends GetxController {
     super.onInit();
     _updatePetIcon();
     fetchSaved();
+
+    // Dynamically update pet icon when the active user profile switches pets
+    ever(AuthController.to.user, (_) {
+      _updatePetIcon();
+    });
   }
 
   void _updatePetIcon() {

@@ -10,25 +10,11 @@ class SplashView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF8C52FF),
-      body: Stack(
-        children: [
-          Center(
-            child: Image.asset(
-              'assets/images/less then android 12.png',
-              width: 200,
-            ),
-          ),
-          const Positioned(
-            bottom: 50,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
+      body: Center(
+        child: Image.asset(
+          'assets/images/less then android 12.png',
+          width: 200,
+        ),
       ),
     );
   }

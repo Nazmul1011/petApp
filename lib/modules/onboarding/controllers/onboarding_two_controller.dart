@@ -19,10 +19,14 @@ class OnboardingTwoController extends GetxController with BaseController {
   // Waveform data
   final RxList<double> waveformValues = RxList<double>.filled(75, 0.1);
   Timer? _waveformTimer;
+  Timer? _listeningTimer;
 
   // Sound wave animation
   final Rx<double> soundWaveAnimation = 0.0.obs;
   Timer? _soundWaveTimer;
+
+  // Track repeat/replay button presses
+  final RxInt replayCount = 0.obs;
 
   @override
   void onInit() {
@@ -42,6 +46,7 @@ class OnboardingTwoController extends GetxController with BaseController {
   void onClose() {
     _waveformTimer?.cancel();
     _soundWaveTimer?.cancel();
+    _listeningTimer?.cancel();
     _player.dispose();
     super.onClose();
   }
@@ -61,11 +66,18 @@ class OnboardingTwoController extends GetxController with BaseController {
         (index) => 0.2 + random.nextDouble() * 0.8,
       );
     });
+
+    // Auto-stop after 3 seconds
+    _listeningTimer?.cancel();
+    _listeningTimer = Timer(const Duration(seconds: 3), () {
+      stopListening();
+    });
   }
 
   void stopListening() {
     if (voiceState.value != VoiceState.listening) return;
 
+    _listeningTimer?.cancel();
     _waveformTimer?.cancel();
     voiceState.value = VoiceState.processing;
     HapticFeedback.lightImpact();
@@ -80,6 +92,11 @@ class OnboardingTwoController extends GetxController with BaseController {
   void replayVoice() {
     if (isPlaying.value) return;
     _playPetResult();
+
+    replayCount.value++;
+    if (replayCount.value >= 3) {
+      completeOnboarding();
+    }
   }
 
   void _playPetResult() async {

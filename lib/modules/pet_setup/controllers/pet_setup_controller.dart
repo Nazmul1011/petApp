@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/core/services/api_service.dart';
@@ -36,8 +37,24 @@ class PetSetupController extends GetxController with BaseController {
     'Bulldog',
     'Poodle',
     'Mixed',
+    'Others',
   ];
-  final List<String> catBreeds = ['Persian', 'Siamese', 'Maine Coon', 'Mixed'];
+  final List<String> catBreeds = ['Persian', 'Siamese', 'Maine Coon', 'Mixed', 'Others'];
+
+  @override
+  void onInit() {
+    super.onInit();
+    final savedPet = GetStorage().read<String>('onboarding_selected_pet');
+    if (savedPet != null) {
+      if (savedPet.toLowerCase() == 'dog') {
+        selectedType.value = 'DOG';
+        selectedBreed.value = dogBreeds.first;
+      } else if (savedPet.toLowerCase() == 'cat') {
+        selectedType.value = 'CAT';
+        selectedBreed.value = catBreeds.first;
+      }
+    }
+  }
 
   @override
   void onClose() {

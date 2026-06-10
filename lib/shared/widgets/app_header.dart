@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
+import '../../modules/main/controllers/main_controller.dart';
 
 class AppHeader extends StatelessWidget {
   const AppHeader({super.key});
@@ -19,7 +20,17 @@ class AppHeader extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset('assets/images/header_logo.png', height: R.height(40)),
+            GestureDetector(
+              onTap: () {
+                if (Get.isRegistered<MainController>()) {
+                  Get.find<MainController>().changeTabIndex(0);
+                }
+                if (Get.currentRoute != AppRoutes.dashboard) {
+                  Get.until((route) => route.settings.name == AppRoutes.dashboard);
+                }
+              },
+              child: Image.asset('assets/images/header_logo.png', height: R.height(40)),
+            ),
             Obx(() {
               final user = AuthController.to.user.value;
               final isPremium = user?.isPremium ?? false;

@@ -22,6 +22,8 @@ class PaymentView extends GetView<PaymentController> {
       horizontalPadding: 0,
       useSafeArea: false,
       systemNavigationBarIconBrightness: Brightness.light,
+      backgroundColor: const Color(0xFF9E8EDD),
+      extendBody: true,
       body: Stack(
         children: [
           // Background Gradient
@@ -45,230 +47,203 @@ class PaymentView extends GetView<PaymentController> {
 
           SafeArea(
             bottom: false, // Allow content to reach the extreme bottom
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: R.width(20)),
-                      child: Column(
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: R.width(20)),
+                child: Column(
+                  children: [
+                    SizedBox(height: R.height(8)),
+                    // Hero Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(R.width(20)),
+                      child: Image.asset(
+                        'assets/images/payment.png',
+                        width: double.infinity,
+                        height: R.height(160),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+
+                    SizedBox(height: R.height(12)),
+
+                    // Title
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: AppTypography.h5.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                         children: [
-                          SizedBox(height: R.height(8)),
-                          // Hero Image
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(R.width(20)),
-                            child: Image.asset(
-                              'assets/images/payment.png',
-                              width: double.infinity,
-                              height: R.height(160),
-                              fit: BoxFit.cover,
+                          const TextSpan(text: "Get "),
+                          const TextSpan(
+                            text: "PRO ",
+                            style: TextStyle(
+                              color: Color(0xFF7F67CB),
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-
-                          SizedBox(height: R.height(12)),
-
-                          // Title
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: AppTypography.h5.copyWith(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              children: [
-                                const TextSpan(text: "Get "),
-                                const TextSpan(
-                                  text: "PRO ",
-                                  style: TextStyle(
-                                    color: Color(0xFF7F67CB),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const TextSpan(text: "access"),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: R.height(6)),
-
-                          // Feature List
-                          const FeatureList(),
-
-                          SizedBox(height: R.height(12)),
-
-                          const DottedLine(
-                            dashColor: Color(0xFF7F67CB),
-                            dashLength: 4,
-                            dashGapLength: 4,
-                            lineThickness: 1,
-                          ),
-
-                          SizedBox(height: R.height(24)),
-
-                          // Subscriptions
-                          Obx(() {
-                            final isLimitReached =
-                                (AuthController.to.user.value?.pets.length ??
-                                    0) >=
-                                1;
-                            return Column(
-                              children: [
-                                if (!isLimitReached)
-                                  SubscriptionCard(
-                                    title: "3 days free trial",
-                                    subtitle: "\$00.00",
-                                    rightText: "Access to limited features",
-                                    isSelected:
-                                        controller.selectedPlan.value ==
-                                        SubscriptionPlan.trial,
-                                    onTap: () => controller.selectPlan(
-                                      SubscriptionPlan.trial,
-                                    ),
-                                  ),
-                                SubscriptionCard(
-                                  title: "Weekly",
-                                  subtitle: "\$1.99 per week",
-                                  rightText:
-                                      "Short-term access to all Pro features",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
-                                      SubscriptionPlan.weekly,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.weekly,
-                                  ),
-                                ),
-                                SubscriptionCard(
-                                  title: "Monthly",
-                                  subtitle: "\$2.99 per month",
-                                  rightText:
-                                      "Full Pro access with better value",
-                                  badgeText: "Best value",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
-                                      SubscriptionPlan.monthly,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.monthly,
-                                  ),
-                                ),
-                                SubscriptionCard(
-                                  title: "Yearly",
-                                  subtitle: "\$12.99 per year",
-                                  rightText: "Full Pro access",
-                                  isSelected:
-                                      controller.selectedPlan.value ==
-                                      SubscriptionPlan.yearly,
-                                  onTap: () => controller.selectPlan(
-                                    SubscriptionPlan.yearly,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }),
+                          const TextSpan(text: "access"),
                         ],
                       ),
                     ),
-                  ),
-                ),
 
-                // Bottom Actions
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: R.width(20)),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: R.height(8)),
-                      Obx(() {
-                        final isLimitReached =
-                            (AuthController.to.user.value?.pets.length ?? 0) >=
-                            1;
-                        final isLoading =
-                            controller.isLoading.value ||
-                            subController.isLoading.value;
-                        final label = isLimitReached
-                            ? "Subscribe Now"
-                            : "Continue with free trial";
-                        return AppMaterialButton(
-                          label: label,
-                          onPressed: isLoading
-                              ? null
-                              : () => controller.handleButtonTap(),
-                          height: R.height(58),
-                          borderRadius: R.width(40),
-                          backgroundColor: Colors.white,
-                          textColor: Colors.black,
-                          textStyle: AppTypography.labelMd.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          isLoading: isLoading,
-                        );
-                      }),
-                      SizedBox(height: R.height(14)),
-                      GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.security,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            SizedBox(width: R.width(8)),
-                            Text(
-                              "Cancel anytime",
-                              style: AppTypography.labelXs.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
+                    SizedBox(height: R.height(6)),
+
+                    // Feature List
+                    const FeatureList(),
+
+                    SizedBox(height: R.height(12)),
+
+                    const DottedLine(
+                      dashColor: Color(0xFF7F67CB),
+                      dashLength: 4,
+                      dashGapLength: 4,
+                      lineThickness: 1,
+                    ),
+
+                    SizedBox(height: R.height(24)),
+
+                    // Subscriptions
+                    Obx(() {
+                      final isLimitReached =
+                          (AuthController.to.user.value?.pets.length ??
+                              0) >=
+                          1;
+                      return Column(
+                        children: [
+                          if (!isLimitReached)
+                            SubscriptionCard(
+                              title: "3 days free trial",
+                              subtitle: "\$00.00",
+                              rightText: "Access to limited features",
+                              isSelected:
+                                  controller.selectedPlan.value ==
+                                  SubscriptionPlan.trial,
+                              onTap: () => controller.selectPlan(
+                                SubscriptionPlan.trial,
                               ),
                             ),
-                          ],
+                          SubscriptionCard(
+                            title: "Weekly",
+                            subtitle: "\$1.99 per week",
+                            rightText:
+                                "Short-term access to all Pro features",
+                            isSelected:
+                                controller.selectedPlan.value ==
+                                SubscriptionPlan.weekly,
+                            onTap: () => controller.selectPlan(
+                              SubscriptionPlan.weekly,
+                            ),
+                          ),
+                          SubscriptionCard(
+                            title: "Monthly",
+                            subtitle: "\$2.99 per month",
+                            rightText:
+                                "Full Pro access with better value",
+                            badgeText: "Best value",
+                            isSelected:
+                                controller.selectedPlan.value ==
+                                SubscriptionPlan.monthly,
+                            onTap: () => controller.selectPlan(
+                              SubscriptionPlan.monthly,
+                            ),
+                          ),
+                          SubscriptionCard(
+                            title: "Yearly",
+                            subtitle: "\$12.99 per year",
+                            rightText: "Full Pro access",
+                            isSelected:
+                                controller.selectedPlan.value ==
+                                SubscriptionPlan.yearly,
+                            onTap: () => controller.selectPlan(
+                              SubscriptionPlan.yearly,
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+
+                    // Bottom Actions
+                    SizedBox(height: R.height(16)),
+                    Obx(() {
+                      final isLimitReached =
+                          (AuthController.to.user.value?.pets.length ?? 0) >=
+                          1;
+                      final isLoading =
+                          controller.isLoading.value ||
+                          subController.isLoading.value;
+                      final label = isLimitReached
+                          ? "Subscribe Now"
+                          : "Continue with free trial";
+                      return AppMaterialButton(
+                        label: label,
+                        onPressed: isLoading
+                            ? null
+                            : () => controller.handleButtonTap(),
+                        height: R.height(58),
+                        borderRadius: R.width(40),
+                        backgroundColor: Colors.white,
+                        textColor: Colors.black,
+                        textStyle: AppTypography.labelMd.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
-                      ),
-                      SizedBox(height: R.height(24)),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: R.width(2),
-                        runSpacing: R.height(2),
+                        isLoading: isLoading,
+                      );
+                    }),
+                    SizedBox(height: R.height(14)),
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildFooterLink(
-                            "PRIVACY POLICY",
-                            onTap: controller.openPrivacyPolicy,
+                          const Icon(
+                            Icons.security,
+                            color: Colors.white,
+                            size: 20,
                           ),
-                          _buildDot(),
-                          _buildFooterLink(
-                            "TERMS AND CONDITIONS",
-                            onTap: controller.openTermsConditions,
-                          ),
-                          _buildDot(),
-                          _buildFooterLink(
-                            "RESTORE",
-                            onTap: controller.restorePurchase,
+                          SizedBox(width: R.width(8)),
+                          Text(
+                            "Cancel anytime",
+                            style: AppTypography.labelXs.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),
-                      SizedBox(height: R.height(34)),
-                      // Home Indicator Handle
-                      // Center(
-                      //   child: Container(
-                      //     width: R.width(134),
-                      //     height: R.height(5),
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.white,
-                      //       borderRadius: BorderRadius.circular(10),
-                      //     ),
-                      //   ),
-                      // ),
-                      SizedBox(height: R.height(8)),
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: R.height(24)),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: R.width(2),
+                      runSpacing: R.height(2),
+                      children: [
+                        _buildFooterLink(
+                          "PRIVACY POLICY",
+                          onTap: controller.openPrivacyPolicy,
+                        ),
+                        _buildDot(),
+                        _buildFooterLink(
+                          "TERMS AND CONDITIONS",
+                          onTap: controller.openTermsConditions,
+                        ),
+                        _buildDot(),
+                        _buildFooterLink(
+                          "RESTORE",
+                          onTap: controller.restorePurchase,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: R.height(34)),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           Positioned(

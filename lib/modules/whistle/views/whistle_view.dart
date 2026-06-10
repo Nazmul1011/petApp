@@ -57,7 +57,7 @@ class WhistleView extends GetView<WhistleController> {
                   return Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Outer pulse ring (only visible if playing)
+                      // Outer pulse ring (removed instantly on stop)
                       if (isplaying)
                         Transform.scale(
                           scale: pulseScale,
@@ -72,9 +72,11 @@ class WhistleView extends GetView<WhistleController> {
                             ),
                           ),
                         ),
-                      // Main central button (220x220 container with 60x60 centered icon)
+                      // Main central button (snaps instantly to off state on stop)
                       AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
+                        duration: isplaying
+                            ? const Duration(milliseconds: 300)
+                            : Duration.zero,
                         width: 220,
                         height: 220,
                         decoration: BoxDecoration(

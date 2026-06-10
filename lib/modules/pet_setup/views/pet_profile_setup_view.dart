@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/pet_setup/controllers/pet_setup_controller.dart';
@@ -9,7 +8,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/widgets/text_form_field/app_text_form_field.dart';
-import 'package:petapp/shared/widgets/app_drop_down_search/app_drop_down_search.dart';
+import 'package:petapp/shared/widgets/app_popup_menu_dropdown/app_popup_menu_dropdown.dart';
 
 class PetProfileSetupView extends GetView<PetSetupController> {
   const PetProfileSetupView({super.key});
@@ -27,95 +26,98 @@ class PetProfileSetupView extends GetView<PetSetupController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: R.height(40)),
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      "Create a pet profile",
-                      style: AppTypography.bodySm.copyWith(
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: R.height(8)),
-                    Text(
-                      "Lets get to know your pet",
-                      style: AppTypography.h5.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: R.height(40)),
-
-                    GestureDetector(
-                      onTap: () => controller.pickImage(),
-                      child: Column(
-                        children: [
-                          Obx(
-                            () => Container(
-                              width: R.width(100),
-                              height: R.width(100),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: AppColors.primaryColor.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  width: 2,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: controller.imageFile.value != null
-                                    ? Image.file(
-                                        File(controller.imageFile.value!.path),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Center(
-                                        child: Image.asset(
-                                          controller.selectedType.value == 'DOG'
-                                              ? 'assets/images/dog image.png'
-                                              : 'assets/images/cat image.png',
-                                          width: R.width(70),
-                                          height: R.height(52),
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: R.height(12)),
-                          Text(
-                            "Upload a picture",
-                            style: AppTypography.bodyXs.copyWith(
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: R.height(30)),
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppDropdownSearch(
-                        labelText: "Pet type",
-                        initialItems: controller.petTypes,
-                        showLeadingIcon: false,
-                        onChanged: (val) {
-                          if (val != null) {
-                            controller.selectedType.value = val;
-                          }
-                        },
+                      SizedBox(height: R.height(40)),
+                      Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              "Create a pet profile",
+                              style: AppTypography.bodySm.copyWith(
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: R.height(8)),
+                            Text(
+                              "Lets get to know your pet",
+                              style: AppTypography.h5.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: R.height(40)),
+
+                            GestureDetector(
+                              onTap: () => controller.pickImage(),
+                              child: Column(
+                                children: [
+                                  Obx(
+                                    () => Container(
+                                      width: R.width(100),
+                                      height: R.width(100),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: AppColors.primaryColor.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: ClipOval(
+                                        child: controller.imageFile.value != null
+                                            ? Image.file(
+                                                File(controller.imageFile.value!.path),
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Center(
+                                                child: Image.asset(
+                                                  controller.selectedType.value == 'DOG'
+                                                      ? 'assets/images/dog image.png'
+                                                      : 'assets/images/cat image.png',
+                                                  width: R.width(70),
+                                                  height: R.height(52),
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: R.height(12)),
+                                  Text(
+                                    "Upload a picture",
+                                    style: AppTypography.bodyXs.copyWith(
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      // SizedBox(height: R.height(20)),
+                      SizedBox(height: R.height(30)),
+                      Obx(
+                        () => AppTextFormField(
+                          key: ValueKey(controller.selectedType.value),
+                          label: "Pet type",
+                          controller: TextEditingController(
+                            text: controller.selectedType.value,
+                          ),
+                          readOnly: true,
+                          showPrefixIcon: false,
+                        ),
+                      ),
+                      SizedBox(height: R.height(20)),
 
                       // Using your custom text field
                       AppTextFormField(
@@ -137,16 +139,17 @@ class PetProfileSetupView extends GetView<PetSetupController> {
                       SizedBox(height: R.height(20)),
 
                       Obx(
-                        () => AppDropdownSearch(
-                          key: ValueKey(controller.selectedType.value),
+                        () => AppPopupMenuDropdown(
+                          key: ValueKey(controller.selectedType.value + '_' + controller.selectedBreed.value),
                           labelText: "Breed",
-                          initialItems: controller.selectedType.value == 'DOG'
+                          items: controller.selectedType.value == 'DOG'
                               ? controller.dogBreeds
                               : controller.catBreeds,
-                          showLeadingIcon: false,
+                          selectedValue: controller.selectedBreed.value,
                           onChanged: (val) {
-                            if (val != null)
+                            if (val != null) {
                               controller.selectedBreed.value = val;
+                            }
                           },
                         ),
                       ),

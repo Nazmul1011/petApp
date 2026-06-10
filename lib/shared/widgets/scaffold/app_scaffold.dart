@@ -13,6 +13,8 @@ class AppScaffold extends StatelessWidget {
   final bool useSafeArea;
   final double horizontalPadding;
   final double verticalPadding;
+  final Color? backgroundColor;
+  final bool extendBody;
 
   const AppScaffold({
     super.key,
@@ -29,6 +31,8 @@ class AppScaffold extends StatelessWidget {
     this.useSafeArea = true,
     this.statusBarIconBrightness = Brightness.dark,
     this.systemNavigationBarIconBrightness = Brightness.dark,
+    this.backgroundColor,
+    this.extendBody = false,
   });
 
   final Brightness statusBarIconBrightness;
@@ -47,6 +51,8 @@ class AppScaffold extends StatelessWidget {
     );
 
     return Scaffold(
+      backgroundColor: backgroundColor,
+      extendBody: extendBody,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: appBar,

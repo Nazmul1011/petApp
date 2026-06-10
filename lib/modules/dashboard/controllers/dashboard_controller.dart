@@ -54,6 +54,26 @@ class DashboardController extends GetxController with BaseController {
   StreamSubscription<Amplitude>? _amplitudeSub;
   Timer? _recordingTimer;
 
+  void _updateSelectedPetFromUser() {
+    final user = AuthController.to.user.value;
+    final activePetId = user?.activePetId;
+    if (activePetId != null) {
+      final pets = user?.pets;
+      if (pets != null && pets.isNotEmpty) {
+        final activePet = pets.firstWhere(
+          (p) => p['id'] == activePetId,
+          orElse: () => pets.first,
+        );
+        final typeStr = activePet['type'] as String?;
+        if (typeStr == 'CAT') {
+          selectedPet.value = PetType.cat;
+        } else {
+          selectedPet.value = PetType.dog;
+        }
+      }
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -61,26 +81,13 @@ class DashboardController extends GetxController with BaseController {
     if (arg is PetType) {
       selectedPet.value = arg;
     } else {
-      // Try to get from active user profile if no arg
-      final activePetId = AuthController.to.user.value?.activePetId;
-      if (activePetId != null) {
-        // Simple logic: if profile exists, we can infer or fetch.
-        // For now, mirroring user's pet list lookup:
-        final pets = AuthController.to.user.value?.pets;
-        if (pets != null && pets.isNotEmpty) {
-          final activePet = pets.firstWhere(
-            (p) => p['id'] == activePetId,
-            orElse: () => pets.first,
-          );
-          final typeStr = activePet['type'] as String?;
-          if (typeStr == 'CAT') {
-            selectedPet.value = PetType.cat;
-          } else {
-            selectedPet.value = PetType.dog;
-          }
-        }
-      }
+      _updateSelectedPetFromUser();
     }
+
+    // Listen to changes in the active user's profile to dynamically update selectedPet
+    ever(AuthController.to.user, (_) {
+      _updateSelectedPetFromUser();
+    });
 
     classifierService.init();
     _initTalkSession();
@@ -328,8 +335,7 @@ class DashboardController extends GetxController with BaseController {
       if (_sessionId != null) {
         final translation = await _talkApi.createTranslation(
           sessionId: _sessionId!,
-          inputType:
-              'PET_VOICE', // Switch to PET_VOICE so the backend knows
+          inputType: 'PET_VOICE', // Switch to PET_VOICE so the backend knows
           direction: 'HUMAN_TO_PET',
           inputAudioUrl:
               'file://$uploadPath', // Upload the bark/meow instead of your voice!
@@ -458,8 +464,8 @@ class DashboardController extends GetxController with BaseController {
     }
   }
 
-  String _mapMoodToBackend(String? localMood) {
-    if (localMood == null) return 'NEUTRAL';
+  String? _mapMoodToBackend(String? localMood) {
+    if (localMood == null) return null;
     switch (localMood.toLowerCase()) {
       case 'happy':
         return 'EXCITED';
@@ -472,7 +478,7 @@ class DashboardController extends GetxController with BaseController {
       case 'sad':
         return 'SLEEPY';
       default:
-        return 'NEUTRAL';
+        return null;
     }
   }
 
@@ -490,8 +496,8 @@ class DashboardController extends GetxController with BaseController {
       if (user != null && !user.isPremium) {
         final savedTalks = await _talkApi.listSaved();
         if (savedTalks.length >= 5) {
-          Get.toNamed(AppRoutes.payment);
           reset();
+          Get.offNamed(AppRoutes.payment);
           return;
         }
       }
@@ -521,7 +527,8 @@ class DashboardController extends GetxController with BaseController {
 
         if (saved != null) {
           print('[Dashboard] Voice saved to backend successfully');
-          Get.toNamed(AppRoutes.savedTalks);
+          reset();
+          Get.offNamed(AppRoutes.savedTalks);
           return;
         }
       }
@@ -529,9 +536,11 @@ class DashboardController extends GetxController with BaseController {
       // If we got here, we saved locally but maybe not to backend, or vice versa
       Get.snackbar('Success', 'Voice translation saved!');
       reset();
+      Get.back();
     } catch (e) {
       print('[Dashboard] saveVoice error: $e');
       reset();
+      Get.back();
     } finally {
       isSaving.value = false;
     }
@@ -556,6 +565,7 @@ class DashboardController extends GetxController with BaseController {
   // Reset
   // ---------------------------------------------------------------------------
   void reset() {
+    stopAudio();
     uiState.value = TranslationUIState.idle;
     resultText.value = '';
     recognizedText.value = '';

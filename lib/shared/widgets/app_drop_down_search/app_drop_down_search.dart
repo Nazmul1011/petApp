@@ -39,7 +39,7 @@ class AppDropdownSearch extends StatefulWidget {
     this.dropdownWidth = double.infinity,
     this.showLabelText = true,
     this.showLeadingIcon = true,
-    this.allowNewItemAddition = true,
+    this.allowNewItemAddition = false,
     this.enabled = true,
     this.validator,
     this.autoValidateMode = AutovalidateMode.disabled,
@@ -71,8 +71,13 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
     items = List<String>.from(widget.initialItems);
     itemController = widget.controller ?? TextEditingController();
     itemController.addListener(_syncSelectedItemWithController);
+    menuFocusNode.addListener(_onFocusChange);
     selectedItem = itemController.text.isNotEmpty ? itemController.text : null;
     WidgetsBinding.instance.addPostFrameCallback((_) => _notifyFormField());
+  }
+
+  void _onFocusChange() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -188,6 +193,7 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
   @override
   void dispose() {
     itemController.removeListener(_syncSelectedItemWithController);
+    menuFocusNode.removeListener(_onFocusChange);
     if (widget.controller == null) itemController.dispose();
     newItemController.dispose();
     menuFocusNode.dispose();
@@ -207,193 +213,213 @@ class _AppDropdownSearchState extends State<AppDropdownSearch> {
       ...items.map((value) => DropdownMenuEntry(value: value, label: value)),
     ];
 
-    return Align(
-      alignment: Alignment.topCenter,
-      child: FormField<String>(
-        autovalidateMode: widget.autoValidateMode,
-        validator: widget.validator,
-        builder: (FormFieldState<String> field) {
-          _formFieldState = field;
+    final labelStyle = TextStyle(
+      color: const Color(0xFF737373),
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+    );
+    final hintStyle = widget.hintTextStyle ??
+        TextStyle(
+          color: const Color(0xFFA1A1A1),
+          fontSize: 14,
+        );
+    final valueStyle = widget.labelTextStyle ??
+        const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        );
 
-          if (selectedItem != field.value) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                field.didChange(selectedItem);
-                _lastNotifiedValue = selectedItem;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = widget.dropdownWidth == double.infinity
+            ? constraints.maxWidth
+            : widget.dropdownWidth;
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: FormField<String>(
+            autovalidateMode: widget.autoValidateMode,
+            validator: widget.validator,
+            builder: (FormFieldState<String> field) {
+              _formFieldState = field;
+
+              if (selectedItem != field.value) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    field.didChange(selectedItem);
+                    _lastNotifiedValue = selectedItem;
+                  }
+                });
               }
-            });
-          }
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DropdownMenu<String>(
-                width: widget.dropdownWidth,
-                controller: itemController,
-                focusNode: menuFocusNode,
-                label: widget.showLabelText
-                    ? Text(
-                        widget.labelText,
-                        style: const TextStyle(
-                          color: Color(0xFF868B8F),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          height: 1.67,
-                          letterSpacing: 0.20,
-                        ),
-                      )
-                    : null,
-                textStyle: widget.labelTextStyle,
-                hintText: widget.hintText,
-                enableSearch: true,
-                enableFilter: true,
-                requestFocusOnTap: true,
-                filterCallback: (entries, filter) {
-                  final trimmed = filter.trim().toLowerCase();
-                  final filtered = entries
-                      .where(
-                        (entry) =>
-                            entry.value != "new" &&
-                            entry.label.toLowerCase().contains(trimmed),
-                      )
-                      .toList();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownMenu<String>(
+                    width: width,
+                    controller: itemController,
+                    focusNode: menuFocusNode,
+                    label: widget.showLabelText
+                        ? Text(
+                            widget.labelText,
+                            style: labelStyle,
+                          )
+                        : null,
+                    textStyle: valueStyle,
+                    hintText: widget.hintText,
+                    enableSearch: true,
+                    enableFilter: true,
+                    requestFocusOnTap: true,
+                    filterCallback: (entries, filter) {
+                      final trimmed = filter.trim().toLowerCase();
+                      final filtered = entries
+                          .where(
+                            (entry) =>
+                                entry.value != "new" &&
+                                entry.label.toLowerCase().contains(trimmed),
+                          )
+                          .toList();
 
-                  if (trimmed.isEmpty) return entries;
+                      if (trimmed.isEmpty) return entries;
 
-                  if (filtered.isEmpty) {
-                    return [
-                      if (widget.allowNewItemAddition)
-                        entries.firstWhere((e) => e.value == "new"),
-                      const DropdownMenuEntry<String>(
-                        value: "no-match",
-                        label: "No match found",
-                        enabled: false,
-                      ),
-                    ];
-                  }
-
-                  return [
-                    if (widget.allowNewItemAddition)
-                      entries.firstWhere((e) => e.value == "new"),
-                    ...filtered,
-                  ];
-                },
-                inputDecorationTheme: InputDecorationTheme(
-                  filled: true,
-                  fillColor: const Color(0xFFF9FAFB),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
-                  hintStyle: widget.hintTextStyle ??
-                      TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 14,
-                      ),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF8B78E6),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.error,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                menuStyle: MenuStyle(
-                  elevation: WidgetStateProperty.all(8),
-                  backgroundColor: WidgetStateProperty.all(Colors.white),
-                  maximumSize: WidgetStateProperty.all(
-                    Size(R.width(280), R.height(300)),
-                  ),
-                  alignment: Alignment.bottomLeft,
-                  shape: WidgetStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-                onSelected: (item) {
-                  if (item == "new") {
-                    setState(() => selectedItem = null);
-                    menuFocusNode.unfocus();
-                    showAddNewItemDialog();
-                  } else {
-                    setState(() {
-                      selectedItem = item;
-                      itemController.text = item!;
-                    });
-                    field.didChange(item);
-                    menuFocusNode.unfocus();
-                    widget.onChanged?.call(item);
-                  }
-                },
-                leadingIcon:
-                    widget.leadingIcon ??
-                    (widget.showLeadingIcon ? const Icon(Icons.search) : null),
-                trailingIcon: (itemController.text.isNotEmpty)
-                    ? GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedItem = null;
-                            itemController.clear();
-                          });
-                          field.didChange(null);
-                          menuFocusNode.unfocus();
-                          widget.onChanged?.call(null);
-                        },
-                        child: Icon(
-                          Icons.remove_circle_outline,
-                          color:
-                              widget.clearIconColor ?? const Color(0xFF737373),
-                        ),
-                      )
-                    : (widget.trailingIcon ??
-                          const Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            color: Color(0xFF737373),
-                          )),
-                selectedTrailingIcon:
-                    widget.expandedTrailingIcon ??
-                    const Icon(
-                      Icons.keyboard_arrow_up_rounded,
-                      color: Color(0xFF8B78E6),
-                    ),
-                dropdownMenuEntries: baseEntries,
-                enabled: widget.enabled,
-              ),
-              SizedBox(
-                height: 20,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12, top: 4),
-                  child: field.errorText != null
-                      ? Text(
-                          field.errorText!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                            fontSize: 12,
+                      if (filtered.isEmpty) {
+                        return [
+                          if (widget.allowNewItemAddition)
+                            entries.firstWhere((e) => e.value == "new"),
+                          const DropdownMenuEntry<String>(
+                            value: "no-match",
+                            label: "No match found",
+                            enabled: false,
                           ),
-                        )
-                      : null,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                        ];
+                      }
+
+                      return [
+                        if (widget.allowNewItemAddition)
+                          entries.firstWhere((e) => e.value == "new"),
+                        ...filtered,
+                      ];
+                    },
+                    inputDecorationTheme: InputDecorationTheme(
+                      filled: true,
+                      fillColor: const Color(0xFFF9FAFB),
+                      contentPadding: const EdgeInsets.only(
+                        left: 12,
+                        right: 12,
+                        top: 22,
+                        bottom: 8,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      alignLabelWithHint: true,
+                      floatingLabelStyle: labelStyle,
+                      labelStyle: labelStyle,
+                      hintStyle: hintStyle,
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color(0xFFD8D9DD)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xFF8B78E6),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.error,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    menuStyle: MenuStyle(
+                      elevation: WidgetStateProperty.all(8),
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      maximumSize: WidgetStateProperty.all(
+                        Size(R.width(280), R.height(300)),
+                      ),
+                      alignment: Alignment.bottomLeft,
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                    onSelected: (item) {
+                      if (item == "new") {
+                        setState(() => selectedItem = null);
+                        menuFocusNode.unfocus();
+                        showAddNewItemDialog();
+                      } else {
+                        setState(() {
+                          selectedItem = item;
+                          itemController.text = item!;
+                        });
+                        field.didChange(item);
+                        menuFocusNode.unfocus();
+                        widget.onChanged?.call(item);
+                      }
+                    },
+                    leadingIcon: widget.leadingIcon ??
+                        (widget.showLeadingIcon ? const Icon(Icons.search) : null),
+                    trailingIcon: (itemController.text.isNotEmpty)
+                        ? GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedItem = null;
+                                itemController.clear();
+                              });
+                              field.didChange(null);
+                              menuFocusNode.unfocus();
+                              widget.onChanged?.call(null);
+                            },
+                            child: Icon(
+                              Icons.remove_circle_outline,
+                              color: widget.clearIconColor ?? const Color(0xFF737373),
+                            ),
+                          )
+                        : (widget.trailingIcon ??
+                              const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.black,
+                                size: 28,
+                              )),
+                    selectedTrailingIcon: widget.expandedTrailingIcon ??
+                        const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.black,
+                          size: 28,
+                        ),
+                    dropdownMenuEntries: baseEntries,
+                    enabled: widget.enabled,
+                  ),
+                  SizedBox(
+                    height: 20,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12, top: 4),
+                      child: field.errorText != null
+                          ? Text(
+                              field.errorText!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontSize: 12,
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

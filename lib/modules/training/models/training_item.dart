@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 enum TrainingType { command, trick }
 
 class TrainingItem {
@@ -49,14 +51,23 @@ class TrainingItem {
   String get fullImageUrl {
     if (imageUrl == null) return '';
     if (imageUrl!.startsWith('assets/')) return imageUrl!;
+    if (imageUrl!.startsWith('http://') || imageUrl!.startsWith('https://')) {
+      return imageUrl!;
+    }
     
     // Remove any existing public/ or leading slashes to avoid duplicates
     var cleanPath = imageUrl!;
     if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
     if (cleanPath.startsWith('public/')) cleanPath = cleanPath.substring(7);
     
-    return '/public/$cleanPath';
+    final baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final cleanBaseUrl = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
+        
+    return '$cleanBaseUrl/public/$cleanPath';
   }
 
   bool get isNetworkImage => imageUrl != null && !imageUrl!.startsWith('assets/');
 }
+

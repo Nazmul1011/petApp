@@ -5,7 +5,6 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class TrainingView extends GetView<TrainingController> {
@@ -138,7 +137,7 @@ class TrainingView extends GetView<TrainingController> {
                       child: item.isNetworkImage
                           ? CachedNetworkImage(
                               imageUrl:
-                                  '${dotenv.env['BASE_URL'] ?? ''}${item.fullImageUrl}'
+                                  item.fullImageUrl
                                       .replaceAll(' ', '%20'),
                               fit: BoxFit.contain,
                               placeholder: (context, url) => const SizedBox(

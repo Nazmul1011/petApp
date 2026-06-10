@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
 import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
@@ -40,8 +41,9 @@ class PetProfileController extends GetxController with BaseController {
     'Bulldog',
     'Poodle',
     'Mixed',
+    'Others',
   ];
-  final List<String> catBreeds = ['Persian', 'Siamese', 'Maine Coon', 'Mixed'];
+  final List<String> catBreeds = ['Persian', 'Siamese', 'Maine Coon', 'Mixed', 'Others'];
 
   @override
   void onInit() {
@@ -94,8 +96,14 @@ class PetProfileController extends GetxController with BaseController {
   void prepareForAdd() {
     addNameController.clear();
     addAgeController.clear();
-    addSelectedType.value = 'DOG';
-    addSelectedBreed.value = dogBreeds.first;
+    final savedPet = GetStorage().read<String>('onboarding_selected_pet');
+    if (savedPet != null && savedPet.toLowerCase() == 'cat') {
+      addSelectedType.value = 'CAT';
+      addSelectedBreed.value = catBreeds.first;
+    } else {
+      addSelectedType.value = 'DOG';
+      addSelectedBreed.value = dogBreeds.first;
+    }
     imageFile.value = null;
   }
 

@@ -5,6 +5,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import '../controllers/emotions_controller.dart';
 import '../models/emotion_item.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class EmotionsView extends GetView<EmotionsController> {
   const EmotionsView({super.key});
@@ -113,17 +114,43 @@ class EmotionsView extends GetView<EmotionsController> {
                     child: Opacity(
                       opacity: item.isLocked ? 0.5 : 1.0,
                       child: item.imagePath.startsWith('http')
-                          ? Image.network(
-                              item.imagePath,
+                          ? CachedNetworkImage(
+                              imageUrl: item.imagePath,
+                              width: double.infinity,
+                              height: double.infinity,
                               fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.image_not_supported,
-                                  color: Colors.grey,
-                                );
-                              },
+                              imageBuilder: (context, imageProvider) => Transform.scale(
+                                scale: 2.3,
+                                child: Image(
+                                  image: imageProvider,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              placeholder: (context, url) => const Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color(0xFF8C52FF),
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                                size: 24,
+                              ),
                             )
-                          : Image.asset(item.imagePath, fit: BoxFit.contain),
+                          : Transform.scale(
+                              scale: 2.3,
+                              child: Image.asset(
+                                item.imagePath,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                     ),
                   ),
                   if (item.isLocked)

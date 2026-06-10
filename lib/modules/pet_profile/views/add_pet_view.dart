@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:petapp/core/themes/app_typography.dart';
-import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/widgets/text_form_field/app_text_form_field.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
-import 'package:petapp/shared/widgets/app_drop_down_search/app_drop_down_search.dart';
+import 'package:petapp/shared/widgets/app_popup_menu_dropdown/app_popup_menu_dropdown.dart';
 import '../controllers/pet_profile_controller.dart';
 import '../widgets/dashed_circle_painter.dart';
 
@@ -24,84 +22,92 @@ class AddPetView extends GetView<PetProfileController> {
           Positioned.fill(child: Container(color: Colors.white)),
           SafeArea(
             bottom: false,
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: Form(
-                    key: controller.addFormKey,
+            child: Form(
+              key: controller.addFormKey,
+              child: Column(
+                children: [
+                  Expanded(
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+                      physics: const ClampingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: R.height(0)),
-                          Center(child: _buildImagePicker()),
-                          SizedBox(height: R.height(16)),
-                          AppDropdownSearch(
-                            labelText: "Type",
-                            initialItems: controller.petTypes,
-                            showLeadingIcon: false,
-                            onChanged: (val) {
-                              if (val != null) {
-                                controller.addSelectedType.value = val;
-                                // Reset breed to first of new type
-                                controller.addSelectedBreed.value = val == 'DOG'
-                                    ? controller.dogBreeds.first
-                                    : controller.catBreeds.first;
-                              }
-                            },
-                          ),
-                          SizedBox(height: R.height(16)),
-                          AppTextFormField(
-                            label: "Name",
-                            controller: controller.addNameController,
-                            hintText: "Tommy",
-                            showPrefixIcon: false,
-                            type: FormFieldType.name,
-                          ),
-                          SizedBox(height: R.height(16)),
-                          AppTextFormField(
-                            label: "Age in human year",
-                            controller: controller.addAgeController,
-                            hintText: "3",
-                            showPrefixIcon: false,
-                            type: FormFieldType.number,
-                          ),
-                          SizedBox(height: R.height(16)),
-                          Obx(
-                            () => AppDropdownSearch(
-                              key: ValueKey(controller.addSelectedType.value),
-                              labelText: "Breed",
-                              initialItems:
-                                  controller.addSelectedType.value == 'DOG'
-                                  ? controller.dogBreeds
-                                  : controller.catBreeds,
-                              showLeadingIcon: false,
-                              onChanged: (val) {
-                                if (val != null)
-                                  controller.addSelectedBreed.value = val;
-                              },
-                              controller: TextEditingController(
-                                text: controller.addSelectedBreed.value,
-                              ),
+                          _buildHeader(),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: R.height(0)),
+                                Center(child: _buildImagePicker()),
+                                SizedBox(height: R.height(16)),
+                                Obx(
+                                  () => AppPopupMenuDropdown(
+                                    key: ValueKey(controller.addSelectedType.value),
+                                    labelText: "Type",
+                                    items: controller.petTypes,
+                                    selectedValue: controller.addSelectedType.value,
+                                    onChanged: (val) {
+                                      if (val != null) {
+                                        controller.addSelectedType.value = val;
+                                        // Reset breed to first of new type
+                                        controller.addSelectedBreed.value = val == 'DOG'
+                                            ? controller.dogBreeds.first
+                                            : controller.catBreeds.first;
+                                      }
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: R.height(16)),
+                                AppTextFormField(
+                                  label: "Name",
+                                  controller: controller.addNameController,
+                                  hintText: "Tommy",
+                                  showPrefixIcon: false,
+                                  type: FormFieldType.name,
+                                ),
+                                SizedBox(height: R.height(16)),
+                                AppTextFormField(
+                                  label: "Age in human year",
+                                  controller: controller.addAgeController,
+                                  hintText: "3",
+                                  showPrefixIcon: false,
+                                  type: FormFieldType.number,
+                                ),
+                                SizedBox(height: R.height(16)),
+                                Obx(
+                                  () => AppPopupMenuDropdown(
+                                    key: ValueKey(controller.addSelectedType.value + '_' + controller.addSelectedBreed.value),
+                                    labelText: "Breed",
+                                    items: controller.addSelectedType.value == 'DOG'
+                                        ? controller.dogBreeds
+                                        : controller.catBreeds,
+                                    selectedValue: controller.addSelectedBreed.value,
+                                    onChanged: (val) {
+                                      if (val != null) {
+                                        controller.addSelectedBreed.value = val;
+                                      }
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: R.height(30)),
+                              ],
                             ),
                           ),
-                          SizedBox(height: R.height(30)),
                         ],
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
-                  child: AppMaterialButton(
-                    label: "Create",
-                    onPressed: () => controller.savePet(isUpdating: false),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+                    child: AppMaterialButton(
+                      label: "Create",
+                      onPressed: () => controller.savePet(isUpdating: false),
+                    ),
                   ),
-                ),
-                SizedBox(height: R.height(58.0)),
-              ],
+                  SizedBox(height: R.height(58.0)),
+                ],
+              ),
             ),
           ),
         ],

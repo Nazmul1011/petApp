@@ -33,7 +33,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
               child: _buildNavItem(
                 1,
                 "Emotions",
-                "assets/images/bottom_navigation/emotions.png",
+                "assets/images/bottom_navigation/pets.png",
               ),
             ),
             Expanded(
@@ -72,7 +72,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
 
   Widget _buildNavItem(int index, String label, String assetPath) {
     final isSelected = controller.currentIndex.value == index;
-    final color = isSelected ? const Color(0xFF7F67CB) : Colors.grey;
+    final color = isSelected ? const Color(0xFF7F67CB) : const Color(0xFF525252);
 
     return GestureDetector(
       onTap: () => controller.changeTabIndex(index),
@@ -80,7 +80,14 @@ class AppBottomNavigationBar extends GetView<MainController> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ImageIcon(AssetImage(assetPath), color: color, size: 24),
+          Image.asset(
+            assetPath,
+            width: R.width(24),
+            height: R.height(24),
+            fit: BoxFit.contain,
+            color: color,
+            colorBlendMode: BlendMode.srcIn,
+          ),
           SizedBox(height: R.height(4)),
           Text(
             label,

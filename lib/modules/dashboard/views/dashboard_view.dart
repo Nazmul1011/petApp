@@ -128,14 +128,25 @@ class DashboardView extends GetView<DashboardController> {
     return AnimatedOpacity(
       opacity: isRecording ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
-      child: Container(
-        height: R.height(60),
-        padding: EdgeInsets.symmetric(vertical: R.height(5)),
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: R.width(20)),
+      child: Center(
+        child: Container(
+          width: R.width(361),
+          height: R.height(48),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade100),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Center(
             child: CustomPaint(
-              size: Size(double.infinity, R.height(48)),
+              size: Size(R.width(361), R.height(48)),
               painter: WaveformPainter(
                 values: controller.waveformValues.toList(),
                 color: const Color(0xFF7F67CB),

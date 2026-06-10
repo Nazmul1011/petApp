@@ -1,7 +1,9 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/api_service.dart';
 import '../model/user_model.dart';
@@ -17,7 +19,8 @@ class AuthController extends GetxController {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   static const String _gameIdKey = 'device_game_id';
-  static const String _hasSeenOnboardingKey = 'has_seen_onboarding_this_install';
+  static const String _hasSeenOnboardingKey =
+      'has_seen_onboarding_this_install';
 
   final Rxn<UserModel> user = Rxn<UserModel>();
   final RxBool isLoading = false.obs;
@@ -52,44 +55,53 @@ class AuthController extends GetxController {
   }
 
   Future<void> _autoLogin() async {
-    final rt = _tokenService.refreshToken;
-    bool success = false;
+    try {
+      final rt = _tokenService.refreshToken;
+      bool success = false;
 
-    if (rt != null) {
-      success = await refreshAccessToken();
+      if (rt != null) {
+        success = await refreshAccessToken();
+      }
+
+      // If refresh failed (e.g. database reset) or no token exists, try device login
+      if (!success) {
+        await loginWithDevice();
+      }
+    } catch (e) {
+      // Safely catch errors to guarantee we always reach the routing phase
+    } finally {
+      // After login attempt, decide where to go
+      handleRouting();
     }
-
-    // If refresh failed (e.g. database reset) or no token exists, try device login
-    if (!success) {
-      await loginWithDevice();
-    }
-
-    // After login attempt, decide where to go
-    handleRouting();
   }
 
   void handleRouting() {
     final currentUser = user.value;
+    String targetRoute;
+
     if (currentUser == null) {
-      // Fallback to initial onboarding if no user found
-      Get.offAllNamed(AppRoutes.onboarding);
-      return;
-    }
-
-    final hasSeenOnboarding = _storage.read<bool>(_hasSeenOnboardingKey) ?? false;
-
-    if (!hasSeenOnboarding || !currentUser.onboardingCompleted) {
-      // Step 1: Force onboarding if not seen locally on this install OR not completed on backend
-      Get.offAllNamed(AppRoutes.onboarding);
-    } else if (currentUser.activePetId == null ||
-        currentUser.activePetId!.isEmpty) {
-      // Step 2: Onboarding done, but no pet profile yet. Go to Payment/Pet Setup flow.
-      // Based on user request, the entry point for pet setup is after Payment.
-      Get.offAllNamed(AppRoutes.payment);
+      targetRoute = AppRoutes.onboarding;
     } else {
-      // Step 3: Fully set up, go to Dashboard
-      Get.offAllNamed(AppRoutes.dashboard);
+      final hasSeenOnboarding =
+          _storage.read<bool>(_hasSeenOnboardingKey) ?? false;
+
+      if (!hasSeenOnboarding || !currentUser.onboardingCompleted) {
+        targetRoute = AppRoutes.onboarding;
+      } else if (currentUser.activePetId == null ||
+          currentUser.activePetId!.isEmpty) {
+        targetRoute = AppRoutes.payment;
+      } else {
+        targetRoute = AppRoutes.dashboard;
+      }
     }
+
+    // Route to the target page
+    Get.offAllNamed(targetRoute);
+
+    // Dismiss the native splash screen after the transition animation is complete
+    Future.delayed(const Duration(milliseconds: 500), () {
+      FlutterNativeSplash.remove();
+    });
   }
 
   Future<bool> loginWithDevice() async {

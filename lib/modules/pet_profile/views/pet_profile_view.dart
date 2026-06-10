@@ -2,12 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_typography.dart';
-import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/widgets/text_form_field/app_text_form_field.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
-import 'package:petapp/shared/widgets/app_drop_down_search/app_drop_down_search.dart';
+import 'package:petapp/shared/widgets/app_popup_menu_dropdown/app_popup_menu_dropdown.dart';
 import '../controllers/pet_profile_controller.dart';
 import '../models/pet_model.dart';
 import '../widgets/dashed_circle_painter.dart';
@@ -27,38 +26,48 @@ class PetProfileView extends GetView<PetProfileController> {
           Positioned.fill(child: Container(color: Colors.white)),
           SafeArea(
             bottom: false,
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: Obx(() {
-                    if (controller.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (controller.pets.isEmpty) {
-                      return _buildEmptyState();
-                    }
-                    final pet =
-                        controller.selectedPet.value ?? controller.pets.first;
-                    return _buildPetDetails(pet);
-                  }),
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.pets.isEmpty) {
+                return Column(
+                  children: [
+                    _buildHeader(context),
+                    Expanded(child: _buildEmptyState()),
+                  ],
+                );
+              }
+              final pet = controller.selectedPet.value ?? controller.pets.first;
+              return Form(
+                key: controller.profileFormKey,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildHeader(context),
+                            _buildPetDetails(pet),
+                          ],
+                        ),
+                      ),
+                    ),
+                    _buildActionButtons(pet),
+                  ],
                 ),
-                Obx(() {
-                  if (controller.pets.isEmpty || controller.isLoading.value)
-                    return const SizedBox.shrink();
-                  final pet =
-                      controller.selectedPet.value ?? controller.pets.first;
-                  return _buildActionButtons(pet);
-                }),
-              ],
-            ),
+              );
+            }),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final canPop = Navigator.canPop(context);
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: R.width(20),
@@ -67,25 +76,27 @@ class PetProfileView extends GetView<PetProfileController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: GestureDetector(
-              onTap: () => Get.back(),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                  size: 24,
+          if (canPop) ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF5F5F5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: R.height(16)),
+            SizedBox(height: R.height(16)),
+          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -156,54 +167,50 @@ class PetProfileView extends GetView<PetProfileController> {
   }
 
   Widget _buildPetDetails(PetModel pet) {
-    return Form(
-      key: controller.profileFormKey,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: R.height(20)),
-            Center(child: _buildImagePicker(pet)),
-            SizedBox(height: R.height(30)),
-            AppTextFormField(
-              label: "Name",
-              controller: controller.profileNameController,
-              hintText: "Tommy",
-              showPrefixIcon: false,
-              type: FormFieldType.name,
-            ),
-            SizedBox(height: R.height(20)),
-            AppTextFormField(
-              label: "Age in human year",
-              controller: controller.profileAgeController,
-              hintText: "3",
-              showPrefixIcon: false,
-              type: FormFieldType.number,
-            ),
-            SizedBox(height: R.height(20)),
-            Obx(
-              () => AppDropdownSearch(
-                key: ValueKey(
-                  controller.profileSelectedType.value +
-                      (controller.selectedPet.value?.id ?? ''),
-                ),
-                labelText: "Breed",
-                initialItems: controller.profileSelectedType.value == 'DOG'
-                    ? controller.dogBreeds
-                    : controller.catBreeds,
-                showLeadingIcon: false,
-                onChanged: (val) {
-                  if (val != null) controller.profileSelectedBreed.value = val;
-                },
-                controller: TextEditingController(
-                  text: controller.profileSelectedBreed.value,
-                ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: R.height(20)),
+          Center(child: _buildImagePicker(pet)),
+          SizedBox(height: R.height(30)),
+          AppTextFormField(
+            label: "Name",
+            controller: controller.profileNameController,
+            hintText: "Tommy",
+            showPrefixIcon: false,
+            type: FormFieldType.name,
+          ),
+          SizedBox(height: R.height(20)),
+          AppTextFormField(
+            label: "Age in human year",
+            controller: controller.profileAgeController,
+            hintText: "3",
+            showPrefixIcon: false,
+            type: FormFieldType.number,
+          ),
+          SizedBox(height: R.height(20)),
+          Obx(
+            () => AppPopupMenuDropdown(
+              key: ValueKey(
+                controller.profileSelectedType.value +
+                    (controller.selectedPet.value?.id ?? ''),
               ),
+              labelText: "Breed",
+              items: controller.profileSelectedType.value == 'DOG'
+                  ? controller.dogBreeds
+                  : controller.catBreeds,
+              selectedValue: controller.profileSelectedBreed.value,
+              onChanged: (val) {
+                if (val != null) {
+                  controller.profileSelectedBreed.value = val;
+                }
+              },
             ),
-            SizedBox(height: R.height(20)),
-          ],
-        ),
+          ),
+          SizedBox(height: R.height(20)),
+        ],
       ),
     );
   }

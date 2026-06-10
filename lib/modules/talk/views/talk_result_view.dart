@@ -14,26 +14,40 @@ class TalkResultView extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            const AppHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+      body: PopScope(
+        canPop: true,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            controller.reset();
+          }
+        },
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              const AppHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
                 child: Column(
                   children: [
                     SizedBox(height: R.height(20)),
 
                     // Large Pet Image (only for Human-to-Pet)
                     _buildPetWithWaves(),
-  
-                    Obx(() => SizedBox(height: controller.isHumanToDog.value ? R.height(20) : 0)),
-  
+
+                    Obx(
+                      () => SizedBox(
+                        height: controller.isHumanToDog.value
+                            ? R.height(20)
+                            : 0,
+                      ),
+                    ),
+
                     // Translation Result Text (Pet to Human)
                     Obx(() {
-                      if (controller.isHumanToDog.value) return const SizedBox.shrink();
+                      if (controller.isHumanToDog.value)
+                        return const SizedBox.shrink();
                       return Column(
                         children: [
                           if (controller.detectedFrequency.value > 0)
@@ -85,8 +99,9 @@ class TalkResultView extends GetView<DashboardController> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildPetWithWaves() {
     return Obx(() {
@@ -213,55 +228,77 @@ class TalkResultView extends GetView<DashboardController> {
   }
 
   Widget _buildSaveVoiceSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Save voice",
-          style: AppTypography.labelXs.copyWith(
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: R.height(8)),
-        TextFormField(
-          onChanged: (val) => controller.voiceLabel.value = val,
-          decoration: InputDecoration(
-            hintText: controller.isHumanToDog.value
-                ? "ie. Hello boy"
-                : "Snack",
-            hintStyle: AppTypography.bodyMd.copyWith(
-              color: Colors.grey.shade400,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFF7F67CB)),
-            ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: R.width(20),
-              vertical: R.height(18),
+    return Obx(() {
+      final resultTextLower = controller.resultText.value.toLowerCase();
+      final isNoSoundDetected =
+          !controller.isHumanToDog.value &&
+          (controller.resultText.value.isEmpty ||
+              resultTextLower.contains("no dog sound detected") ||
+              resultTextLower.contains("no cat sound detected") ||
+              resultTextLower.contains("silence") ||
+              resultTextLower.contains("blocked") ||
+              resultTextLower.contains("error"));
+
+      final isLabelEmpty = controller.voiceLabel.value.isEmpty;
+      final isSaving = controller.isSaving.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Save voice",
+            style: AppTypography.labelXs.copyWith(
+              color: isNoSoundDetected
+                  ? Colors.grey.shade400
+                  : Colors.grey.shade600,
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ),
-        SizedBox(height: R.height(24)),
-        Obx(() {
-          final isLabelEmpty = controller.voiceLabel.value.isEmpty;
-          final isSaving = controller.isSaving.value;
-          return AppMaterialButton(
+          SizedBox(height: R.height(8)),
+          TextFormField(
+            enabled: !isNoSoundDetected,
+            onChanged: (val) => controller.voiceLabel.value = val,
+            decoration: InputDecoration(
+              hintText: controller.isHumanToDog.value
+                  ? "ie. Hello boy"
+                  : (isNoSoundDetected ? "No sound detected" : "Snack"),
+              hintStyle: AppTypography.bodyMd.copyWith(
+                color: Colors.grey.shade400,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: Colors.grey.shade100),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFF7F67CB)),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: R.width(20),
+                vertical: R.height(18),
+              ),
+              fillColor: isNoSoundDetected
+                  ? Colors.grey.shade50
+                  : Colors.transparent,
+              filled: isNoSoundDetected,
+            ),
+          ),
+          SizedBox(height: R.height(24)),
+          AppMaterialButton(
             label: isSaving
                 ? "Saving…"
-                : isLabelEmpty
-                ? "Talk again"
-                : "Save and continue",
-            onPressed: isSaving
+                : (isNoSoundDetected
+                      ? "Cannot save (No sound)"
+                      : (isLabelEmpty ? "Talk again" : "Save and continue")),
+            onPressed: (isSaving || isNoSoundDetected)
                 ? null
                 : () {
                     if (isLabelEmpty) {
@@ -273,11 +310,13 @@ class TalkResultView extends GetView<DashboardController> {
                   },
             height: R.height(56),
             borderRadius: 30,
-            backgroundColor: const Color(0xFF7F67CB),
-            textColor: Colors.white,
-          );
-        }),
-      ],
-    );
+            backgroundColor: isNoSoundDetected
+                ? Colors.grey.shade200
+                : const Color(0xFF7F67CB),
+            textColor: isNoSoundDetected ? Colors.grey.shade400 : Colors.white,
+          ),
+        ],
+      );
+    });
   }
 }

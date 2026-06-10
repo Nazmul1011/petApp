@@ -9,7 +9,8 @@ import 'core/services/api_service.dart';
 import 'material_app.dart';
 
 Future<void> bootstrap() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Configure Audio Session for iOS (fixes record/play conflicts)
   try {
@@ -44,7 +45,4 @@ Future<void> bootstrap() async {
   ]);
 
   runApp(const Petapp());
-
-  // Remove native splash screen
-  FlutterNativeSplash.remove();
 }
