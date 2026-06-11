@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
@@ -27,24 +28,6 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
         child: Column(
           children: [
             SizedBox(height: R.height(80)), // Match top spacing
-            // Top Heading & Sub-heading (Synced with Screen One)
-            Obx(
-              () => Text(
-                controller.titleText,
-                style: AppTypography.h5.copyWith(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: R.height(12)),
-            Text(
-              "Tap. Speak. Hear them reply",
-              style: AppTypography.bodySm.copyWith(color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-
             // Main Interactive Area
             Expanded(
               child: Obx(() {
@@ -85,8 +68,32 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
     final isProcessing = state == VoiceState.processing;
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        // Top Heading & Sub-heading (Visible only during mic states)
+        Obx(
+          () => FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              controller.titleText,
+              style: AppTypography.h4.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        SizedBox(height: R.height(12)),
+        Text(
+          "Tap. Speak. Hear them reply.",
+          style: AppTypography.bodyMd.copyWith(
+            color: Colors.grey[600],
+            height: 1.4,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: R.height(128)),
         // Status Bubble
         AnimatedOpacity(
           opacity: isProcessing ? 0.0 : 1.0,
@@ -107,7 +114,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
               ],
             ),
             child: Text(
-              isListening ? "Listening.." : "Tap to speak",
+              isListening ? "LISTENING.." : "TAP TO SPEAK",
               style: AppTypography.labelMd.copyWith(
                 color: isListening ? AppColors.primaryColor : Colors.black,
               ),
@@ -115,7 +122,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
           ),
         ),
 
-        const SizedBox(height: 40),
+        const SizedBox(height: 24),
 
         // Mic Button
         GestureDetector(
@@ -127,26 +134,26 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
               // Outer Pulse Circle
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: isListening ? R.width(220) : R.width(200),
-                height: isListening ? R.width(220) : R.width(200),
+                width: isListening ? R.width(180) : R.width(160),
+                height: isListening ? R.width(180) : R.width(160),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isListening
-                      ? AppColors.primaryColor.withValues(alpha: 0.05)
+                      ? AppColors.primaryColor.withValues(alpha: 0.15)
                       : Colors.transparent,
-                  border: Border.all(
-                    color: isListening
-                        ? AppColors.primaryColor.withValues(alpha: 0.2)
-                        : Colors.grey[100]!,
-                    width: 1,
-                  ),
+                  border: isListening
+                      ? Border.all(
+                          color: AppColors.primaryColor.withValues(alpha: 0.2),
+                          width: 1,
+                        )
+                      : null,
                 ),
               ),
               // Main Circle
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: isListening ? R.width(160) : R.width(140),
-                height: isListening ? R.width(160) : R.width(140),
+                width: R.width(160),
+                height: R.width(160),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isListening ? AppColors.primaryColor : Colors.white,
@@ -170,10 +177,14 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                             ),
                           ),
                         )
-                      : Icon(
-                          Icons.mic,
-                          size: R.width(50),
-                          color: isListening ? Colors.white : Colors.grey[400],
+                      : Image.asset(
+                          'assets/images/onboarding_1/microphone.png',
+                          width: R.width(50),
+                          height: R.width(50),
+                          fit: BoxFit.contain,
+                          color: isListening
+                              ? Colors.white
+                              : AppColors.primaryColor,
                         ),
                 ),
               ),
@@ -181,9 +192,10 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
           ),
         ),
 
-        const SizedBox(height: 40),
+        // const SizedBox(height: 40),
 
-        // Waveform at bottom during listening
+        // Waveform at bottom during listening (Commented out as per request)
+        /*
         AnimatedOpacity(
           opacity: isListening ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 300),
@@ -219,167 +231,107 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
             }),
           ),
         ),
+        */
       ],
     );
   }
 
   Widget _buildResultState() {
-    return AnimatedFadeIn(
-      child: Column(
-        children: [
-          // Pet Head with Sound Waves (Aligned top-left)
-          Align(
-            alignment: Alignment.topLeft,
-            child: SizedBox(
-              width: R.width(260),
-              height: R.height(180),
-              child: Stack(
-                children: [
-                  // Pet Image (Using the new Wave versions)
-                  Positioned(
-                    left: 0,
-                    top: R.height(20),
-                    child: Image.asset(
-                      controller.selectedPet.value == PetType.dog
-                          ? 'assets/images/dogwave.png'
-                          : 'assets/images/catwave.png',
-                      width: R.width(260), // Increased width for the wave image
-                      height: R.width(140),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  // Animated Sound Waves (Commented out as per request)
-                  /*
-                  Positioned(
-                    left: R.width(125),
-                    top: R.height(60),
-                    child: Obx(() {
-                      final animValue = controller.soundWaveAnimation.value;
-                      // Only show pulse if playing
-                      return Opacity(
-                        opacity: controller.isPlaying.value ? 1.0 : 0.0,
-                        child: CustomPaint(
-                          size: Size(R.width(60), R.width(60)),
-                          painter: SoundWavePainter(
-                            color: const Color(0xFFFFD700),
-                            animationValue: animValue,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                  */
-                ],
-              ),
+    return Column(
+      children: [
+        // Pet Image (Using the new Wave versions from onboarding_1)
+        Center(
+          child: SizedBox(
+            width: R.width(351),
+            height: R.height(234),
+            child: Image.asset(
+              controller.selectedPet.value == PetType.dog
+                  ? 'assets/images/onboarding_1/dog sound 1.png'
+                  : 'assets/images/onboarding_1/Cat Sound 1.png',
+              width: R.width(351),
+              height: R.height(234),
+              fit: BoxFit.contain,
             ),
           ),
+        ),
 
-          SizedBox(height: R.height(10)),
+        SizedBox(height: R.height(24)),
 
-          // Replay Button will be part of the morphing bar below
-          SizedBox(height: R.height(24)),
-
-          // Morphing Waveform Button
-          Obx(() {
-            final isPlaying = controller.isPlaying.value;
-            return GestureDetector(
-              onTap: () => controller.replayVoice(),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                width: R.width(361),
-                height: R.height(48),
-                decoration: BoxDecoration(
-                  color: isPlaying ? Colors.white : const Color(0xFFF7F4FF),
-                  borderRadius: BorderRadius.circular(999), // Pill shape
-                  border: Border.all(
-                    color: AppColors.primaryColor.withValues(
-                      alpha: isPlaying ? 0.1 : 1.0,
-                    ),
-                    width: 1.0,
+        // Morphing Waveform Button
+        Obx(() {
+          final isPlaying = controller.isPlaying.value;
+          return GestureDetector(
+            onTap: () => controller.replayVoice(),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  width: R.width(361),
+                  height: R.height(48),
+                  decoration: BoxDecoration(
+                    color: isPlaying
+                        ? Colors.white
+                        : AppColors.primaryColor.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(999), // Pill shape
+                    border: isPlaying
+                        ? Border.all(
+                            color: AppColors.primaryColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            width: 1.0,
+                          )
+                        : null,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: isPlaying
-                      ? Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: R.width(24),
-                          ),
-                          child: CustomPaint(
-                            size: Size(double.infinity, R.height(24)),
-                            painter: WaveformPainter(
-                              values: controller.waveformValues.toList(),
-                              color: AppColors.primaryColor,
-                              secondaryColor: Colors.grey.withValues(
-                                alpha: 0.1,
+                  child: Center(
+                    child: isPlaying
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: R.width(4),
+                            ),
+                            child: CustomPaint(
+                              size: Size(double.infinity, R.height(24)),
+                              painter: WaveformPainter(
+                                values: controller.waveformValues.toList(),
+                                color: AppColors.primaryColor,
+                                secondaryColor: Colors.grey.withValues(
+                                  alpha: 0.1,
+                                ),
                               ),
                             ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.refresh,
+                                color: AppColors.primaryColor,
+                                size: R.width(24),
+                              ),
+                              SizedBox(width: R.width(8)),
+                              Text(
+                                "Play again",
+                                style: AppTypography.labelMd.copyWith(
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      : Icon(
-                          Icons.refresh,
-                          color: AppColors.primaryColor,
-                          size: R.width(28),
-                        ),
+                  ),
                 ),
               ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-}
-
-class AnimatedFadeIn extends StatefulWidget {
-  final Widget child;
-  const AnimatedFadeIn({super.key, required this.child});
-
-  @override
-  State<AnimatedFadeIn> createState() => _AnimatedFadeInState();
-}
-
-class _AnimatedFadeInState extends State<AnimatedFadeIn>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _opacity;
-  late Animation<double> _scale;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _opacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-    _scale = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _opacity,
-      child: ScaleTransition(scale: _scale, child: widget.child),
+            ),
+          );
+        }),
+      ],
     );
   }
 }

@@ -10,6 +10,7 @@ class SubscriptionCard extends StatelessWidget {
   final String? badgeText;
   final bool isSelected;
   final VoidCallback onTap;
+  final Color? rightTextColor;
 
   const SubscriptionCard({
     super.key,
@@ -19,6 +20,7 @@ class SubscriptionCard extends StatelessWidget {
     this.badgeText,
     required this.isSelected,
     required this.onTap,
+    this.rightTextColor,
   });
 
   @override
@@ -27,18 +29,17 @@ class SubscriptionCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        width: R.width(361),
+        width: R.width(350),
+        height: R.height(68),
         padding: EdgeInsets.symmetric(
           horizontal: R.width(16),
-          vertical: R.height(8),
         ),
-        constraints: BoxConstraints(minHeight: R.height(66)),
         margin: EdgeInsets.only(bottom: R.height(8)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(R.width(12)),
           border: Border.all(
-            color: isSelected ? const Color(0xFFFF9D6B) : Colors.black12,
+            color: isSelected ? AppColors.primaryColor : Colors.black12,
             width: isSelected ? R.width(2.0) : R.width(1.0), // Stroke-md
           ),
           boxShadow: [
@@ -83,7 +84,7 @@ class SubscriptionCard extends StatelessWidget {
                       vertical: R.height(2),
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7F67CB),
+                      color: AppColors.primaryColor,
                       borderRadius: BorderRadius.circular(R.width(8)),
                     ),
                     child: Text(
@@ -99,7 +100,9 @@ class SubscriptionCard extends StatelessWidget {
                 SizedBox(height: R.height(4)),
                 Text(
                   rightText,
-                  style: AppTypography.bodyXxs.copyWith(color: Colors.black38),
+                  style: AppTypography.bodyXxs.copyWith(
+                    color: rightTextColor ?? Colors.black38,
+                  ),
                 ),
               ],
             ),

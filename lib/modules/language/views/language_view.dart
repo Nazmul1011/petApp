@@ -89,7 +89,7 @@ class LanguageView extends GetView<LanguageController> {
                 onPressed: () => controller.continueWithSelection(),
                 height: R.height(58),
                 borderRadius: R.width(30),
-                backgroundColor: const Color(0xFF7F67CB),
+                backgroundColor: const Color(0xFF6C3BAA),
                 textColor: Colors.white,
                 textStyle: AppTypography.labelMd.copyWith(
                   color: Colors.white,

@@ -72,22 +72,52 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
           );
         },
         child: Container(
-          width: R.width(173),
-          height: R.height(158),
+          padding: EdgeInsets.symmetric(
+            horizontal: R.width(16),
+            vertical: R.height(16),
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(R.width(24)),
+            border: Border.all(
+              color: Colors.black.withValues(alpha: 0.06),
+              width: 1.2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(R.width(24)),
-            child: widget.icon, // Use the image as the full content
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: R.width(60),
+                height: R.width(60),
+                child: widget.icon,
+              ),
+              const Spacer(),
+              Text(
+                widget.title,
+                style: AppTypography.subtitleLg.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: R.height(6)),
+              Text(
+                widget.subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.bodyXs.copyWith(
+                  color: Colors.grey[600],
+                  height: 1.3,
+                ),
+              ),
+            ],
           ),
         ),
       ),

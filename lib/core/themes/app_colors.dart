@@ -2,7 +2,7 @@ import 'dart:ui';
 
 class AppColors {
   // Brand
-  static const Color primaryColor = Color.fromRGBO(127, 103, 203, 1);
+  static const Color primaryColor = Color(0xFF6C3BAA);
   static const Color onPrimary = Color(0xFFFFFFFF);
 
   // Text

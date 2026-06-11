@@ -1,6 +1,7 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
@@ -9,7 +10,6 @@ import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/payment_controller.dart';
 import '../widgets/feature_list.dart';
 import '../widgets/subscription_card.dart';
-import '../../auth/controllers/auth_controller.dart';
 import '../../subscription/controllers/subscription_controller.dart';
 
 class PaymentView extends GetView<PaymentController> {
@@ -22,7 +22,7 @@ class PaymentView extends GetView<PaymentController> {
       horizontalPadding: 0,
       useSafeArea: false,
       systemNavigationBarIconBrightness: Brightness.light,
-      backgroundColor: const Color(0xFF9E8EDD),
+      backgroundColor: AppColors.primaryColor,
       extendBody: true,
       body: Stack(
         children: [
@@ -35,7 +35,7 @@ class PaymentView extends GetView<PaymentController> {
                     Colors.white,
                     Colors.white,
                     Color(0xFFE9E4F8),
-                    Color(0xFF9E8EDD),
+                    AppColors.primaryColor,
                   ],
                   stops: [0.0, 0.4, 0.7, 1.0],
                   begin: Alignment.topCenter,
@@ -53,19 +53,16 @@ class PaymentView extends GetView<PaymentController> {
                 padding: EdgeInsets.symmetric(horizontal: R.width(20)),
                 child: Column(
                   children: [
-                    SizedBox(height: R.height(8)),
+                    SizedBox(height: R.height(4)),
                     // Hero Image
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(R.width(20)),
-                      child: Image.asset(
-                        'assets/images/payment.png',
-                        width: double.infinity,
-                        height: R.height(160),
-                        fit: BoxFit.cover,
-                      ),
+                    Image.asset(
+                      'assets/images/payment.png',
+                      width: R.width(390),
+                      height: R.height(220),
+                      fit: BoxFit.contain,
                     ),
 
-                    SizedBox(height: R.height(12)),
+                    SizedBox(height: R.height(6)),
 
                     // Title
                     RichText(
@@ -80,7 +77,7 @@ class PaymentView extends GetView<PaymentController> {
                           const TextSpan(
                             text: "PRO ",
                             style: TextStyle(
-                              color: Color(0xFF7F67CB),
+                              color: Color(0xFF6C3BAA),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -89,77 +86,67 @@ class PaymentView extends GetView<PaymentController> {
                       ),
                     ),
 
-                    SizedBox(height: R.height(6)),
+                    SizedBox(height: R.height(4)),
 
                     // Feature List
                     const FeatureList(),
 
-                    SizedBox(height: R.height(12)),
+                    SizedBox(height: R.height(6)),
 
                     const DottedLine(
-                      dashColor: Color(0xFF7F67CB),
+                      dashColor: Color(0xFF6C3BAA),
                       dashLength: 4,
                       dashGapLength: 4,
                       lineThickness: 1,
                     ),
 
-                    SizedBox(height: R.height(24)),
+                    SizedBox(height: R.height(12)),
 
                     // Subscriptions
                     Obx(() {
-                      final isLimitReached =
-                          (AuthController.to.user.value?.pets.length ??
-                              0) >=
-                          1;
                       return Column(
                         children: [
-                          if (!isLimitReached)
-                            SubscriptionCard(
-                              title: "3 days free trial",
-                              subtitle: "\$00.00",
-                              rightText: "Access to limited features",
-                              isSelected:
-                                  controller.selectedPlan.value ==
-                                  SubscriptionPlan.trial,
-                              onTap: () => controller.selectPlan(
+                          SubscriptionCard(
+                            title: "3 days free trial",
+                            subtitle: "\$00.00",
+                            rightText: "Access to limited features",
+                            isSelected:
+                                controller.selectedPlan.value ==
                                 SubscriptionPlan.trial,
-                              ),
-                            ),
+                            onTap: () =>
+                                controller.selectPlan(SubscriptionPlan.trial),
+                          ),
                           SubscriptionCard(
                             title: "Weekly",
                             subtitle: "\$1.99 per week",
-                            rightText:
-                                "Short-term access to all Pro features",
+                            rightText: "Short-term access to all Pro features",
                             isSelected:
                                 controller.selectedPlan.value ==
                                 SubscriptionPlan.weekly,
-                            onTap: () => controller.selectPlan(
-                              SubscriptionPlan.weekly,
-                            ),
+                            onTap: () =>
+                                controller.selectPlan(SubscriptionPlan.weekly),
                           ),
                           SubscriptionCard(
                             title: "Monthly",
                             subtitle: "\$2.99 per month",
-                            rightText:
-                                "Full Pro access with better value",
+                            rightText: "Full Pro access with better value",
                             badgeText: "Best value",
                             isSelected:
                                 controller.selectedPlan.value ==
                                 SubscriptionPlan.monthly,
-                            onTap: () => controller.selectPlan(
-                              SubscriptionPlan.monthly,
-                            ),
+                            onTap: () =>
+                                controller.selectPlan(SubscriptionPlan.monthly),
                           ),
                           SubscriptionCard(
                             title: "Yearly",
                             subtitle: "\$12.99 per year",
                             rightText: "Full Pro access",
+                            rightTextColor: const Color(0xFF43A047),
                             isSelected:
                                 controller.selectedPlan.value ==
                                 SubscriptionPlan.yearly,
-                            onTap: () => controller.selectPlan(
-                              SubscriptionPlan.yearly,
-                            ),
+                            onTap: () =>
+                                controller.selectPlan(SubscriptionPlan.yearly),
                           ),
                         ],
                       );
@@ -168,15 +155,14 @@ class PaymentView extends GetView<PaymentController> {
                     // Bottom Actions
                     SizedBox(height: R.height(16)),
                     Obx(() {
-                      final isLimitReached =
-                          (AuthController.to.user.value?.pets.length ?? 0) >=
-                          1;
                       final isLoading =
                           controller.isLoading.value ||
                           subController.isLoading.value;
-                      final label = isLimitReached
-                          ? "Subscribe Now"
-                          : "Continue with free trial";
+                      final label =
+                          controller.selectedPlan.value ==
+                              SubscriptionPlan.trial
+                          ? "Continue with free trial"
+                          : "Buy subscription";
                       return AppMaterialButton(
                         label: label,
                         onPressed: isLoading
@@ -217,7 +203,7 @@ class PaymentView extends GetView<PaymentController> {
                         ],
                       ),
                     ),
-                    SizedBox(height: R.height(24)),
+                    SizedBox(height: R.height(10)),
                     Wrap(
                       alignment: WrapAlignment.center,
                       crossAxisAlignment: WrapCrossAlignment.center,
@@ -240,7 +226,7 @@ class PaymentView extends GetView<PaymentController> {
                         ),
                       ],
                     ),
-                    SizedBox(height: R.height(34)),
+                    SizedBox(height: R.height(10)),
                   ],
                 ),
               ),

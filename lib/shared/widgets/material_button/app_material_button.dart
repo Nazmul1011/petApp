@@ -131,10 +131,10 @@ class AppMaterialButton extends StatelessWidget {
       height: height,
       width: width,
       decoration: BoxDecoration(
-        color: backgroundColor ?? const Color(0xFF7F67CB),
+        color: backgroundColor ?? const Color(0xFF6C3BAA),
         borderRadius: BorderRadius.circular(borderRadius > 50 ? 999 : borderRadius),
         border: Border.all(
-          color: const Color(0xFFBFB3E5),
+          color: const Color(0xFFB398D9),
           width: 0.5,
         ),
         boxShadow: [
@@ -189,10 +189,10 @@ class AppMaterialButton extends StatelessWidget {
           width: isLoading ? height : actualWidth,
           height: height,
           decoration: BoxDecoration(
-            color: backgroundColor ?? const Color(0xFF7F67CB),
+            color: backgroundColor ?? const Color(0xFF6C3BAA),
             borderRadius: BorderRadius.circular(isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius)),
             border: Border.all(
-              color: const Color(0xFFBFB3E5),
+              color: const Color(0xFFB398D9),
               width: 0.5,
             ),
             boxShadow: [

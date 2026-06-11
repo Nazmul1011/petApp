@@ -116,8 +116,8 @@ class NotificationView extends GetView<NotificationController> {
     Color iconColor = Colors.grey.shade600;
 
     if (notification.type == NotificationType.TRAINING_REMINDER) {
-      bgColor = const Color(0xFFEBE7FF); // Light purple from design
-      iconColor = const Color(0xFF7F67CB);
+      bgColor = const Color(0xFFEBE4FA); // Light purple from design
+      iconColor = const Color(0xFF6C3BAA);
     }
 
     return InkWell(
@@ -129,7 +129,7 @@ class NotificationView extends GetView<NotificationController> {
         ),
         color: notification.isRead
             ? Colors.transparent
-            : const Color(0xFFF5F3FF),
+            : const Color(0xFFF4F0FC),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

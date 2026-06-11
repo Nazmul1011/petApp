@@ -4,7 +4,6 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
-import 'package:petapp/modules/dashboard/views/dashboard_view.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 
@@ -103,10 +102,10 @@ class TalkHumanToPetView extends GetView<DashboardController> {
             painter: WaveformPainter(
               values: controller.waveformValues.toList(),
               color: controller.isPlaying.value
-                  ? const Color(0xFF7F67CB)
+                  ? const Color(0xFF6C3BAA)
                   : Colors.grey.shade400,
               secondaryColor: controller.isPlaying.value
-                  ? const Color(0xFF7F67CB)
+                  ? const Color(0xFF6C3BAA)
                   : Colors.grey.shade400,
             ),
           ),
@@ -190,7 +189,7 @@ class TalkHumanToPetView extends GetView<DashboardController> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFF7F67CB)),
+              borderSide: const BorderSide(color: Color(0xFF6C3BAA)),
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: R.width(20),
@@ -220,7 +219,7 @@ class TalkHumanToPetView extends GetView<DashboardController> {
                   },
             height: R.height(56),
             borderRadius: 30,
-            backgroundColor: const Color(0xFF7F67CB),
+            backgroundColor: const Color(0xFF6C3BAA),
             textColor: Colors.white,
           );
         }),

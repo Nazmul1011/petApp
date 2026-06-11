@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/core/controllers/base_controller.dart';
-import '../../auth/controllers/auth_controller.dart';
 import '../../subscription/controllers/subscription_controller.dart';
 
 enum SubscriptionPlan { trial, weekly, monthly, yearly }
@@ -20,13 +19,12 @@ class PaymentController extends GetxController with BaseController {
   }
 
   void handleButtonTap() {
-    final isLimitReached = (AuthController.to.user.value?.pets.length ?? 0) >= 1;
-    if (isLimitReached) {
+    if (selectedPlan.value == SubscriptionPlan.trial) {
+      continueWithTrial();
+    } else {
       final subController = Get.find<SubscriptionModuleController>();
       subController.selectedPlan.value = selectedPlan.value;
       subController.continueSubscription();
-    } else {
-      continueWithTrial();
     }
   }
 

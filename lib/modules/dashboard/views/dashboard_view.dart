@@ -84,11 +84,11 @@ class DashboardView extends GetView<DashboardController> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isRecording
-                  ? const Color(0xFF7F67CB).withValues(alpha: 0.1)
+                  ? const Color(0xFF6C3BAA).withValues(alpha: 0.1)
                   : Colors.white,
               border: Border.all(
                 color: isRecording
-                    ? const Color(0xFF7F67CB).withValues(alpha: 0.2)
+                    ? const Color(0xFF6C3BAA).withValues(alpha: 0.2)
                     : Colors.grey.withValues(alpha: 0.1),
               ),
               boxShadow: [
@@ -105,7 +105,7 @@ class DashboardView extends GetView<DashboardController> {
                 height: R.width(130),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isRecording ? const Color(0xFF7F67CB) : Colors.white,
+                  color: isRecording ? const Color(0xFF6C3BAA) : Colors.white,
                 ),
                 child: Center(
                   child: Icon(
@@ -149,7 +149,7 @@ class DashboardView extends GetView<DashboardController> {
               size: Size(R.width(361), R.height(48)),
               painter: WaveformPainter(
                 values: controller.waveformValues.toList(),
-                color: const Color(0xFF7F67CB),
+                color: const Color(0xFF6C3BAA),
               ),
             ),
           ),
@@ -187,7 +187,7 @@ class DashboardView extends GetView<DashboardController> {
                 padding: EdgeInsets.symmetric(horizontal: R.width(16)),
                 child: const Icon(
                   Icons.swap_horiz,
-                  color: Color(0xFF7F67CB),
+                  color: Color(0xFF6C3BAA),
                   size: 20,
                 ),
               ),

@@ -26,11 +26,11 @@ class LegalTabButton extends StatelessWidget {
           vertical: R.height(8),
         ),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF7F67CB) : Colors.transparent,
+          color: isSelected ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(R.width(20)),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF7F67CB)
+                ? AppColors.primaryColor
                 : Colors.grey.withValues(alpha: 0.2),
           ),
         ),

@@ -38,7 +38,7 @@ class EmotionsView extends GetView<EmotionsController> {
                             child: Padding(
                               padding: EdgeInsets.only(top: R.height(100)),
                               child: const CircularProgressIndicator(
-                                color: Color(0xFF8C52FF),
+                                color: Color(0xFF6C3BAA),
                               ),
                             ),
                           )
@@ -132,7 +132,7 @@ class EmotionsView extends GetView<EmotionsController> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Color(0xFF8C52FF),
+                                    color: Color(0xFF6C3BAA),
                                   ),
                                 ),
                               ),

@@ -75,7 +75,7 @@ class LanguageItem extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF7F67CB) : Colors.grey,
+                  color: isSelected ? const Color(0xFF6C3BAA) : Colors.grey,
                   width: isSelected ? R.width(2.0) : R.width(1.0),
                 ),
                 color: Colors.white,
@@ -87,7 +87,7 @@ class LanguageItem extends StatelessWidget {
                         height: R.width(10),
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFF7F67CB),
+                          color: Color(0xFF6C3BAA),
                         ),
                       ),
                     )

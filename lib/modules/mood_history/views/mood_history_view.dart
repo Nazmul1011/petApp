@@ -24,7 +24,7 @@ class MoodHistoryView extends StatelessWidget {
               child: Obx(() {
                 if (controller.isLoading.value) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF7F67CB)),
+                    child: CircularProgressIndicator(color: Color(0xFF6C3BAA)),
                   );
                 }
                 final data = controller.analyticsData.value;
@@ -129,7 +129,7 @@ class MoodHistoryView extends StatelessWidget {
             vertical: R.height(8),
           ),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF8A72D6) : Colors.transparent,
+            color: isSelected ? const Color(0xFF6C3BAA) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
             border: isSelected
                 ? null

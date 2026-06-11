@@ -24,18 +24,24 @@ class OnboardingView extends GetView<OnboardingController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: R.height(80)), // Adjusted top spacing
-            Text(
-              "Choose your companion",
-              style: AppTypography.h5.copyWith(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "Choose your companion",
+                style: AppTypography.h4.copyWith(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
             SizedBox(height: R.height(12)),
             Text(
-              "Select the pet you want to communicate with.\nThe experience, sounds, and translations will be tailored specifically to them.",
-              style: AppTypography.bodySm.copyWith(color: Colors.grey[600]),
+              "We'll personalize sounds, translations,\nand interactions for them.",
+              style: AppTypography.bodyMd.copyWith(
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
               textAlign: TextAlign.center,
             ),
             const Spacer(),
@@ -46,14 +52,14 @@ class OnboardingView extends GetView<OnboardingController> {
                   PetCard(
                     type: PetType.dog,
                     label: "Woof",
-                    imagePath: 'assets/images/dog image.png',
+                    imagePath: 'assets/images/onboarding_1/dog face 1.png',
                     isSelected: controller.selectedPet.value == PetType.dog,
                     onTap: () => controller.selectPet(PetType.dog),
                   ),
                   PetCard(
                     type: PetType.cat,
                     label: "Meow",
-                    imagePath: 'assets/images/cat image.png',
+                    imagePath: 'assets/images/onboarding_1/cat face 1.png',
                     isSelected: controller.selectedPet.value == PetType.cat,
                     onTap: () => controller.selectPet(PetType.cat),
                   ),

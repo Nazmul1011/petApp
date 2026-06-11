@@ -143,7 +143,7 @@ class SavedTalksView extends StatelessWidget {
               child: Obx(() {
                 if (controller.isLoading.value) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF7F67CB)),
+                    child: CircularProgressIndicator(color: Color(0xFF6C3BAA)),
                   );
                 }
                 final list = controller.filtered;
@@ -283,7 +283,7 @@ class SavedTalksView extends StatelessWidget {
                     child: const Icon(
                       Icons.swap_horiz,
                       size: 22,
-                      color: Color(0xFF7F67CB),
+                      color: Color(0xFF6C3BAA),
                     ),
                   ),
                 ),
@@ -325,7 +325,7 @@ class _AvatarBadge extends StatelessWidget {
       height: 34,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isActive ? const Color(0xFF7F67CB) : Colors.grey.shade200,
+        color: isActive ? const Color(0xFF6C3BAA) : Colors.grey.shade200,
       ),
       child: Center(child: child),
     );
@@ -400,8 +400,8 @@ class _TalkCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isPlaying
-                    ? const Color(0xFF7F67CB)
-                    : const Color(0xFF7F67CB),
+                    ? const Color(0xFF6C3BAA)
+                    : const Color(0xFF6C3BAA),
               ),
               child: Icon(
                 isPlaying ? Icons.pause : Icons.play_arrow,
@@ -504,7 +504,7 @@ class _WaveBarState extends State<_WaveBar>
         height: widget.isPlaying ? _anim.value : widget.height,
         decoration: BoxDecoration(
           color: widget.isPlaying
-              ? const Color(0xFF7F67CB)
+              ? const Color(0xFF6C3BAA)
               : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(2),
         ),

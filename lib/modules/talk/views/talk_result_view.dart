@@ -56,7 +56,7 @@ class TalkResultView extends GetView<DashboardController> {
                               child: Text(
                                 "${controller.detectedFrequency.value.toStringAsFixed(0)} Hz",
                                 style: AppTypography.labelXs.copyWith(
-                                  color: const Color(0xFF7F67CB),
+                                  color: const Color(0xFF6C3BAA),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -169,10 +169,10 @@ class TalkResultView extends GetView<DashboardController> {
             painter: WaveformPainter(
               values: controller.waveformValues.toList(),
               color: controller.isPlaying.value
-                  ? const Color(0xFF7F67CB)
+                  ? const Color(0xFF6C3BAA)
                   : Colors.grey.shade400,
               secondaryColor: controller.isPlaying.value
-                  ? const Color(0xFF7F67CB)
+                  ? const Color(0xFF6C3BAA)
                   : Colors.grey.shade400,
             ),
           ),
@@ -279,7 +279,7 @@ class TalkResultView extends GetView<DashboardController> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Color(0xFF7F67CB)),
+                borderSide: const BorderSide(color: Color(0xFF6C3BAA)),
               ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: R.width(20),
@@ -312,7 +312,7 @@ class TalkResultView extends GetView<DashboardController> {
             borderRadius: 30,
             backgroundColor: isNoSoundDetected
                 ? Colors.grey.shade200
-                : const Color(0xFF7F67CB),
+                : const Color(0xFF6C3BAA),
             textColor: isNoSoundDetected ? Colors.grey.shade400 : Colors.white,
           ),
         ],

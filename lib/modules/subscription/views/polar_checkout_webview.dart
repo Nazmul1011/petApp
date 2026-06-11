@@ -69,7 +69,7 @@ class _PolarCheckoutWebViewState extends State<PolarCheckoutWebView> {
           if (progress < 1.0)
             LinearProgressIndicator(
               value: progress,
-              color: const Color(0xFF7F67CB),
+              color: const Color(0xFF6C3BAA),
               backgroundColor: Colors.transparent,
             ),
         ],

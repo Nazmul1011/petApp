@@ -42,19 +42,23 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
                 child: Column(
                   children: [
                     SizedBox(height: R.height(80)), // Match top spacing
-                    Text(
-                      "Understand feelings",
-                      style: AppTypography.h5.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "Understand feelings",
+                        style: AppTypography.h4.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                     SizedBox(height: R.height(12)), // Match 12px gap
                     Text(
                       "Swipe to explore",
-                      style: AppTypography.bodySm.copyWith(
+                      style: AppTypography.bodyMd.copyWith(
                         color: Colors.grey[600],
+                        height: 1.4,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -161,73 +165,16 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
     final petType = controller.selectedPet.value;
     final isDog = petType.name == 'dog';
     final petImage = isDog ? emotion.dogImage : emotion.catImage;
-    final isSvg = petImage.endsWith('.svg');
-    final backgroundColor = controller.getInterpolatedBackgroundColor();
 
     return Center(
-      child: Container(
-        // Outer Layer: The Light Thick Border
-        decoration: BoxDecoration(
-          color: backgroundColor.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(R.width(44)),
-        ),
-        padding: EdgeInsets.all(R.width(12)),
-        child: Container(
-          // Inner Layer: The Deep Thick Border
-          decoration: BoxDecoration(
-            color: backgroundColor.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(R.width(36)),
-          ),
-          padding: EdgeInsets.all(R.width(12)),
-          child: Container(
-            // Core Layer: The White Card
-            width: R.width(273),
-            height: R.height(340),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(R.width(28)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 32),
-                // Emotion Specific Illustration (273 x 340)
-                Expanded(
-                  child: Image.asset(
-                    petImage,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  emotion.title,
-                  style: AppTypography.h5.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: R.height(8)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-                  child: Text(
-                    emotion.description,
-                    style: AppTypography.bodySm.copyWith(
-                      color: Colors.black.withValues(alpha: 0.6),
-                      height: 1.3,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 32),
-              ],
-            ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(R.width(28)),
+        child: SizedBox(
+          width: R.width(273),
+          height: R.height(360),
+          child: Image.asset(
+            petImage,
+            fit: BoxFit.fill,
           ),
         ),
       ),

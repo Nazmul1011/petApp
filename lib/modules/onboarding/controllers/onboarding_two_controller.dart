@@ -114,6 +114,13 @@ class OnboardingTwoController extends GetxController with BaseController {
       // Log error silently
     }
 
+    // Initialize waveform values with active random values immediately
+    final random = Random();
+    waveformValues.value = List.generate(
+      75,
+      (index) => 0.2 + random.nextDouble() * 0.8,
+    );
+
     // Start yellow sound wave animation (Top pet head)
     _soundWaveTimer?.cancel();
     _soundWaveTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {

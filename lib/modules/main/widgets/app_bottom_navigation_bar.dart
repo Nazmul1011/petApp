@@ -72,7 +72,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
 
   Widget _buildNavItem(int index, String label, String assetPath) {
     final isSelected = controller.currentIndex.value == index;
-    final color = isSelected ? const Color(0xFF7F67CB) : const Color(0xFF525252);
+    final color = isSelected ? const Color(0xFF6C3BAA) : const Color(0xFF525252);
 
     return GestureDetector(
       onTap: () => controller.changeTabIndex(index),

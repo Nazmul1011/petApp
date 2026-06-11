@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_four_controller.dart';
 import 'package:petapp/modules/onboarding/widgets/feature_card.dart';
@@ -24,18 +23,24 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
           child: Column(
             children: [
               SizedBox(height: R.height(80)), // Match top spacing
-              Text(
-                "Your pet, your world",
-                style: AppTypography.h5.copyWith(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  "Your pet, your world",
+                  style: AppTypography.h4.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
               SizedBox(height: R.height(12)),
               Text(
-                "Decode barks. Interpret meows",
-                style: AppTypography.bodySm.copyWith(color: Colors.grey[600]),
+                "Decode barks. Interpret meows.",
+                style: AppTypography.bodyMd.copyWith(
+                  color: Colors.grey[600],
+                  height: 1.4,
+                ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: R.height(48)),
@@ -46,62 +51,62 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                   crossAxisCount: 2,
                   crossAxisSpacing: R.width(12),
                   mainAxisSpacing: R.width(12),
-                  childAspectRatio: 173 / 158, // Match 158 height
+                  childAspectRatio: 173 / 180, // Match 180 height for a taller card layout
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
                     OnboardingFeatureCard(
                       icon: Image.asset(
-                        "assets/images/onbarding-4/first.png",
-                        fit: BoxFit.fill,
+                        "assets/images/onbarding-4/picture.png",
+                        fit: BoxFit.contain,
                         errorBuilder: (c, e, s) => const Icon(
                           Icons.image_rounded,
                           color: Color(0xFF7E57C2),
                           size: 28,
                         ),
                       ),
-                      iconBgColor: const Color(0xFFF7F4FF),
+                      iconBgColor: const Color(0xFFF2ECFA),
                       title: "Pet profile",
-                      subtitle: "Photo + settings",
+                      subtitle: "Photo + personalized settings",
                     ),
                     OnboardingFeatureCard(
                       icon: Image.asset(
-                        "assets/images/onbarding-4/second.png",
-                        fit: BoxFit.fill,
+                        "assets/images/onbarding-4/voice.png",
+                        fit: BoxFit.contain,
                         errorBuilder: (c, e, s) => const Icon(
                           Icons.graphic_eq_rounded,
                           color: Color(0xFF43A047),
                           size: 28,
                         ),
                       ),
-                      iconBgColor: const Color(0xFFE8F5E9),
+                      iconBgColor: const Color(0xFFE5F6EE),
                       title: "Saved voices",
                       subtitle: "Bookmark moments",
                     ),
                     OnboardingFeatureCard(
                       icon: Image.asset(
-                        "assets/images/onbarding-4/third.png",
-                        fit: BoxFit.fill,
+                        "assets/images/onbarding-4/training.png",
+                        fit: BoxFit.contain,
                         errorBuilder: (c, e, s) => const Icon(
                           Icons.sports_soccer_rounded,
                           color: Color(0xFFFB8C00),
                           size: 28,
                         ),
                       ),
-                      iconBgColor: const Color(0xFFFFF3E0),
+                      iconBgColor: const Color(0xFFFFF0E5),
                       title: "Games & training",
-                      subtitle: "Play together",
+                      subtitle: "Interactive activities",
                     ),
                     OnboardingFeatureCard(
                       icon: Image.asset(
-                        "assets/images/onbarding-4/four.png",
-                        fit: BoxFit.fill,
+                        "assets/images/onbarding-4/love.png",
+                        fit: BoxFit.contain,
                         errorBuilder: (c, e, s) => const Icon(
                           Icons.history_rounded,
                           color: Color(0xFFE53935),
                           size: 28,
                         ),
                       ),
-                      iconBgColor: const Color(0xFFFFEBEE),
+                      iconBgColor: const Color(0xFFFFF0F2),
                       title: "Mood history",
                       subtitle: "Track patterns",
                     ),

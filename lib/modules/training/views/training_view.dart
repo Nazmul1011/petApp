@@ -77,7 +77,7 @@ class TrainingView extends GetView<TrainingController> {
               child: Text(
                 "VIEW ALL",
                 style: AppTypography.labelXs.copyWith(
-                  color: const Color(0xFF7F67CB),
+                  color: const Color(0xFF6C3BAA),
                   fontWeight: FontWeight.w700,
                 ),
               ),

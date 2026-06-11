@@ -9,47 +9,65 @@ class FeatureList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: R.width(10),
-          runSpacing: R.height(4),
-          children: [
-            _buildFeatureItem("No ads, no data sold"),
-            _buildFeatureItem("Unlock all emojis and sounds"),
-            _buildFeatureItem("All tricks & commands guide"),
-            _buildFeatureItem("Lifetime features & future AI upgrades"),
-            _buildFeatureItem("Unlimited Human to Dog/Cat translation"),
-          ],
-        ),
-        SizedBox(height: R.height(12)),
+        SizedBox(height: R.height(4)),
+        
+        // Line 1
+        _buildLine([
+          _bullet(),
+          _text(" No ads, no data sold "),
+          _bullet(),
+          _text(" Unlock all training and sounds "),
+          _bullet(),
+        ]),
+        
+        SizedBox(height: R.height(4)),
+        
+        // Line 2
+        _buildLine([
+          _text("All tricks & commands guide "),
+          _bullet(),
+          _text(" Lifetime features & future AI upgrades"),
+        ]),
+        
+        SizedBox(height: R.height(4)),
+        
+        // Line 3
+        _buildLine([
+          _bullet(),
+          _text(" Unlimited Human to Dog/Cat translation"),
+        ]),
+        
+        SizedBox(height: R.height(4)),
       ],
     );
   }
 
-  Widget _buildFeatureItem(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: R.height(4)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.circle,
-            size: R.width(4),
-            color: const Color(0xFF7F67CB).withValues(alpha: 0.6),
-          ),
-          SizedBox(width: R.width(10)),
-          Flexible(
-            child: Text(
-              text,
-              style: AppTypography.bodyXxs.copyWith(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.visible,
-            ),
-          ),
-        ],
+  Widget _buildLine(List<InlineSpan> children) {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        children: children,
+      ),
+    );
+  }
+
+  InlineSpan _bullet() {
+    return const TextSpan(
+      text: " • ",
+      style: TextStyle(
+        color: Color(0xFF6C3BAA),
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+      ),
+    );
+  }
+
+  InlineSpan _text(String text) {
+    return TextSpan(
+      text: text,
+      style: AppTypography.bodyXs.copyWith(
+        color: Colors.black,
+        fontWeight: FontWeight.w500,
       ),
     );
   }

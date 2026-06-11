@@ -86,7 +86,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                       width: double.infinity,
                       padding: EdgeInsets.all(R.width(20)),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF7F67CB),
+                        color: const Color(0xFF6C3BAA),
                         borderRadius: BorderRadius.circular(R.width(20)),
                       ),
                       child: Row(
@@ -162,7 +162,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                     SizedBox(height: R.height(24)),
 
                     const DottedLine(
-                      dashColor: Color(0xFF7F67CB),
+                      dashColor: Color(0xFF6C3BAA),
                       dashLength: 4,
                       dashGapLength: 4,
                       lineThickness: 1,

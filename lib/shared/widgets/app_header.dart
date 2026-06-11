@@ -132,7 +132,7 @@ class AppHeader extends StatelessWidget {
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: isSelected
-                                            ? const Color(0xFF7F67CB)
+                                            ? const Color(0xFF6C3BAA)
                                             : Colors.grey.shade300,
                                         width: 1,
                                       ),
@@ -158,7 +158,7 @@ class AppHeader extends StatelessWidget {
                                   if (isSelected)
                                     const Icon(
                                       Icons.check,
-                                      color: Color(0xFF7F67CB),
+                                      color: Color(0xFF6C3BAA),
                                       size: 24,
                                     ),
                                 ],
@@ -176,7 +176,7 @@ class AppHeader extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFF7F67CB),
+                              color: const Color(0xFF6C3BAA),
                               width: 1.5,
                             ),
                             image: DecorationImage(
