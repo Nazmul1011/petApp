@@ -73,6 +73,37 @@ class TrainingViewAllView extends GetView<TrainingController> {
 
   Widget _buildGridItem(TrainingItem item) {
     final isLocked = controller.isItemLocked(item);
+    
+    Widget imageWidget = item.isNetworkImage
+        ? CachedNetworkImage(
+            imageUrl: item.fullImageUrl.replaceAll(' ', '%20'),
+            fit: BoxFit.contain,
+            placeholder: (context, url) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) => const Icon(
+              Icons.broken_image,
+              size: 24,
+              color: Colors.grey,
+            ),
+          )
+        : Image.asset(
+            item.imageUrl ?? 'assets/images/play dog 1.png',
+            fit: BoxFit.contain,
+          );
+
+    if (isLocked) {
+      imageWidget = ColorFiltered(
+        colorFilter: const ColorFilter.matrix(<double>[
+          0.2126, 0.7152, 0.0722, 0, 0,
+          0.2126, 0.7152, 0.0722, 0, 0,
+          0.2126, 0.7152, 0.0722, 0, 0,
+          0,      0,      0,      1, 0,
+        ]),
+        child: imageWidget,
+      );
+    }
+
     return GestureDetector(
       onTap: () => controller.goToDetail(item),
       child: Container(
@@ -101,35 +132,16 @@ class TrainingViewAllView extends GetView<TrainingController> {
                     padding: EdgeInsets.all(R.width(1)),
                     child: Opacity(
                       opacity: isLocked ? 0.5 : 1.0,
-                      child: item.isNetworkImage
-                          ? CachedNetworkImage(
-                              imageUrl:
-                                  item.fullImageUrl
-                                      .replaceAll(' ', '%20'),
-                              fit: BoxFit.contain,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              errorWidget: (context, url, error) => const Icon(
-                                Icons.broken_image,
-                                size: 24,
-                                color: Colors.grey,
-                              ),
-                            )
-                          : Image.asset(
-                              item.imageUrl ?? 'assets/images/play dog 1.png',
-                              fit: BoxFit.contain,
-                            ),
+                      child: imageWidget,
                     ),
                   ),
                   if (isLocked)
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.lock, color: Colors.white, size: 20),
+                    Center(
+                      child: Image.asset(
+                        'assets/images/Buton.png',
+                        width: R.width(36),
+                        height: R.width(36),
+                        fit: BoxFit.contain,
                       ),
                     ),
                 ],
@@ -140,7 +152,7 @@ class TrainingViewAllView extends GetView<TrainingController> {
               item.name,
               style: AppTypography.bodyXs.copyWith(
                 fontWeight: FontWeight.w600,
-                color: isLocked ? Colors.black45 : Colors.black87,
+                color: Colors.black87,
                 fontSize: 11,
               ),
               textAlign: TextAlign.center,

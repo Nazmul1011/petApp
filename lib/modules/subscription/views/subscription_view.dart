@@ -47,239 +47,180 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
             bottom: false,
             child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: R.width(20)),
-                child: Column(
-                  children: [
-                    // Top Custom App Bar
-                    SizedBox(height: R.height(10)),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey.shade200),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
+              child: Column(
+                children: [
+                  // Top Custom App Bar (with padding)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: R.width(20)),
+                    child: Column(
+                      children: [
+                        SizedBox(height: R.height(10)),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () => Get.back(),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade200),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: R.height(12)),
+
+                  // Big Purple PRO Card Image Banner (Full bleed to remove double padding)
+                  Image.asset(
+                    'assets/images/second payment header.png',
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ),
+
+                  // Rest of the screen (with padding)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: R.width(20)),
+                    child: Column(
+                      children: [
+                        SizedBox(height: R.height(16)),
+
+                        // Orange Alert Box
+                        const SubscriptionAlertBox(),
+
+                        SizedBox(height: R.height(24)),
+
+                        const DottedLine(
+                          dashColor: Color(0xFF6C3BAA),
+                          dashLength: 4,
+                          dashGapLength: 4,
+                          lineThickness: 1,
+                        ),
+
+                        SizedBox(height: R.height(24)),
+
+                        // Subscription Cards
+                        Obx(
+                          () => Column(
+                            children: [
+                              SubscriptionCard(
+                                title: "Weekly",
+                                subtitle: "\$1.99 per week",
+                                rightText: "Short-term access to all Pro features",
+                                isSelected:
+                                    controller.selectedPlan.value ==
+                                    SubscriptionPlan.weekly,
+                                onTap: () =>
+                                    controller.selectPlan(SubscriptionPlan.weekly),
+                              ),
+                              SubscriptionCard(
+                                title: "Monthly",
+                                subtitle: "\$2.99 per month",
+                                rightText: "Full Pro access with better value",
+                                badgeText: "Best value",
+                                isSelected:
+                                    controller.selectedPlan.value ==
+                                    SubscriptionPlan.monthly,
+                                onTap: () =>
+                                    controller.selectPlan(SubscriptionPlan.monthly),
+                              ),
+                              SubscriptionCard(
+                                title: "Yearly",
+                                subtitle: "\$12.99 per year",
+                                rightText: "Full Pro access",
+                                isSelected:
+                                    controller.selectedPlan.value ==
+                                    SubscriptionPlan.yearly,
+                                onTap: () =>
+                                    controller.selectPlan(SubscriptionPlan.yearly),
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                            size: 20,
+                        ),
+
+                        // Bottom Actions
+                        SizedBox(height: R.height(16)),
+                        Obx(
+                          () => AppMaterialButton(
+                            label: "Continue",
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () => controller.continueSubscription(),
+                            height: R.height(58),
+                            borderRadius: R.width(40),
+                            backgroundColor: Colors.white,
+                            textColor: Colors.black,
+                            textStyle: AppTypography.labelMd.copyWith(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            isLoading: controller.isLoading.value,
                           ),
                         ),
-                      ),
-                    ),
-
-                    SizedBox(height: R.height(12)),
-
-                    // Big Purple PRO Card
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(R.width(20)),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C3BAA),
-                        borderRadius: BorderRadius.circular(R.width(20)),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "PREMIUM STATUS",
-                                  style: AppTypography.overlineXs
-                                      .copyWith(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.9,
-                                        ),
-                                      ),
+                        SizedBox(height: R.height(14)),
+                        GestureDetector(
+                          onTap: () => Get.back(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.security,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              SizedBox(width: R.width(8)),
+                              Text(
+                                "Cancel anytime",
+                                style: AppTypography.labelXs.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
                                 ),
-                                SizedBox(height: R.height(8)),
-                                Text(
-                                  "PRO Yearly",
-                                  style: AppTypography.h6.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: R.height(4)),
-                                Text(
-                                  "\$12.99/year",
-                                  style: AppTypography.subtitleLg
-                                      .copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                                SizedBox(height: R.height(12)),
-                                Text(
-                                  "Full access to all premium features and tools.",
-                                  style: AppTypography.bodyXs.copyWith(
-                                    color: Colors.white.withValues(
-                                      alpha: 0.9,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          Expanded(
-                            flex: 2,
-                            child: Image.asset(
-                              // Use best match from assets found
-                              'assets/images/dog image.png',
-                              fit: BoxFit.contain,
-                              errorBuilder:
-                                  (context, error, stackTrace) =>
-                                      const Icon(
-                                        Icons.pets,
-                                        size: 80,
-                                        color: Colors.white54,
-                                      ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: R.height(16)),
-
-                    // Orange Alert Box
-                    const SubscriptionAlertBox(),
-
-                    SizedBox(height: R.height(24)),
-
-                    const DottedLine(
-                      dashColor: Color(0xFF6C3BAA),
-                      dashLength: 4,
-                      dashGapLength: 4,
-                      lineThickness: 1,
-                    ),
-
-                    SizedBox(height: R.height(24)),
-
-                    // Subscription Cards
-                    Obx(
-                      () => Column(
-                        children: [
-                          SubscriptionCard(
-                            title: "Weekly",
-                            subtitle: "\$1.99 per week",
-                            rightText:
-                                "Short-term access to all Pro features",
-                            isSelected:
-                                controller.selectedPlan.value ==
-                                SubscriptionPlan.weekly,
-                            onTap: () => controller.selectPlan(
-                              SubscriptionPlan.weekly,
-                            ),
-                          ),
-                          SubscriptionCard(
-                            title: "Monthly",
-                            subtitle: "\$2.99 per month",
-                            rightText:
-                                "Full Pro access with better value",
-                            badgeText: "Best value",
-                            isSelected:
-                                controller.selectedPlan.value ==
-                                SubscriptionPlan.monthly,
-                            onTap: () => controller.selectPlan(
-                              SubscriptionPlan.monthly,
-                            ),
-                          ),
-                          SubscriptionCard(
-                            title: "Yearly",
-                            subtitle: "\$12.99 per year",
-                            rightText: "Full Pro access",
-                            isSelected:
-                                controller.selectedPlan.value ==
-                                SubscriptionPlan.yearly,
-                            onTap: () => controller.selectPlan(
-                              SubscriptionPlan.yearly,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Bottom Actions
-                    SizedBox(height: R.height(16)),
-                    Obx(
-                      () => AppMaterialButton(
-                        label: "Continue",
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : () => controller.continueSubscription(),
-                        height: R.height(58),
-                        borderRadius: R.width(40),
-                        backgroundColor: Colors.white,
-                        textColor: Colors.black,
-                        textStyle: AppTypography.labelMd.copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
                         ),
-                        isLoading: controller.isLoading.value,
-                      ),
-                    ),
-                    SizedBox(height: R.height(14)),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.security,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          SizedBox(width: R.width(8)),
-                          Text(
-                            "Cancel anytime",
-                            style: AppTypography.labelXs.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: R.height(24)),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: R.width(2),
-                      runSpacing: R.height(2),
-                      children: [
-                        _buildFooterLink("PRIVACY POLICY", () {
-                          Get.toNamed('/legal', arguments: {'tab': 0});
-                        }),
-                        _buildDot(),
-                        _buildFooterLink("TERMS AND CONDITIONS", () {
-                          Get.toNamed('/legal', arguments: {'tab': 1});
-                        }),
-                        _buildDot(),
-                        _buildFooterLink("RESTORE", () {
-                          controller.restorePurchase();
-                        }),
+                        SizedBox(height: R.height(24)),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: R.width(2),
+                          runSpacing: R.height(2),
+                          children: [
+                            _buildFooterLink("PRIVACY POLICY", () {
+                              Get.toNamed('/legal', arguments: {'tab': 0});
+                            }),
+                            _buildDot(),
+                            _buildFooterLink("TERMS AND CONDITIONS", () {
+                              Get.toNamed('/legal', arguments: {'tab': 1});
+                            }),
+                            _buildDot(),
+                            _buildFooterLink("RESTORE", () {
+                              controller.restorePurchase();
+                            }),
+                          ],
+                        ),
+                        SizedBox(height: R.height(34)),
                       ],
                     ),
-                    SizedBox(height: R.height(34)),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

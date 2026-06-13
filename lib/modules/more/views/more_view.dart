@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../controllers/more_controller.dart';
@@ -92,7 +93,7 @@ class MoreView extends GetView<MoreController> {
               label: "Rate us",
               iconColor: const Color(0xFFFFB300),
               bgColor: const Color(0xFFFFB300).withValues(alpha: 0.12),
-              onTap: () => controller.launchRateUs(),
+              onTap: () => _showRateUsSheet(context),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/Share_app.png",
@@ -106,6 +107,25 @@ class MoreView extends GetView<MoreController> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showRateUsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: _RateUsBottomSheet(
+          onSubmit: () {
+            Get.back();
+            controller.launchRateUs();
+          },
         ),
       ),
     );
@@ -130,6 +150,13 @@ class MoreView extends GetView<MoreController> {
             color: Colors.grey.withValues(alpha: 0.15),
             width: 1,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -161,6 +188,131 @@ class MoreView extends GetView<MoreController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RateUsBottomSheet extends StatefulWidget {
+  final VoidCallback onSubmit;
+  const _RateUsBottomSheet({required this.onSubmit});
+
+  @override
+  State<_RateUsBottomSheet> createState() => _RateUsBottomSheetState();
+}
+
+class _RateUsBottomSheetState extends State<_RateUsBottomSheet> {
+  int _rating = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: R.width(24),
+        vertical: R.height(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: R.width(48),
+              height: R.height(4),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          SizedBox(height: R.height(24)),
+          const Text(
+            "Rate us",
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: R.height(20)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: List.generate(5, (index) {
+              final starIndex = index + 1;
+              final isFilled = starIndex <= _rating;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _rating = starIndex;
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(right: R.width(12)),
+                  child: Icon(
+                    isFilled ? Icons.star_rounded : Icons.star_border_rounded,
+                    color: const Color(0xFFFF7A00),
+                    size: 40,
+                  ),
+                ),
+              );
+            }),
+          ),
+          SizedBox(height: R.height(24)),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: R.width(16),
+              vertical: R.height(12),
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Your thoughts",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black54,
+                  ),
+                ),
+                SizedBox(height: R.height(4)),
+                TextField(
+                  maxLines: 3,
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  decoration: InputDecoration(
+                    hintText: "Details",
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: R.height(24)),
+          AppMaterialButton(
+            label: "Submit",
+            onPressed: widget.onSubmit,
+            height: R.height(56),
+            borderRadius: 28,
+            backgroundColor: const Color(0xFF6C3BAA),
+          ),
+          SizedBox(height: R.height(20)),
+        ],
       ),
     );
   }

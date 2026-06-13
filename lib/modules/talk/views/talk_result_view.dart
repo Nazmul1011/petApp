@@ -5,7 +5,6 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
-import 'package:petapp/shared/widgets/app_header.dart';
 
 class TalkResultView extends GetView<DashboardController> {
   const TalkResultView({super.key});
@@ -22,16 +21,16 @@ class TalkResultView extends GetView<DashboardController> {
           }
         },
         child: SafeArea(
-          top: false,
+          top: true,
           child: Column(
             children: [
-              const AppHeader(),
+              // const AppHeader(),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: R.width(24)),
                 child: Column(
                   children: [
-                    SizedBox(height: R.height(20)),
+                    SizedBox(height: R.height(40)),
 
                     // Large Pet Image (only for Human-to-Pet)
                     _buildPetWithWaves(),
@@ -194,11 +193,13 @@ class TalkResultView extends GetView<DashboardController> {
           },
         ),
         SizedBox(width: R.width(24)),
+        /*
         _assetIconButton(
           assetPath: 'assets/images/audio_button/hold.png',
           onTap: () => controller.stopAudio(),
         ),
         SizedBox(width: R.width(24)),
+        */
         Obx(
           () => _assetIconButton(
             assetPath: controller.isPlaying.value

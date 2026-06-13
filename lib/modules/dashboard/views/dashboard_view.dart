@@ -1,10 +1,9 @@
-import 'dart:math';
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
-import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import '../controllers/dashboard_controller.dart';
@@ -189,13 +188,10 @@ class DashboardView extends GetView<DashboardController> {
     return GestureDetector(
       onTap: controller.toggleMode,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: R.width(16),
-          vertical: R.height(12),
-        ),
+        width: R.width(192),
+        height: R.height(66),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(33),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -204,21 +200,51 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ],
         ),
-        child: Obx(
-          () => Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: R.width(16)),
-                child: const Icon(
-                  Icons.swap_horiz,
-                  color: Color(0xFF6C3BAA),
-                  size: 20,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(33),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            child: Container(
+              width: R.width(192),
+              height: R.height(66),
+              padding: EdgeInsets.symmetric(
+                horizontal: R.width(8),
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(33),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  width: 1.5,
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.25),
+                    Colors.white.withValues(alpha: 0.08),
+                  ],
                 ),
               ),
-              _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
-            ],
+              child: Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
+                    AnimatedRotation(
+                      turns: controller.isHumanToDog.value ? 0.0 : 0.5,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: const Icon(
+                        Icons.swap_horiz,
+                        color: Colors.black,
+                        size: 24,
+                      ),
+                    ),
+                    _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -226,25 +252,34 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Widget _buildToggleAvatar({required bool isHuman}) {
-    if (isHuman) {
-      return Container(
-        width: R.width(28),
-        height: R.width(28),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.grey.shade700,
+    return Container(
+      width: R.width(50),
+      height: R.width(50),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        border: Border.all(
+          color: Colors.black.withValues(alpha: 0.06),
+          width: 1.0,
         ),
-        child: const Icon(Icons.person, color: Colors.white, size: 18),
-      );
-    } else {
-      return Image.asset(
-        controller.selectedPet.value == PetType.dog
-            ? 'assets/images/dogwave.png'
-            : 'assets/images/catwave.png',
-        width: R.width(28),
-        height: R.width(28),
-        fit: BoxFit.contain,
-      );
-    }
+      ),
+      child: Center(
+        child: isHuman
+            ? Image.asset(
+                'assets/images/Emoji Image.png',
+                width: R.width(32),
+                height: R.width(32),
+                fit: BoxFit.contain,
+              )
+            : Image.asset(
+                controller.selectedPet.value == PetType.dog
+                    ? 'assets/images/dogwave.png'
+                    : 'assets/images/catwave.png',
+                width: R.width(32),
+                height: R.width(32),
+                fit: BoxFit.contain,
+              ),
+      ),
+    );
   }
 }

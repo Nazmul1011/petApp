@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -135,96 +136,114 @@ class SavedTalksView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            _buildHeader(controller),
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF6C3BAA)),
-                  );
-                }
-                final list = controller.filtered;
-                if (list.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: R.width(32)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.mic_none,
-                            size: 64,
-                            color: Color(0xFFCDC8E8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(controller),
+                Expanded(
+                  child: Obx(() {
+                    if (controller.isLoading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: Color(0xFF6C3BAA)),
+                      );
+                    }
+                    final list = controller.filtered;
+                    if (list.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: R.width(32)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.mic_none,
+                                size: 64,
+                                color: Color(0xFFCDC8E8),
+                              ),
+                              SizedBox(height: R.height(16)),
+                              Text(
+                                'No saved talks yet',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              SizedBox(height: R.height(8)),
+                              Text(
+                                'Record a voice on the home screen and tap "Save and continue".',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade400,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: R.height(16)),
-                          Text(
-                            'No saved talks yet',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                          SizedBox(height: R.height(8)),
-                          Text(
-                            'Record a voice on the home screen and tap "Save and continue".',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return ListView.separated(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: R.width(20),
-                    vertical: R.height(8),
-                  ),
-                  itemCount: list.length,
-                  separatorBuilder: (_, __) => SizedBox(height: R.height(10)),
-                  itemBuilder: (context, index) {
-                    final item = list[index];
-                    return Dismissible(
-                      key: Key(item.id),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (direction) {
-                        controller.deleteTalk(index);
-                      },
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.symmetric(horizontal: R.width(20)),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFEAEA),
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Image.asset(
-                          'assets/images/delete.png',
-                          width: 24,
-                          height: 24,
-                          color: Colors.red,
-                        ),
+                      );
+                    }
+                    return ListView.separated(
+                      padding: EdgeInsets.only(
+                        left: R.width(20),
+                        right: R.width(20),
+                        top: R.height(8),
+                        bottom: R.height(100), // Extra padding to clear the floating mode toggle
                       ),
-                      child: Obx(
-                        () => _TalkCard(
-                          item: item,
-                          index: index,
-                          isPlaying: controller.playingIndex.value == index,
-                          onPlay: () {
-                            controller.togglePlay(index, item.inputAudioUrl);
+                      itemCount: list.length,
+                      separatorBuilder: (_, __) => SizedBox(height: R.height(10)),
+                      itemBuilder: (context, index) {
+                        final item = list[index];
+                        return Dismissible(
+                          key: Key(item.id),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            controller.deleteTalk(index);
                           },
-                        ),
-                      ),
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.only(right: R.width(16)),
+                            color: Colors.transparent,
+                            child: Container(
+                              width: R.width(48),
+                              height: R.width(48),
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFFFFEBEB),
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: Color(0xFFF05151),
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                          child: Obx(
+                            () => _TalkCard(
+                              item: item,
+                              index: index,
+                              isPlaying: controller.playingIndex.value == index,
+                              onPlay: () {
+                                controller.togglePlay(index, item.inputAudioUrl);
+                              },
+                            ),
+                          ),
+                        );
+                      },
                     );
-                  },
-                );
-              }),
+                  }),
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: R.height(24),
+              left: 0,
+              right: 0,
+              child: Center(
+                child: _buildModeToggle(controller),
+              ),
             ),
           ],
         ),
@@ -234,101 +253,126 @@ class SavedTalksView extends StatelessWidget {
 
   Widget _buildHeader(SavedTalksController controller) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: R.width(16),
-        right: R.width(16),
-        top: R.height(8),
-        bottom: R.height(4),
+      padding: EdgeInsets.symmetric(
+        horizontal: R.width(20),
+        vertical: R.height(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Back button row
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: const Icon(Icons.arrow_back, size: 22, color: Colors.black),
-          ),
-          SizedBox(height: R.height(12)),
-          Obx(
-            () => Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Saved talks',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: () => Get.back(),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF5F5F5),
+                  shape: BoxShape.circle,
                 ),
-                const Spacer(),
-                // Human icon
-                GestureDetector(
-                  onTap: controller.showHumanToPet.value
-                      ? null
-                      : controller.toggleView,
-                  child: _AvatarBadge(
-                    isActive: controller.showHumanToPet.value,
-                    child: const Icon(
-                      Icons.person,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                  ),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                  size: 24,
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: R.width(8)),
-                  child: GestureDetector(
-                    onTap: controller.toggleView,
-                    child: const Icon(
-                      Icons.swap_horiz,
-                      size: 22,
-                      color: Color(0xFF6C3BAA),
-                    ),
-                  ),
-                ),
-                // Pet icon
-                GestureDetector(
-                  onTap: controller.showHumanToPet.value
-                      ? controller.toggleView
-                      : null,
-                  child: _AvatarBadge(
-                    isActive: !controller.showHumanToPet.value,
-                    child: Image.asset(
-                      controller.petIcon.value,
-                      width: 18,
-                      height: 18,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-          SizedBox(height: R.height(8)),
+          SizedBox(height: R.height(16)),
+          const Text(
+            'Saved talks',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
     );
   }
-}
 
-/// Circular avatar badge for the header toggle
-class _AvatarBadge extends StatelessWidget {
-  final bool isActive;
-  final Widget child;
-  const _AvatarBadge({required this.isActive, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 34,
-      height: 34,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isActive ? const Color(0xFF6C3BAA) : Colors.grey.shade200,
+  Widget _buildModeToggle(SavedTalksController controller) {
+    return GestureDetector(
+      onTap: controller.toggleView,
+      child: Container(
+        width: R.width(192),
+        height: R.height(66),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(33),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(33),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            child: Container(
+              width: R.width(192),
+              height: R.height(66),
+              padding: EdgeInsets.symmetric(
+                horizontal: R.width(8),
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(33),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  width: 1.5,
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.25),
+                    Colors.white.withValues(alpha: 0.08),
+                  ],
+                ),
+              ),
+              child: Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildToggleAvatar(controller, isHuman: controller.showHumanToPet.value),
+                    AnimatedRotation(
+                      turns: controller.showHumanToPet.value ? 0.0 : 0.5,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: const Icon(
+                        Icons.swap_horiz,
+                        color: Colors.black,
+                        size: 24,
+                      ),
+                    ),
+                    _buildToggleAvatar(controller, isHuman: !controller.showHumanToPet.value),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
-      child: Center(child: child),
     );
+  }
+
+  Widget _buildToggleAvatar(SavedTalksController controller, {required bool isHuman}) {
+    return isHuman
+        ? Image.asset(
+            'assets/images/Emoji Image.png',
+            width: R.width(32),
+            height: R.width(32),
+            fit: BoxFit.contain,
+          )
+        : Image.asset(
+            controller.petIcon.value,
+            width: R.width(32),
+            height: R.width(32),
+            fit: BoxFit.contain,
+          );
   }
 }
 
@@ -395,18 +439,23 @@ class _TalkCard extends StatelessWidget {
           GestureDetector(
             onTap: onPlay,
             child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
+              width: R.width(32),
+              height: R.width(32),
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: isPlaying
-                    ? const Color(0xFF6C3BAA)
-                    : const Color(0xFF6C3BAA),
               ),
-              child: Icon(
-                isPlaying ? Icons.pause : Icons.play_arrow,
-                color: Colors.white,
-                size: 22,
+              child: OverflowBox(
+                minWidth: R.width(54),
+                maxWidth: R.width(54),
+                minHeight: R.width(54),
+                maxHeight: R.width(54),
+                child: Image.asset(
+                  isPlaying
+                      ? 'assets/images/audio_button/pause.png'
+                      : 'assets/images/audio_button/start_playing.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),

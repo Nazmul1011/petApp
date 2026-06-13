@@ -32,15 +32,22 @@ class AppBottomNavigationBar extends GetView<MainController> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(40),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: Container(
                 height: R.height(72),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(40),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
+                    color: Colors.white.withValues(alpha: 0.8),
                     width: 1.5,
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.25),
+                      Colors.white.withValues(alpha: 0.08),
+                    ],
                   ),
                 ),
                 child: Obx(

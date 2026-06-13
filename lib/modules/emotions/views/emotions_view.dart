@@ -60,10 +60,10 @@ class EmotionsView extends GetView<EmotionsController> {
                             itemCount: controller.emotions.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
+                                  crossAxisCount: 2,
                                   mainAxisSpacing: R.height(16),
                                   crossAxisSpacing: R.width(16),
-                                  childAspectRatio: 110 / 106,
+                                  childAspectRatio: 169 / 166,
                                 ),
                             itemBuilder: (context, index) {
                               return _buildEmotionCard(
@@ -83,90 +83,98 @@ class EmotionsView extends GetView<EmotionsController> {
   }
 
   Widget _buildEmotionCard(EmotionItem item) {
+    Widget imageWidget = item.imagePath.startsWith('http')
+        ? CachedNetworkImage(
+            imageUrl: item.imagePath,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.contain,
+            imageBuilder: (context, imageProvider) => Transform.scale(
+              scale: 1.25,
+              child: Image(
+                image: imageProvider,
+                fit: BoxFit.contain,
+              ),
+            ),
+            placeholder: (context, url) => const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFF6C3BAA),
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(
+              Icons.broken_image,
+              color: Colors.grey,
+              size: 24,
+            ),
+          )
+        : Transform.scale(
+            scale: 1.25,
+            child: Image.asset(
+              item.imagePath,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.contain,
+            ),
+          );
+
+    if (item.isLocked) {
+      imageWidget = ColorFiltered(
+        colorFilter: const ColorFilter.matrix(<double>[
+          0.2126, 0.7152, 0.0722, 0, 0,
+          0.2126, 0.7152, 0.0722, 0, 0,
+          0.2126, 0.7152, 0.0722, 0, 0,
+          0,      0,      0,      1, 0,
+        ]),
+        child: imageWidget,
+      );
+    }
+
     return GestureDetector(
       onTap: () => controller.selectEmotion(item),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: R.width(8),
-          vertical: R.height(6),
+          horizontal: R.width(12),
+          vertical: R.height(12),
         ),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE8E8E8), width: 1),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE8E8E8), width: 1.5),
         ),
         child: Column(
           children: [
-            Container(
-              width: R.width(94),
-              height: R.height(60),
-              decoration: BoxDecoration(
-                color: item.isLocked
-                    ? Colors.grey.shade400
-                    : const Color(0xFFFFF0E1).withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(12),
-              ),
+            Expanded(
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(R.width(1)),
-                    child: Opacity(
-                      opacity: item.isLocked ? 0.5 : 1.0,
-                      child: item.imagePath.startsWith('http')
-                          ? CachedNetworkImage(
-                              imageUrl: item.imagePath,
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.contain,
-                              imageBuilder: (context, imageProvider) => Transform.scale(
-                                scale: 2.3,
-                                child: Image(
-                                  image: imageProvider,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              placeholder: (context, url) => const Center(
-                                child: SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Color(0xFF6C3BAA),
-                                  ),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) => const Icon(
-                                Icons.broken_image,
-                                color: Colors.grey,
-                                size: 24,
-                              ),
-                            )
-                          : Transform.scale(
-                              scale: 2.3,
-                              child: Image.asset(
-                                item.imagePath,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                    ),
+                  Opacity(
+                    opacity: item.isLocked ? 0.5 : 1.0,
+                    child: imageWidget,
                   ),
                   if (item.isLocked)
-                    const Center(
-                      child: Icon(Icons.lock, color: Colors.white, size: 20),
+                    Center(
+                      child: Image.asset(
+                        'assets/images/Buton.png',
+                        width: R.width(44),
+                        height: R.width(44),
+                        fit: BoxFit.contain,
+                      ),
                     ),
                 ],
               ),
             ),
-            const Spacer(),
+            SizedBox(height: R.height(4)),
             Text(
               item.name,
-              style: AppTypography.bodyXs.copyWith(
-                fontWeight: FontWeight.w600,
-                color: item.isLocked ? Colors.black45 : Colors.black87,
-                fontSize: 11,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+                fontSize: 16,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

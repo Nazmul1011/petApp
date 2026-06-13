@@ -217,35 +217,45 @@ class PetProfileView extends GetView<PetProfileController> {
 
   Widget _buildActionButtons(PetModel pet) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
+      padding: EdgeInsets.symmetric(horizontal: R.width(2)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: AppMaterialButton(
-                  label: "Delete profile",
-                  backgroundColor: const Color(
-                    0xFFF05151,
-                  ), // Red from screenshot
-                  textColor: Colors.white,
-                  onPressed: () => _showDeleteConfirmation(pet),
-                  borderRadius: 28,
-                  height: R.height(56),
+              GestureDetector(
+                onTap: () => _showDeleteConfirmation(pet),
+                child: Container(
+                  width: R.height(60),
+                  height: R.height(60),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFFFEBEB),
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Color(0xFFF05151),
+                    size: 24,
+                  ),
                 ),
               ),
               SizedBox(width: R.width(16)),
-              Expanded(
-                child: AppMaterialButton(
-                  label: "Update",
-                  onPressed: () =>
-                      controller.savePet(isUpdating: true, id: pet.id),
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: R.width(274)),
+                  child: AppMaterialButton(
+                    label: "Update",
+                    onPressed: () =>
+                        controller.savePet(isUpdating: true, id: pet.id),
+                    height: R.height(60),
+                    borderRadius: 30,
+                  ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: R.height(58.0)),
+          SizedBox(height: R.height(40.0)),
         ],
       ),
     );
