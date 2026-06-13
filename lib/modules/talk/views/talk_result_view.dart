@@ -108,18 +108,19 @@ class TalkResultView extends GetView<DashboardController> {
       if (!controller.isHumanToDog.value) return const SizedBox.shrink();
       final isDog = controller.selectedPet.value == PetType.dog;
       return Center(
-        child: Container(
-          // Move the whole group to the left as requested
-          padding: EdgeInsets.only(right: R.width(60)),
+        child: SizedBox(
+          width: R.width(350),
+          height: R.height(224),
           child: Stack(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.center,
             clipBehavior: Clip.none,
             children: [
               Image.asset(
                 isDog
                     ? 'assets/images/dogwave.png'
                     : 'assets/images/catwave.png',
-                height: R.height(150),
+                width: R.width(350),
+                height: R.height(224),
                 fit: BoxFit.contain,
               ),
               /* 

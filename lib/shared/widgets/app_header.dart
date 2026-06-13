@@ -26,14 +26,20 @@ class AppHeader extends StatelessWidget {
                   Get.find<MainController>().changeTabIndex(0);
                 }
                 if (Get.currentRoute != AppRoutes.dashboard) {
-                  Get.until((route) => route.settings.name == AppRoutes.dashboard);
+                  Get.until(
+                    (route) => route.settings.name == AppRoutes.dashboard,
+                  );
                 }
               },
-              child: Image.asset('assets/images/header_logo.png', height: R.height(40)),
+              child: Image.asset(
+                'assets/images/HeaderLogo.png',
+                width: R.width(50),
+                height: R.width(50),
+                fit: BoxFit.contain,
+              ),
             ),
             Obx(() {
               final user = AuthController.to.user.value;
-              final isPremium = user?.isPremium ?? false;
               final pets = user?.pets ?? [];
               final activePetId = user?.activePetId;
 
@@ -51,24 +57,16 @@ class AppHeader extends StatelessWidget {
 
               return Row(
                 children: [
-                  if (!isPremium) ...[
-                    GestureDetector(
-                      onTap: () => Get.toNamed(AppRoutes.subscription),
-                      child: Container(
-                        padding: EdgeInsets.all(R.width(8)),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFFFFF7EA),
-                        ),
-                        child: const Icon(
-                          Icons.workspace_premium,
-                          color: Color(0xFFFF9900),
-                          size: 20,
-                        ),
-                      ),
+                  GestureDetector(
+                    onTap: () => Get.toNamed(AppRoutes.subscription),
+                    child: Image.asset(
+                      'assets/images/Crown Container.png',
+                      width: R.width(50),
+                      height: R.width(50),
+                      fit: BoxFit.contain,
                     ),
-                    SizedBox(width: R.width(12)),
-                  ],
+                  ),
+                  SizedBox(width: R.width(12)),
                   PopupMenuButton<String>(
                     offset: Offset(0, R.height(50)),
                     shape: RoundedRectangleBorder(
@@ -168,29 +166,30 @@ class AppHeader extends StatelessWidget {
                         }),
                       ];
                     },
-                    child: Row(
-                      children: [
-                        Container(
-                          width: R.width(36),
-                          height: R.width(36),
+                    child: Container(
+                      width: R.width(50),
+                      height: R.width(50),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.all(
+                          color: const Color(0xFFEBEBEB),
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: R.width(30),
+                          height: R.width(30),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFF6C3BAA),
-                              width: 1.5,
-                            ),
                             image: DecorationImage(
                               image: AssetImage(avatarAsset),
                               fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        const Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.black,
-                          size: 28,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ],

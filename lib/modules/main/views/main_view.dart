@@ -18,6 +18,7 @@ class MainView extends GetView<MainController> {
     return AppScaffold(
       horizontalPadding: 0,
       useSafeArea: false,
+      extendBody: true,
       bottomNavigationBar: const AppBottomNavigationBar(),
       body: Obx(
         () => IndexedStack(

@@ -67,11 +67,13 @@ class TalkHumanToPetView extends GetView<DashboardController> {
     return Obx(() {
       final isDog = controller.selectedPet.value == PetType.dog;
       return Center(
-        child: Container(
-          padding: EdgeInsets.only(right: R.width(60)),
+        child: SizedBox(
+          width: R.width(350),
+          height: R.height(224),
           child: Image.asset(
             isDog ? 'assets/images/dogwave.png' : 'assets/images/catwave.png',
-            height: R.height(150),
+            width: R.width(350),
+            height: R.height(224),
             fit: BoxFit.contain,
           ),
         ),

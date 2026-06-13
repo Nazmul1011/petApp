@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
@@ -20,6 +21,22 @@ class DashboardView extends GetView<DashboardController> {
         child: Column(
           children: [
             const AppHeader(),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: R.width(24),
+                  vertical: R.height(8),
+                ),
+                child: Text(
+                  "Talk",
+                  style: AppTypography.h5.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
             Expanded(
               child: _buildInteractiveState(),
             ),
@@ -69,53 +86,62 @@ class DashboardView extends GetView<DashboardController> {
           onPointerDown: (_) => controller.startRecording(),
           onPointerUp: (_) => controller.stopRecording(),
           onPointerMove: (event) {
-            // Cancel if finger leaves the 173x173 area
+            final double limit = isRecording ? 180.0 : 160.0;
             if (event.localPosition.dx < 0 ||
-                event.localPosition.dx > R.width(173) ||
+                event.localPosition.dx > R.width(limit) ||
                 event.localPosition.dy < 0 ||
-                event.localPosition.dy > R.height(173)) {
+                event.localPosition.dy > R.height(limit)) {
               controller.stopRecording();
             }
           },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: R.width(173),
-            height: R.width(173),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isRecording
-                  ? const Color(0xFF6C3BAA).withValues(alpha: 0.1)
-                  : Colors.white,
-              border: Border.all(
-                color: isRecording
-                    ? const Color(0xFF6C3BAA).withValues(alpha: 0.2)
-                    : Colors.grey.withValues(alpha: 0.1),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  spreadRadius: 5,
-                ),
-              ],
-            ),
-            child: Center(
-              child: Container(
-                width: R.width(130),
-                height: R.width(130),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Outer Pulse Circle
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: isRecording ? R.width(180) : R.width(160),
+                height: isRecording ? R.width(180) : R.width(160),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isRecording ? const Color(0xFF6C3BAA) : Colors.white,
+                  color: isRecording
+                      ? AppColors.primaryColor.withValues(alpha: 0.15)
+                      : Colors.transparent,
+                  border: isRecording
+                      ? Border.all(
+                          color: AppColors.primaryColor.withValues(alpha: 0.2),
+                          width: 1,
+                        )
+                      : null,
+                ),
+              ),
+              // Main Circle
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: R.width(160),
+                height: R.width(160),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isRecording ? AppColors.primaryColor : Colors.white,
+                  boxShadow: [
+                    if (!isRecording)
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 20,
+                      ),
+                  ],
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.mic,
-                    color: isRecording ? Colors.white : Colors.black87,
-                    size: R.width(44),
+                  child: Image.asset(
+                    'assets/images/onboarding_1/microphone.png',
+                    width: R.width(50),
+                    height: R.width(50),
+                    fit: BoxFit.contain,
+                    color: isRecording ? Colors.white : AppColors.primaryColor,
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       );
