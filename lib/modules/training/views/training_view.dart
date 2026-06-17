@@ -72,7 +72,7 @@ class TrainingView extends GetView<TrainingController> {
                         crossAxisCount: 2,
                         mainAxisSpacing: R.height(16),
                         crossAxisSpacing: R.width(16),
-                        childAspectRatio: 169 / 166,
+                        childAspectRatio: 169 / 116,
                       ),
                       itemBuilder: (context, index) {
                         return _buildGridItem(allItems[index], context);
@@ -95,7 +95,9 @@ class TrainingView extends GetView<TrainingController> {
     Widget imageWidget = item.isNetworkImage
         ? CachedNetworkImage(
             imageUrl: item.fullImageUrl.replaceAll(' ', '%20'),
-            fit: BoxFit.contain,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
             placeholder: (context, url) => const Center(
               child: SizedBox(
                 width: 20,
@@ -114,7 +116,9 @@ class TrainingView extends GetView<TrainingController> {
           )
         : Image.asset(
             item.imageUrl ?? 'assets/images/play dog 1.png',
-            fit: BoxFit.contain,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
           );
 
     if (isLocked) {
@@ -137,50 +141,25 @@ class TrainingView extends GetView<TrainingController> {
           _showTrainingDetailSheet(context, item);
         }
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: R.width(12),
-          vertical: R.height(12),
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFE8E8E8), width: 1.5),
-        ),
-        child: Column(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          fit: StackFit.expand,
+          alignment: Alignment.center,
           children: [
-            Expanded(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Opacity(
-                    opacity: isLocked ? 0.5 : 1.0,
-                    child: imageWidget,
-                  ),
-                  if (isLocked)
-                    Center(
-                      child: Image.asset(
-                        'assets/images/Buton.png',
-                        width: R.width(44),
-                        height: R.width(44),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                ],
-              ),
+            Opacity(
+              opacity: isLocked ? 0.5 : 1.0,
+              child: imageWidget,
             ),
-            SizedBox(height: R.height(4)),
-            Text(
-              item.name,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-                fontSize: 16,
+            if (isLocked)
+              Center(
+                child: Image.asset(
+                  'assets/images/Buton.png',
+                  width: R.width(44),
+                  height: R.width(44),
+                  fit: BoxFit.contain,
+                ),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
           ],
         ),
       ),
@@ -197,66 +176,79 @@ class TrainingView extends GetView<TrainingController> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: R.width(24),
-            right: R.width(24),
-            top: R.height(8),
-            bottom: MediaQuery.of(context).padding.bottom + R.height(24),
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: R.height(700),
           ),
           child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              top: R.height(8),
+              bottom: MediaQuery.of(context).padding.bottom + R.height(24),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: item.isNetworkImage
-                      ? CachedNetworkImage(
-                          imageUrl: item.fullImageUrl.replaceAll(' ', '%20'),
-                          width: double.infinity,
-                          height: R.height(200),
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            height: R.height(200),
-                            color: Colors.grey.shade100,
-                            child: const Center(
-                              child: CircularProgressIndicator(),
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: item.isNetworkImage
+                        ? CachedNetworkImage(
+                            imageUrl: item.fullImageUrl.replaceAll(' ', '%20'),
+                            width: R.width(350),
+                            height: R.height(196),
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              width: R.width(350),
+                              height: R.height(196),
+                              color: Colors.grey.shade100,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                             ),
+                            errorWidget: (context, url, error) => Container(
+                              width: R.width(350),
+                              height: R.height(196),
+                              color: Colors.grey.shade100,
+                              child: const Icon(Icons.broken_image, size: 40),
+                            ),
+                          )
+                        : Image.asset(
+                            item.imageUrl ?? 'assets/images/play dog 1.png',
+                            width: R.width(350),
+                            height: R.height(196),
+                            fit: BoxFit.cover,
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            height: R.height(200),
-                            color: Colors.grey.shade100,
-                            child: const Icon(Icons.broken_image, size: 40),
-                          ),
-                        )
-                      : Image.asset(
-                          item.imageUrl ?? 'assets/images/play dog 1.png',
-                          width: double.infinity,
-                          height: R.height(200),
-                          fit: BoxFit.cover,
-                        ),
+                  ),
                 ),
                 SizedBox(height: R.height(24)),
-                if (item.position.isNotEmpty) ...[
-                  _buildModalSectionTitle("Position"),
-                  _buildModalSectionBody(item.position),
-                  SizedBox(height: R.height(20)),
-                ],
-                if (item.command.isNotEmpty) ...[
-                  _buildModalSectionTitle("Command"),
-                  _buildModalSectionBody(item.command),
-                  SizedBox(height: R.height(20)),
-                ],
-                if (item.guidance.isNotEmpty) ...[
-                  _buildModalSectionTitle("Guidance"),
-                  _buildModalSectionBody(item.guidance),
-                  SizedBox(height: R.height(20)),
-                ],
-                if (item.confirmation.isNotEmpty) ...[
-                  _buildModalSectionTitle("Confirmation"),
-                  _buildModalSectionBody(item.confirmation),
-                ],
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (item.position.isNotEmpty) ...[
+                        _buildModalSectionTitle("Position"),
+                        _buildModalSectionBody(item.position),
+                        SizedBox(height: R.height(20)),
+                      ],
+                      if (item.command.isNotEmpty) ...[
+                        _buildModalSectionTitle("Command"),
+                        _buildModalSectionBody(item.command),
+                        SizedBox(height: R.height(20)),
+                      ],
+                      if (item.guidance.isNotEmpty) ...[
+                        _buildModalSectionTitle("Guidance"),
+                        _buildModalSectionBody(item.guidance),
+                        SizedBox(height: R.height(20)),
+                      ],
+                      if (item.confirmation.isNotEmpty) ...[
+                        _buildModalSectionTitle("Confirmation"),
+                        _buildModalSectionBody(item.confirmation),
+                      ],
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

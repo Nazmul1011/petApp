@@ -173,14 +173,17 @@ class WhistleView extends GetView<WhistleController> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: R.width(24),
-            right: R.width(24),
-            top: R.height(8),
-            bottom: MediaQuery.of(context).padding.bottom + R.height(24),
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: R.height(700),
           ),
           child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              left: R.width(24),
+              right: R.width(24),
+              top: R.height(8),
+              bottom: MediaQuery.of(context).padding.bottom + R.height(24),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
