@@ -54,7 +54,6 @@ class TalkHumanToPetView extends GetView<DashboardController> {
               padding: EdgeInsets.symmetric(horizontal: R.width(24)),
               child: _buildSaveVoiceSection(),
             ),
-            SizedBox(height: R.height(30)),
           ],
         ),
       ),
@@ -226,6 +225,7 @@ class TalkHumanToPetView extends GetView<DashboardController> {
             textColor: Colors.white,
           );
         }),
+        SizedBox(height: R.height(20)),
       ],
     );
   }

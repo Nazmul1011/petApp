@@ -94,7 +94,7 @@ class OnboardingTwoController extends GetxController with BaseController {
     _playPetResult();
 
     replayCount.value++;
-    if (replayCount.value >= 3) {
+    if (replayCount.value >= 2) {
       completeOnboarding();
     }
   }

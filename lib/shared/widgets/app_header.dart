@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/pet_avatar/pet_avatar.dart';
 import 'package:petapp/core/routes/app_routes.dart';
+import 'package:petapp/modules/pet_profile/models/pet_model.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
 import '../../modules/main/controllers/main_controller.dart';
 
@@ -50,10 +52,13 @@ class AppHeader extends StatelessWidget {
                 );
               }
 
-              String avatarAsset = 'assets/images/dog image.png';
-              if (activePet != null && activePet['type'] == 'CAT') {
-                avatarAsset = 'assets/images/cat image.png';
-              }
+              final PetType activePetType =
+                  (activePet != null && activePet['type'] == 'CAT')
+                  ? PetType.CAT
+                  : PetType.DOG;
+              final String? activePetImageUrl = activePet != null
+                  ? activePet['imageUrl'] as String?
+                  : null;
 
               return Row(
                 children: [
@@ -99,9 +104,9 @@ class AppHeader extends StatelessWidget {
                       return [
                         ...pets.map((pet) {
                           final isSelected = pet['id'] == activePetId;
-                          final assetPath = pet['type'] == 'CAT'
-                              ? 'assets/images/cat image.png'
-                              : 'assets/images/dog image.png';
+                          final petType = pet['type'] == 'CAT'
+                              ? PetType.CAT
+                              : PetType.DOG;
 
                           return PopupMenuItem<String>(
                             value: pet['id'],
@@ -126,7 +131,7 @@ class AppHeader extends StatelessWidget {
                                   Container(
                                     width: R.width(36),
                                     height: R.width(36),
-                                    decoration: BoxDecoration(
+                                    foregroundDecoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: isSelected
@@ -134,10 +139,11 @@ class AppHeader extends StatelessWidget {
                                             : Colors.grey.shade300,
                                         width: 1,
                                       ),
-                                      image: DecorationImage(
-                                        image: AssetImage(assetPath),
-                                        fit: BoxFit.cover,
-                                      ),
+                                    ),
+                                    child: PetAvatar(
+                                      imageUrl: pet['imageUrl'] as String?,
+                                      type: petType,
+                                      size: R.width(36),
                                     ),
                                   ),
                                   SizedBox(width: R.width(12)),
@@ -178,16 +184,10 @@ class AppHeader extends StatelessWidget {
                         ),
                       ),
                       child: Center(
-                        child: Container(
-                          width: R.width(30),
-                          height: R.width(30),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage(avatarAsset),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                        child: PetAvatar(
+                          imageUrl: activePetImageUrl,
+                          type: activePetType,
+                          size: R.width(30),
                         ),
                       ),
                     ),

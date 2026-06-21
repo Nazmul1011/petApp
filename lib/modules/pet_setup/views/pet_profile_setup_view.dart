@@ -164,7 +164,7 @@ class PetProfileSetupView extends GetView<PetSetupController> {
                     ? null
                     : () => controller.createPetProfile(),
               ),
-              SizedBox(height: R.height(24.0)),
+              SizedBox(height: R.height(40.0)),
             ],
           ),
         ),

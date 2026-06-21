@@ -75,7 +75,7 @@ class OnboardingView extends GetView<OnboardingController> {
                     : null,
               ),
             ),
-            SizedBox(height: R.height(54.0)), // 74px Bottom Margin
+            SizedBox(height: R.height(20.0)), // Standard bottom gap
           ],
         ),
       ),

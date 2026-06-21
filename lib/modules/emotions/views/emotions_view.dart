@@ -72,7 +72,9 @@ class EmotionsView extends GetView<EmotionsController> {
                             },
                           ),
                   ),
-                  SizedBox(height: R.height(40)),
+                  SizedBox(
+                    height: MediaQuery.of(context).padding.bottom + R.height(100),
+                  ),
                 ],
               ),
             ),

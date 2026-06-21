@@ -30,9 +30,10 @@ class SubscriptionCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: R.width(350),
-        height: R.height(68),
+        height: R.height(78),
         padding: EdgeInsets.symmetric(
           horizontal: R.width(16),
+          vertical: R.height(8),
         ),
         margin: EdgeInsets.only(bottom: R.height(8)),
         decoration: BoxDecoration(
@@ -80,12 +81,12 @@ class SubscriptionCard extends StatelessWidget {
                 if (badgeText != null)
                   Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: R.width(10),
-                      vertical: R.height(2),
+                      horizontal: R.width(12),
+                      vertical: R.height(4),
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor,
-                      borderRadius: BorderRadius.circular(R.width(8)),
+                      borderRadius: BorderRadius.circular(R.width(12)),
                     ),
                     child: Text(
                       badgeText!,
@@ -96,7 +97,7 @@ class SubscriptionCard extends StatelessWidget {
                     ),
                   )
                 else
-                  const SizedBox(height: 18),
+                  SizedBox(height: R.height(20)),
                 SizedBox(height: R.height(4)),
                 Text(
                   rightText,

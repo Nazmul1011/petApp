@@ -122,7 +122,7 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                   onPressed: () => controller.completeOnboarding(),
                 ),
               ),
-              SizedBox(height: R.height(54.0)), // Match 54px bottom margin
+              SizedBox(height: R.height(20.0)), // Standard bottom gap
             ],
           ),
         ),

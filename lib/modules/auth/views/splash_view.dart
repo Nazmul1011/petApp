@@ -12,7 +12,7 @@ class SplashView extends StatelessWidget {
       backgroundColor: const Color(0xFF6C3BAA),
       body: Center(
         child: Image.asset(
-          'assets/images/less then android 12.png',
+          'assets/images/logo 1.png',
           width: 200,
         ),
       ),

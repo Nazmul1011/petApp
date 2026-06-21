@@ -153,7 +153,7 @@ class PaymentView extends GetView<PaymentController> {
                     }),
 
                     // Bottom Actions
-                    SizedBox(height: R.height(16)),
+                    SizedBox(height: R.height(40)),
                     Obx(() {
                       final isLoading =
                           controller.isLoading.value ||
@@ -180,7 +180,7 @@ class PaymentView extends GetView<PaymentController> {
                         isLoading: isLoading,
                       );
                     }),
-                    SizedBox(height: R.height(14)),
+                    SizedBox(height: R.height(16)),
                     GestureDetector(
                       onTap: () => Get.back(),
                       child: Row(
@@ -203,7 +203,7 @@ class PaymentView extends GetView<PaymentController> {
                         ],
                       ),
                     ),
-                    SizedBox(height: R.height(10)),
+                    SizedBox(height: R.height(32)),
                     Wrap(
                       alignment: WrapAlignment.center,
                       crossAxisAlignment: WrapCrossAlignment.center,
@@ -226,7 +226,7 @@ class PaymentView extends GetView<PaymentController> {
                         ),
                       ],
                     ),
-                    SizedBox(height: R.height(10)),
+                    SizedBox(height: R.height(20)),
                   ],
                 ),
               ),
@@ -278,11 +278,8 @@ class PaymentView extends GetView<PaymentController> {
         padding: EdgeInsets.symmetric(vertical: R.height(4)),
         child: Text(
           text,
-          style: AppTypography.overlineXxs.copyWith(
+          style: AppTypography.overlineSm.copyWith(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.2,
-            fontSize: 10, // Small font size to prevent overflow
           ),
         ),
       ),

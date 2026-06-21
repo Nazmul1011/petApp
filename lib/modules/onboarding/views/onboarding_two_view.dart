@@ -56,7 +56,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                           : () => controller.skipDemo()),
               );
             }),
-            SizedBox(height: R.height(54.0)), // Updated to 54px bottom margin
+            SizedBox(height: R.height(20.0)), // Standard bottom gap
           ],
         ),
       ),
@@ -301,9 +301,6 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                               painter: WaveformPainter(
                                 values: controller.waveformValues.toList(),
                                 color: AppColors.primaryColor,
-                                secondaryColor: Colors.grey.withValues(
-                                  alpha: 0.1,
-                                ),
                               ),
                             ),
                           )

@@ -80,9 +80,11 @@ class LanguageView extends GetView<LanguageController> {
             // Bottom Section
             Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: R.width(20),
-                vertical: R.height(20),
+              padding: EdgeInsets.fromLTRB(
+                R.width(20),
+                R.height(20),
+                R.width(20),
+                R.height(40),
               ),
               child: AppMaterialButton(
                 label: "Continue",

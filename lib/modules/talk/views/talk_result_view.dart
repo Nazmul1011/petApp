@@ -94,7 +94,6 @@ class TalkResultView extends GetView<DashboardController> {
               padding: EdgeInsets.symmetric(horizontal: R.width(24)),
               child: _buildSaveVoiceSection(),
             ),
-            SizedBox(height: R.height(30)),
           ],
         ),
       ),
@@ -317,6 +316,7 @@ class TalkResultView extends GetView<DashboardController> {
                 : const Color(0xFF6C3BAA),
             textColor: isNoSoundDetected ? Colors.grey.shade400 : Colors.white,
           ),
+          SizedBox(height: R.height(20)),
         ],
       );
     });

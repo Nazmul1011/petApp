@@ -121,12 +121,14 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                               SubscriptionCard(
                                 title: "Weekly",
                                 subtitle: "\$1.99 per week",
-                                rightText: "Short-term access to all Pro features",
+                                rightText:
+                                    "Short-term access to all Pro features",
                                 isSelected:
                                     controller.selectedPlan.value ==
                                     SubscriptionPlan.weekly,
-                                onTap: () =>
-                                    controller.selectPlan(SubscriptionPlan.weekly),
+                                onTap: () => controller.selectPlan(
+                                  SubscriptionPlan.weekly,
+                                ),
                               ),
                               SubscriptionCard(
                                 title: "Monthly",
@@ -136,8 +138,9 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                 isSelected:
                                     controller.selectedPlan.value ==
                                     SubscriptionPlan.monthly,
-                                onTap: () =>
-                                    controller.selectPlan(SubscriptionPlan.monthly),
+                                onTap: () => controller.selectPlan(
+                                  SubscriptionPlan.monthly,
+                                ),
                               ),
                               SubscriptionCard(
                                 title: "Yearly",
@@ -146,15 +149,16 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                 isSelected:
                                     controller.selectedPlan.value ==
                                     SubscriptionPlan.yearly,
-                                onTap: () =>
-                                    controller.selectPlan(SubscriptionPlan.yearly),
+                                onTap: () => controller.selectPlan(
+                                  SubscriptionPlan.yearly,
+                                ),
                               ),
                             ],
                           ),
                         ),
 
                         // Bottom Actions
-                        SizedBox(height: R.height(16)),
+                        SizedBox(height: R.height(40)),
                         Obx(
                           () => AppMaterialButton(
                             label: "Continue",
@@ -173,7 +177,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                             isLoading: controller.isLoading.value,
                           ),
                         ),
-                        SizedBox(height: R.height(14)),
+                        SizedBox(height: R.height(16)),
                         GestureDetector(
                           onTap: () => Get.back(),
                           child: Row(
@@ -196,7 +200,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                             ],
                           ),
                         ),
-                        SizedBox(height: R.height(24)),
+                        SizedBox(height: R.height(32)),
                         Wrap(
                           alignment: WrapAlignment.center,
                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -216,7 +220,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                             }),
                           ],
                         ),
-                        SizedBox(height: R.height(34)),
+                        SizedBox(height: R.height(20)),
                       ],
                     ),
                   ),
@@ -232,13 +236,11 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
   Widget _buildFooterLink(String text, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
-      child: Text(
-        text,
-        style: AppTypography.overlineXxs.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.2,
-          fontSize: 10, // Small font size to prevent overflow
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: R.height(4)),
+        child: Text(
+          text,
+          style: AppTypography.overlineSm.copyWith(color: Colors.white),
         ),
       ),
     );

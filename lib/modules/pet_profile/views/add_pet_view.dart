@@ -105,7 +105,7 @@ class AddPetView extends GetView<PetProfileController> {
                       onPressed: () => controller.savePet(isUpdating: false),
                     ),
                   ),
-                  SizedBox(height: R.height(58.0)),
+                  SizedBox(height: R.height(40.0)),
                 ],
               ),
             ),

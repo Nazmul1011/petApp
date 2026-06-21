@@ -21,7 +21,12 @@ class PetSetupController extends GetxController with BaseController {
   final Rxn<XFile> imageFile = Rxn<XFile>();
 
   Future<void> pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 70,
+    );
     if (image != null) {
       imageFile.value = image;
     }

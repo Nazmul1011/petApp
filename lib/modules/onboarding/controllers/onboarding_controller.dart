@@ -10,8 +10,16 @@ import 'package:petapp/modules/onboarding/widgets/pet_pop_overlay.dart';
 enum PetType { none, dog, cat }
 
 class OnboardingController extends GetxController with BaseController {
-  final Rx<PetType> selectedPet = PetType.none.obs;
+  final Rx<PetType> selectedPet = PetType.dog.obs;
   final AudioPlayer _player = AudioPlayer();
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Pre-select dog by default (without auto-playing the sound)
+    selectedPet.value = PetType.dog;
+    GetStorage().write('onboarding_selected_pet', PetType.dog.name);
+  }
 
   void selectPet(PetType type) {
     selectedPet.value = type;

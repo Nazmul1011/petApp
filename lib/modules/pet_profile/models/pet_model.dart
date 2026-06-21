@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 enum PetType { DOG, CAT }
 
 class PetModel {
@@ -53,6 +55,31 @@ class PetModel {
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
+  }
+
+  String get fullImageUrl => buildPetImageUrl(imageUrl);
+
+  /// Builds an absolute image URL from a stored pet [imageUrl] value.
+  /// Returns '' when empty; passes through asset and http(s) values; otherwise
+  /// resolves a relative upload path against BASE_URL + /public (matches backend
+  /// static serving and the existing training/emotions convention).
+  static String buildPetImageUrl(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) return '';
+    if (imageUrl.startsWith('assets/')) return imageUrl;
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+
+    var cleanPath = imageUrl;
+    if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
+    if (cleanPath.startsWith('public/')) cleanPath = cleanPath.substring(7);
+
+    final baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final cleanBaseUrl = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
+
+    return '$cleanBaseUrl/public/$cleanPath';
   }
 
   PetModel copyWith({

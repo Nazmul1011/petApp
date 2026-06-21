@@ -79,7 +79,9 @@ class TrainingView extends GetView<TrainingController> {
                       },
                     );
                   }),
-                  SizedBox(height: R.height(40)),
+                  SizedBox(
+                    height: MediaQuery.of(context).padding.bottom + R.height(100),
+                  ),
                 ],
               ),
             ),

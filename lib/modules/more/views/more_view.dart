@@ -311,7 +311,7 @@ class _RateUsBottomSheetState extends State<_RateUsBottomSheet> {
             borderRadius: 28,
             backgroundColor: const Color(0xFF6C3BAA),
           ),
-          SizedBox(height: R.height(20)),
+          SizedBox(height: R.height(40)),
         ],
       ),
     );

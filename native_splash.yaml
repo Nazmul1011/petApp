@@ -6,7 +6,7 @@ flutter_native_splash:
   #! FOR ALL PLATFORM, except Android 12+:
   fullscreen: true
   color: '#6C3BAA'
-  image: assets/images/less then android 12.png
+  image: assets/images/logo 1.png
 #  background_image: assets/images/background-image.png
 #  branding: assets/images/branding_main_logo.png
   branding_bottom_padding: 75
@@ -14,5 +14,5 @@ flutter_native_splash:
   #! ANDROID 12+ configuration:
   android_12:
     color: '#6C3BAA'
-    image: assets/images/main_android12+.png
+    image: assets/images/logo 1.png
     # branding: assets/images/branding_main_logo.png

@@ -7,6 +7,7 @@ import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/widgets/text_form_field/app_text_form_field.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/app_popup_menu_dropdown/app_popup_menu_dropdown.dart';
+import 'package:petapp/shared/widgets/pet_avatar/pet_avatar.dart';
 import '../controllers/pet_profile_controller.dart';
 import '../models/pet_model.dart';
 import '../widgets/dashed_circle_painter.dart';
@@ -221,39 +222,34 @@ class PetProfileView extends GetView<PetProfileController> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () => _showDeleteConfirmation(pet),
-                child: Container(
-                  width: R.height(60),
-                  height: R.height(60),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFFFEBEB),
-                  ),
-                  child: const Icon(
-                    Icons.delete_outline,
-                    color: Color(0xFFF05151),
-                    size: 24,
-                  ),
-                ),
-              ),
-              SizedBox(width: R.width(16)),
-              Flexible(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: R.width(274)),
-                  child: AppMaterialButton(
-                    label: "Update",
-                    onPressed: () =>
-                        controller.savePet(isUpdating: true, id: pet.id),
-                    height: R.height(60),
-                    borderRadius: 30,
-                  ),
-                ),
-              ),
-            ],
+          // Delete icon hidden for now, only keep the Update button.
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     GestureDetector(
+          //       onTap: () => _showDeleteConfirmation(pet),
+          //       child: Container(
+          //         width: R.height(60),
+          //         height: R.height(60),
+          //         decoration: const BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           color: Color(0xFFFFEBEB),
+          //         ),
+          //         child: const Icon(
+          //           Icons.delete_outline,
+          //           color: Color(0xFFF05151),
+          //           size: 24,
+          //         ),
+          //       ),
+          //     ),
+          //     SizedBox(width: R.width(16)),
+          //   ],
+          // ),
+          AppMaterialButton(
+            label: "Update",
+            onPressed: () => controller.savePet(isUpdating: true, id: pet.id),
+            height: R.height(60),
+            borderRadius: 30,
           ),
           SizedBox(height: R.height(40.0)),
         ],
@@ -298,18 +294,18 @@ class PetProfileView extends GetView<PetProfileController> {
                   width: R.width(90),
                   height: R.width(90),
                   decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: ClipOval(
-                    child: localImage != null
-                        ? Image.file(File(localImage.path), fit: BoxFit.cover)
-                        : pet.imageUrl != null
-                        ? Image.network(pet.imageUrl!, fit: BoxFit.cover)
-                        : Image.asset(
-                            pet.type == PetType.DOG
-                                ? "assets/images/dog image.png"
-                                : "assets/images/cat image.png",
+                  child: localImage != null
+                      ? ClipOval(
+                          child: Image.file(
+                            File(localImage.path),
                             fit: BoxFit.cover,
                           ),
-                  ),
+                        )
+                      : PetAvatar(
+                          imageUrl: pet.imageUrl,
+                          type: pet.type,
+                          size: R.width(90),
+                        ),
                 ),
               ],
             );
@@ -328,6 +324,7 @@ class PetProfileView extends GetView<PetProfileController> {
     );
   }
 
+  // ignore: unused_element
   void _showDeleteConfirmation(PetModel pet) {
     Get.dialog(
       AlertDialog(
