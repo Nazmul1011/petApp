@@ -67,6 +67,7 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       iconBgColor: const Color(0xFFF2ECFA),
                       title: "Pet profile",
                       subtitle: "Photo + personalized settings",
+                      autoPlayDelay: const Duration(milliseconds: 500),
                     ),
                     OnboardingFeatureCard(
                       icon: Image.asset(
@@ -81,6 +82,7 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       iconBgColor: const Color(0xFFE5F6EE),
                       title: "Saved voices",
                       subtitle: "Bookmark moments",
+                      autoPlayDelay: const Duration(milliseconds: 2300),
                     ),
                     OnboardingFeatureCard(
                       icon: Image.asset(
@@ -95,6 +97,7 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       iconBgColor: const Color(0xFFFFF0E5),
                       title: "Games & training",
                       subtitle: "Interactive activities",
+                      autoPlayDelay: const Duration(milliseconds: 4100),
                     ),
                     OnboardingFeatureCard(
                       icon: Image.asset(
@@ -109,6 +112,7 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       iconBgColor: const Color(0xFFFFF0F2),
                       title: "Mood history",
                       subtitle: "Track patterns",
+                      autoPlayDelay: const Duration(milliseconds: 5900),
                     ),
                   ],
                 ),

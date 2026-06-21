@@ -30,11 +30,14 @@ class DashedCirclePainter extends CustomPainter {
     final radius = size.width / 2;
     final center = Offset(size.width / 2, size.height / 2);
     final circumference = 2 * pi * radius;
-    final dashCount = (circumference / (dashWidth + dashSpace)).floor();
+    // Round (not floor) so the dashes divide the circle evenly and the
+    // pattern closes perfectly at angle 0 instead of leaving a leftover gap.
+    final dashCount = (circumference / (dashWidth + dashSpace)).round();
+    final period = (2 * pi) / dashCount;
+    final sweepAngle = (dashWidth / circumference) * 2 * pi;
 
     for (int i = 0; i < dashCount; i++) {
-      final startAngle = (i * (dashWidth + dashSpace) / circumference) * 2 * pi;
-      final sweepAngle = (dashWidth / circumference) * 2 * pi;
+      final startAngle = i * period;
 
       if (gapAngle != null) {
         final angle = startAngle % (2 * pi);

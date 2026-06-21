@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
@@ -7,6 +8,8 @@ class OnboardingFeatureCard extends StatefulWidget {
   final Color iconBgColor;
   final String title;
   final String subtitle;
+  final Duration? autoPlayDelay;
+  final int jiggleCount;
 
   const OnboardingFeatureCard({
     super.key,
@@ -14,6 +17,8 @@ class OnboardingFeatureCard extends StatefulWidget {
     required this.iconBgColor,
     required this.title,
     required this.subtitle,
+    this.autoPlayDelay,
+    this.jiggleCount = 6,
   });
 
   @override
@@ -25,6 +30,7 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotationAnimation;
+  int _remainingPlays = 0;
 
   @override
   void initState() {
@@ -44,6 +50,26 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
       TweenSequenceItem(tween: Tween(begin: 0.04, end: -0.04), weight: 50),
       TweenSequenceItem(tween: Tween(begin: -0.04, end: 0.0), weight: 25),
     ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    // Repeat the single jiggle up to [jiggleCount] times, one after another.
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (_remainingPlays > 1 && mounted) {
+          _remainingPlays--;
+          _controller.forward(from: 0.0);
+        } else {
+          _remainingPlays = 0;
+        }
+      }
+    });
+
+    // Auto-play once on entry after the staggered delay (runs a single
+    // sequence, then rests — no continuous loop).
+    if (widget.autoPlayDelay != null) {
+      Future.delayed(widget.autoPlayDelay!, () {
+        if (mounted) _giggle();
+      });
+    }
   }
 
   @override
@@ -53,6 +79,7 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
   }
 
   void _giggle() {
+    _remainingPlays = widget.jiggleCount;
     _controller.forward(from: 0.0);
   }
 
@@ -60,18 +87,7 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _giggle,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Transform.rotate(
-              angle: _rotationAnimation.value,
-              child: child,
-            ),
-          );
-        },
-        child: Container(
+      child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: R.width(16),
             vertical: R.height(16),
@@ -97,7 +113,19 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
               SizedBox(
                 width: R.width(60),
                 height: R.width(60),
-                child: widget.icon,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: Transform.rotate(
+                        angle: _rotationAnimation.value,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: widget.icon,
+                ),
               ),
               const Spacer(),
               Text(
@@ -119,7 +147,6 @@ class _OnboardingFeatureCardState extends State<OnboardingFeatureCard>
               ),
             ],
           ),
-        ),
       ),
     );
   }
