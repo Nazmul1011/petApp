@@ -9,6 +9,9 @@ class AppColors {
   static const Color headingText = Color(0xFF0A0A0A);
   static const Color bodyText = Color(0xFF525252);
   static const Color lightText = Color(0xFF9E9E9E);
+  static const Color textSoft = Color(0xFF404040);
+  static const Color textGreen = Color(0xFF43A047);
+  static const Color textWhite = Color(0xFFFFFFFF);
 
   // Borders / Inputs
   static const Color inputBorder = Color(0xFFD8D9DD);

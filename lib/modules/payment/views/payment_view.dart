@@ -141,7 +141,7 @@ class PaymentView extends GetView<PaymentController> {
                             title: "Yearly",
                             subtitle: "\$12.99 per year",
                             rightText: "Full Pro access",
-                            rightTextColor: const Color(0xFF43A047),
+                            rightTextColor: AppColors.textGreen,
                             isSelected:
                                 controller.selectedPlan.value ==
                                 SubscriptionPlan.yearly,
@@ -153,7 +153,7 @@ class PaymentView extends GetView<PaymentController> {
                     }),
 
                     // Bottom Actions
-                    SizedBox(height: R.height(40)),
+                    SizedBox(height: R.height(30)),
                     Obx(() {
                       final isLoading =
                           controller.isLoading.value ||
@@ -186,24 +186,23 @@ class PaymentView extends GetView<PaymentController> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.security,
-                            color: Colors.white,
-                            size: 20,
+                          Image.asset(
+                            'assets/images/Vector.png',
+                            width: R.width(20),
+                            height: R.width(20),
+                            fit: BoxFit.contain,
                           ),
                           SizedBox(width: R.width(8)),
                           Text(
                             "Cancel anytime",
-                            style: AppTypography.labelXs.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                            style: AppTypography.labelSm.copyWith(
+                              color: AppColors.textWhite,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: R.height(32)),
+                    SizedBox(height: R.height(28)),
                     Wrap(
                       alignment: WrapAlignment.center,
                       crossAxisAlignment: WrapCrossAlignment.center,

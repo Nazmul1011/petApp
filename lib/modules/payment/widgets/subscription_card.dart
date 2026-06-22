@@ -32,8 +32,8 @@ class SubscriptionCard extends StatelessWidget {
         width: R.width(350),
         height: R.height(78),
         padding: EdgeInsets.symmetric(
-          horizontal: R.width(16),
-          vertical: R.height(8),
+          horizontal: R.width(18),
+          vertical: R.height(10),
         ),
         margin: EdgeInsets.only(bottom: R.height(8)),
         decoration: BoxDecoration(
@@ -41,7 +41,7 @@ class SubscriptionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(R.width(12)),
           border: Border.all(
             color: isSelected ? AppColors.primaryColor : Colors.black12,
-            width: isSelected ? R.width(2.0) : R.width(1.0), // Stroke-md
+            width: R.width(1.0), // Stroke-sm
           ),
           boxShadow: [
             BoxShadow(
@@ -51,34 +51,25 @@ class SubscriptionCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
                     title,
                     style: AppTypography.subtitleMd.copyWith(
                       color: AppColors.headingText,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: R.height(2)),
-                  Text(
-                    subtitle,
-                    style: AppTypography.bodySm.copyWith(color: Colors.black54),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (badgeText != null)
+                ),
+                if (badgeText != null) ...[
+                  SizedBox(width: R.width(8)),
                   Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: R.width(12),
@@ -93,16 +84,40 @@ class SubscriptionCard extends StatelessWidget {
                       style: AppTypography.bodyXxs.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        height: 1.0,
                       ),
                     ),
-                  )
-                else
-                  SizedBox(height: R.height(20)),
-                SizedBox(height: R.height(4)),
-                Text(
-                  rightText,
-                  style: AppTypography.bodyXxs.copyWith(
-                    color: rightTextColor ?? Colors.black38,
+                  ),
+                ],
+              ],
+            ),
+            SizedBox(height: R.height(4)),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 0,
+                  child: Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.textSoft,
+                    ),
+                  ),
+                ),
+                SizedBox(width: R.width(8)),
+                Expanded(
+                  child: Text(
+                    rightText,
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodyXxs.copyWith(
+                      color: rightTextColor ?? AppColors.textSoft,
+                      height: 1.2,
+                    ),
                   ),
                 ),
               ],

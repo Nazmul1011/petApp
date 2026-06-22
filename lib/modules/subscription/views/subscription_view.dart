@@ -1,6 +1,7 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
@@ -10,6 +11,7 @@ import '../../payment/controllers/payment_controller.dart';
 import '../../payment/widgets/subscription_card.dart';
 import '../controllers/subscription_controller.dart';
 import '../widgets/subscription_alert_box.dart';
+import '../widgets/subscription_header_card.dart';
 
 class SubscriptionView extends GetView<SubscriptionModuleController> {
   const SubscriptionView({super.key});
@@ -49,7 +51,6 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
               physics: const ClampingScrollPhysics(),
               child: Column(
                 children: [
-                  // Top Custom App Bar (with padding)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: R.width(20)),
                     child: Column(
@@ -80,17 +81,10 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                             ),
                           ),
                         ),
+                        SizedBox(height: R.height(12)),
+                        const SubscriptionHeaderCard(),
                       ],
                     ),
-                  ),
-
-                  SizedBox(height: R.height(12)),
-
-                  // Big Purple PRO Card Image Banner (Full bleed to remove double padding)
-                  Image.asset(
-                    'assets/images/second payment header.png',
-                    width: double.infinity,
-                    fit: BoxFit.contain,
                   ),
 
                   // Rest of the screen (with padding)
@@ -146,6 +140,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                 title: "Yearly",
                                 subtitle: "\$12.99 per year",
                                 rightText: "Full Pro access",
+                                rightTextColor: AppColors.textGreen,
                                 isSelected:
                                     controller.selectedPlan.value ==
                                     SubscriptionPlan.yearly,
@@ -158,7 +153,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         ),
 
                         // Bottom Actions
-                        SizedBox(height: R.height(40)),
+                        SizedBox(height: R.height(30)),
                         Obx(
                           () => AppMaterialButton(
                             label: "Continue",
@@ -177,30 +172,29 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                             isLoading: controller.isLoading.value,
                           ),
                         ),
-                        SizedBox(height: R.height(16)),
+                        SizedBox(height: R.height(24)),
                         GestureDetector(
                           onTap: () => Get.back(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.security,
-                                color: Colors.white,
-                                size: 20,
+                              Image.asset(
+                                'assets/images/Vector.png',
+                                width: R.width(20),
+                                height: R.width(20),
+                                fit: BoxFit.contain,
                               ),
                               SizedBox(width: R.width(8)),
                               Text(
                                 "Cancel anytime",
-                                style: AppTypography.labelXs.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
+                                style: AppTypography.labelSm.copyWith(
+                                  color: AppColors.textWhite,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: R.height(32)),
+                        SizedBox(height: R.height(28)),
                         Wrap(
                           alignment: WrapAlignment.center,
                           crossAxisAlignment: WrapCrossAlignment.center,
