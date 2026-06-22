@@ -1,10 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
+import 'package:petapp/modules/payment/models/subscription_plan.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 
 class SubscriptionHeaderCard extends StatelessWidget {
-  const SubscriptionHeaderCard({super.key});
+  final SubscriptionPlan plan;
+
+  const SubscriptionHeaderCard({super.key, required this.plan});
+
+  String get _planTitle {
+    switch (plan) {
+      case SubscriptionPlan.yearlyRegular:
+      case SubscriptionPlan.yearlyIntro:
+        return 'PRO Yearly';
+      case SubscriptionPlan.yearlyStandard:
+        return 'PRO Standard';
+    }
+  }
+
+  String get _planPrice {
+    switch (plan) {
+      case SubscriptionPlan.yearlyRegular:
+        return '7 days free, then \$40/year';
+      case SubscriptionPlan.yearlyIntro:
+        return '\$1 first month, then \$40/year';
+      case SubscriptionPlan.yearlyStandard:
+        return '\$25/year';
+    }
+  }
+
+  String get _planDescription {
+    switch (plan) {
+      case SubscriptionPlan.yearlyRegular:
+        return 'Start with a 7-day free trial. Full access to all premium features.';
+      case SubscriptionPlan.yearlyIntro:
+        return 'Get your first month for \$1. Full access to all premium features.';
+      case SubscriptionPlan.yearlyStandard:
+        return 'One year of full access to all premium features and tools.';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +73,7 @@ class SubscriptionHeaderCard extends StatelessWidget {
                   ),
                   SizedBox(height: R.height(4)),
                   Text(
-                    'PRO Yearly',
+                    _planTitle,
                     style: AppTypography.h5.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -46,7 +81,7 @@ class SubscriptionHeaderCard extends StatelessWidget {
                   ),
                   SizedBox(height: R.height(2)),
                   Text(
-                    '\$12.99/year',
+                    _planPrice,
                     style: AppTypography.subtitleSm.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -54,7 +89,7 @@ class SubscriptionHeaderCard extends StatelessWidget {
                   ),
                   SizedBox(height: R.height(8)),
                   Text(
-                    'Full access to all premium features and tools.',
+                    _planDescription,
                     style: AppTypography.bodyXs.copyWith(
                       color: Colors.white.withValues(alpha: 0.9),
                     ),

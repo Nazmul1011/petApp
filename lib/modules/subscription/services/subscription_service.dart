@@ -11,7 +11,7 @@ class SubscriptionService extends BaseService {
   }
 
   /// Creates a Polar checkout session for the selected plan.
-  /// [plan] should be "WEEKLY", "MONTHLY", or "YEARLY".
+  /// [plan] should be "YEARLY_REGULAR" or "YEARLY_STANDARD".
   Future<BaseApiResponse<Map<String, dynamic>>> createCheckoutSession({
     required String plan,
     String? successUrl,

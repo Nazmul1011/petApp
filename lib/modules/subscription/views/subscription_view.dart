@@ -7,7 +7,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
-import '../../payment/controllers/payment_controller.dart';
+import '../../payment/models/subscription_plan.dart';
 import '../../payment/widgets/subscription_card.dart';
 import '../controllers/subscription_controller.dart';
 import '../widgets/subscription_alert_box.dart';
@@ -82,7 +82,11 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           ),
                         ),
                         SizedBox(height: R.height(12)),
-                        const SubscriptionHeaderCard(),
+                        Obx(
+                          () => SubscriptionHeaderCard(
+                            plan: controller.selectedPlan.value,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -94,8 +98,11 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                       children: [
                         SizedBox(height: R.height(16)),
 
-                        // Orange Alert Box
-                        const SubscriptionAlertBox(),
+                        Obx(
+                          () => SubscriptionAlertBox(
+                            plan: controller.selectedPlan.value,
+                          ),
+                        ),
 
                         SizedBox(height: R.height(24)),
 
@@ -113,39 +120,27 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           () => Column(
                             children: [
                               SubscriptionCard(
-                                title: "Weekly",
-                                subtitle: "\$1.99 per week",
-                                rightText:
-                                    "Short-term access to all Pro features",
-                                isSelected:
-                                    controller.selectedPlan.value ==
-                                    SubscriptionPlan.weekly,
-                                onTap: () => controller.selectPlan(
-                                  SubscriptionPlan.weekly,
-                                ),
-                              ),
-                              SubscriptionCard(
-                                title: "Monthly",
-                                subtitle: "\$2.99 per month",
-                                rightText: "Full Pro access with better value",
-                                badgeText: "Best value",
-                                isSelected:
-                                    controller.selectedPlan.value ==
-                                    SubscriptionPlan.monthly,
-                                onTap: () => controller.selectPlan(
-                                  SubscriptionPlan.monthly,
-                                ),
-                              ),
-                              SubscriptionCard(
-                                title: "Yearly",
-                                subtitle: "\$12.99 per year",
+                                title: "7 days free trial",
+                                subtitle: "then \$40/year",
                                 rightText: "Full Pro access",
+                                badgeText: "Popular",
+                                isSelected:
+                                    controller.selectedPlan.value ==
+                                    SubscriptionPlan.yearlyRegular,
+                                onTap: () => controller.selectPlan(
+                                  SubscriptionPlan.yearlyRegular,
+                                ),
+                              ),
+                              SubscriptionCard(
+                                title: "Standard",
+                                subtitle: "\$25/year",
+                                rightText: "Full Pro access for 1 year",
                                 rightTextColor: AppColors.textGreen,
                                 isSelected:
                                     controller.selectedPlan.value ==
-                                    SubscriptionPlan.yearly,
+                                    SubscriptionPlan.yearlyStandard,
                                 onTap: () => controller.selectPlan(
-                                  SubscriptionPlan.yearly,
+                                  SubscriptionPlan.yearlyStandard,
                                 ),
                               ),
                             ],

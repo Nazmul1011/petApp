@@ -8,6 +8,7 @@ import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
 import '../controllers/payment_controller.dart';
+import '../models/subscription_plan.dart';
 import '../widgets/feature_list.dart';
 import '../widgets/subscription_card.dart';
 import '../../subscription/controllers/subscription_controller.dart';
@@ -62,7 +63,7 @@ class PaymentView extends GetView<PaymentController> {
                       fit: BoxFit.contain,
                     ),
 
-                    SizedBox(height: R.height(6)),
+                    SizedBox(height: R.height(50)),
 
                     // Title
                     RichText(
@@ -107,46 +108,27 @@ class PaymentView extends GetView<PaymentController> {
                       return Column(
                         children: [
                           SubscriptionCard(
-                            title: "3 days free trial",
-                            subtitle: "\$00.00",
-                            rightText: "Access to limited features",
-                            isSelected:
-                                controller.selectedPlan.value ==
-                                SubscriptionPlan.trial,
-                            onTap: () =>
-                                controller.selectPlan(SubscriptionPlan.trial),
-                          ),
-                          SubscriptionCard(
-                            title: "Weekly",
-                            subtitle: "\$1.99 per week",
-                            rightText: "Short-term access to all Pro features",
-                            isSelected:
-                                controller.selectedPlan.value ==
-                                SubscriptionPlan.weekly,
-                            onTap: () =>
-                                controller.selectPlan(SubscriptionPlan.weekly),
-                          ),
-                          SubscriptionCard(
-                            title: "Monthly",
-                            subtitle: "\$2.99 per month",
-                            rightText: "Full Pro access with better value",
-                            badgeText: "Best value",
-                            isSelected:
-                                controller.selectedPlan.value ==
-                                SubscriptionPlan.monthly,
-                            onTap: () =>
-                                controller.selectPlan(SubscriptionPlan.monthly),
-                          ),
-                          SubscriptionCard(
-                            title: "Yearly",
-                            subtitle: "\$12.99 per year",
+                            title: "7 days free trial",
+                            subtitle: "then \$40/year",
                             rightText: "Full Pro access",
-                            rightTextColor: AppColors.textGreen,
+                            badgeText: "Popular",
                             isSelected:
                                 controller.selectedPlan.value ==
-                                SubscriptionPlan.yearly,
-                            onTap: () =>
-                                controller.selectPlan(SubscriptionPlan.yearly),
+                                SubscriptionPlan.yearlyRegular,
+                            onTap: () => controller.selectPlan(
+                              SubscriptionPlan.yearlyRegular,
+                            ),
+                          ),
+                          SubscriptionCard(
+                            title: "1 month for \$1",
+                            subtitle: "then \$40/year",
+                            rightText: "Full Pro access",
+                            isSelected:
+                                controller.selectedPlan.value ==
+                                SubscriptionPlan.yearlyIntro,
+                            onTap: () => controller.selectPlan(
+                              SubscriptionPlan.yearlyIntro,
+                            ),
                           ),
                         ],
                       );
@@ -158,13 +140,8 @@ class PaymentView extends GetView<PaymentController> {
                       final isLoading =
                           controller.isLoading.value ||
                           subController.isLoading.value;
-                      final label =
-                          controller.selectedPlan.value ==
-                              SubscriptionPlan.trial
-                          ? "Continue with free trial"
-                          : "Buy subscription";
                       return AppMaterialButton(
-                        label: label,
+                        label: "Continue",
                         onPressed: isLoading
                             ? null
                             : () => controller.handleButtonTap(),
