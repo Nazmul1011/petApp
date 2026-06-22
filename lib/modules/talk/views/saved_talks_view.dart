@@ -3,7 +3,9 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
 import '../../talk/models/translation_model.dart';
 import '../../talk/services/talk_api_service.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -146,45 +148,17 @@ class SavedTalksView extends StatelessWidget {
                   child: Obx(() {
                     if (controller.isLoading.value) {
                       return const Center(
-                        child: CircularProgressIndicator(color: Color(0xFF6C3BAA)),
-                      );
-                    }
-                    final list = controller.filtered;
-                    if (list.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: R.width(32)),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.mic_none,
-                                size: 64,
-                                color: Color(0xFFCDC8E8),
-                              ),
-                              SizedBox(height: R.height(16)),
-                              Text(
-                                'No saved talks yet',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                              SizedBox(height: R.height(8)),
-                              Text(
-                                'Record a voice on the home screen and tap "Save and continue".',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade400,
-                                ),
-                              ),
-                            ],
-                          ),
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF6C3BAA),
                         ),
                       );
                     }
+
+                    final list = controller.filtered;
+                    if (list.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+
                     return ListView.separated(
                       padding: EdgeInsets.only(
                         left: R.width(20),
@@ -237,6 +211,24 @@ class SavedTalksView extends StatelessWidget {
                 ),
               ],
             ),
+            Obx(() {
+              if (controller.isLoading.value || controller.filtered.isNotEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              return Positioned(
+                top: R.height(96),
+                left: 0,
+                right: 0,
+                bottom: R.height(96),
+                child: const AppEmptyState(
+                  icon: Icons.mic_none_outlined,
+                  title: 'No saved talks',
+                  description:
+                      'Record a voice on the home screen and access it from here',
+                ),
+              );
+            }),
             Positioned(
               bottom: R.height(24),
               left: 0,
@@ -284,7 +276,7 @@ class SavedTalksView extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w700,
-              color: Colors.black,
+              color: AppColors.headingText,
             ),
           ),
         ],

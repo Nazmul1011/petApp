@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import '../controllers/notification_controller.dart';
@@ -42,26 +43,19 @@ class NotificationView extends GetView<NotificationController> {
                   ),
                   Expanded(
                     child: controller.notifications.isEmpty
-                        ? _buildEmptyState()
+                        ? const AppEmptyState(
+                            iconAsset:
+                                'assets/images/bottom_navigation/notification.png',
+                            title: 'No Notifications Yet',
+                            description:
+                                'New alerts and updates will show up here as they happen.',
+                          )
                         : _buildNotificationList(),
                   ),
                 ],
               );
             }),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.notifications_none, size: R.width(64), color: Colors.grey),
-          SizedBox(height: R.height(16)),
-          Text("No notifications yet", style: AppTypography.bodyMd),
         ],
       ),
     );
