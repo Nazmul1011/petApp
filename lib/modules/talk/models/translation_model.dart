@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class TranslationModel {
   final String id;
   final String userId;
@@ -62,4 +64,45 @@ class TranslationModel {
   }
 
   bool get isHumanToPet => direction == 'HUMAN_TO_PET';
+
+  /// Audio source used when replaying a saved talk.
+  String? get playbackAudioUrl =>
+      isHumanToPet ? outputAudioUrl : (inputAudioUrl ?? outputAudioUrl);
+
+  static bool isBundledAssetPath(String audioUrl) {
+    if (audioUrl.startsWith('assets/')) return true;
+    if (audioUrl.startsWith('audio/')) return true;
+    return !audioUrl.startsWith('/') &&
+        !audioUrl.startsWith('http://') &&
+        !audioUrl.startsWith('https://') &&
+        !audioUrl.startsWith('file://') &&
+        (audioUrl.endsWith('.mp3') ||
+            audioUrl.endsWith('.wav') ||
+            audioUrl.endsWith('.m4a'));
+  }
+
+  /// Resolves stored audio paths into something [AudioPlayer] can play.
+  static String? resolvePlaybackSource(String? audioUrl) {
+    if (audioUrl == null || audioUrl.isEmpty) return null;
+    if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
+      return audioUrl;
+    }
+    if (audioUrl.startsWith('file://') ||
+        audioUrl.startsWith('assets/') ||
+        isBundledAssetPath(audioUrl)) {
+      return audioUrl;
+    }
+
+    var cleanPath = audioUrl;
+    if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
+    if (cleanPath.startsWith('public/')) cleanPath = cleanPath.substring(7);
+
+    final baseUrl = dotenv.env['BASE_URL'] ?? '';
+    if (baseUrl.isEmpty) return audioUrl;
+
+    final cleanBaseUrl = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
+    return '$cleanBaseUrl/public/$cleanPath';
+  }
 }

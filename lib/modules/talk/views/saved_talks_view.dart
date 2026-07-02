@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
@@ -26,6 +27,8 @@ class SavedTalksController extends GetxController {
     super.onInit();
     _updatePetIcon();
     fetchSaved();
+
+    _player.onPlayerComplete.listen((_) => playingIndex.value = -1);
 
     // Dynamically update pet icon when the active user profile switches pets
     ever(AuthController.to.user, (_) {
@@ -72,25 +75,61 @@ class SavedTalksController extends GetxController {
     stopPlaying();
   }
 
-  Future<void> togglePlay(int index, String? audioUrl) async {
+  String? _resolveAudioUrl(TranslationModel item) {
+    var audioUrl = item.playbackAudioUrl;
+
+    if (item.isHumanToPet &&
+        (audioUrl == null ||
+            audioUrl.isEmpty ||
+            audioUrl.contains('mock-') ||
+            audioUrl.startsWith('/public/'))) {
+      final input = item.inputText?.trim().toLowerCase();
+      if (input != null && input.isNotEmpty) {
+        final isDog = petIcon.value.contains('dog');
+        final learned = GetStorage().read('learned_${isDog ? 'dog' : 'cat'}_$input');
+        if (learned is String && learned.isNotEmpty) {
+          audioUrl = learned;
+        }
+      }
+    }
+
+    return TranslationModel.resolvePlaybackSource(audioUrl);
+  }
+
+  Future<void> togglePlay(int index, TranslationModel item) async {
     if (playingIndex.value == index) {
       await _player.stop();
       playingIndex.value = -1;
       return;
     }
+
+    final audioUrl = _resolveAudioUrl(item);
+    if (audioUrl == null || audioUrl.isEmpty) {
+      print('[SavedTalks] No playable audio for ${item.savedName}');
+      return;
+    }
+
     await _player.stop();
     playingIndex.value = index;
 
-    if (audioUrl != null && audioUrl.startsWith('http')) {
-      await _player.play(UrlSource(audioUrl));
-    } else if (audioUrl != null && audioUrl.startsWith('file://')) {
-      await _player.play(
-        DeviceFileSource(audioUrl.replaceFirst('file://', '')),
-      );
-    } else if (audioUrl != null && audioUrl.isNotEmpty) {
-      await _player.play(AssetSource(audioUrl));
+    try {
+      if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
+        await _player.play(UrlSource(audioUrl));
+      } else if (audioUrl.startsWith('file://')) {
+        await _player.play(
+          DeviceFileSource(audioUrl.replaceFirst('file://', '')),
+        );
+      } else {
+        final assetPath = audioUrl.startsWith('assets/')
+            ? audioUrl.substring('assets/'.length)
+            : audioUrl;
+        print('[SavedTalks] Playing asset: $assetPath');
+        await _player.play(AssetSource(assetPath));
+      }
+    } catch (e) {
+      print('[SavedTalks] Playback error: $e');
+      playingIndex.value = -1;
     }
-    _player.onPlayerComplete.listen((_) => playingIndex.value = -1);
   }
 
   void stopPlaying() {
@@ -200,7 +239,7 @@ class SavedTalksView extends StatelessWidget {
                               index: index,
                               isPlaying: controller.playingIndex.value == index,
                               onPlay: () {
-                                controller.togglePlay(index, item.inputAudioUrl);
+                                controller.togglePlay(index, item);
                               },
                             ),
                           ),

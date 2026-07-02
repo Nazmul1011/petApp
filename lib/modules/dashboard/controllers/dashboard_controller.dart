@@ -335,12 +335,12 @@ class DashboardController extends GetxController with BaseController {
       if (_sessionId != null) {
         final translation = await _talkApi.createTranslation(
           sessionId: _sessionId!,
-          inputType: 'PET_VOICE', // Switch to PET_VOICE so the backend knows
+          // Use TEXT here so the backend can actually create+store the translation.
+          // Sending file:// paths from the phone doesn't work on the server.
+          inputType: 'TEXT',
           direction: 'HUMAN_TO_PET',
-          inputAudioUrl:
-              'file://$uploadPath', // Upload the bark/meow instead of your voice!
           inputText: recognizedText.value,
-          outputText: responseAssetPath.value,
+          outputAudioUrl: responseAssetPath.value,
         );
         if (translation != null) {
           _translationId = translation.id;
