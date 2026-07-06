@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
+import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import '../controllers/emotions_controller.dart';
 import '../models/emotion_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,20 +18,13 @@ class EmotionsView extends GetView<EmotionsController> {
       body: Column(
         children: [
           const AppHeader(),
+          const DashboardPageTitle(title: 'Emotions'),
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: R.width(24)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: R.height(10)),
-                  Text(
-                    "Emotions",
-                    style: AppTypography.h5.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 28,
-                    ),
-                  ),
                   SizedBox(height: R.height(12)),
                   Obx(
                     () => controller.isLoading.value

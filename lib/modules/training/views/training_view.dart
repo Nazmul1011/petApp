@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
+import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
 import 'package:petapp/core/routes/app_routes.dart';
@@ -18,20 +19,13 @@ class TrainingView extends GetView<TrainingController> {
       body: Column(
         children: [
           const AppHeader(),
+          const DashboardPageTitle(title: 'Training'),
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: R.width(24)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: R.height(10)),
-                  Text(
-                    "Training",
-                    style: AppTypography.h5.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 28,
-                    ),
-                  ),
                   SizedBox(height: R.height(24)),
                   Obx(() {
                     if (controller.isLoading.value) {

@@ -6,6 +6,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
+import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import '../controllers/notification_controller.dart';
 import '../models/notification_model.dart';
 
@@ -19,6 +20,7 @@ class NotificationView extends GetView<NotificationController> {
       body: Column(
         children: [
           const AppHeader(),
+          const DashboardPageTitle(title: 'Notification'),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value &&
@@ -29,18 +31,6 @@ class NotificationView extends GetView<NotificationController> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: R.width(20),
-                      vertical: R.height(16),
-                    ),
-                    child: Text(
-                      "Notifications",
-                      style: AppTypography.h5.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: controller.notifications.isEmpty
                         ? const AppEmptyState(

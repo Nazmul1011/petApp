@@ -2,9 +2,9 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
-import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
+import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -20,22 +20,7 @@ class DashboardView extends GetView<DashboardController> {
         child: Column(
           children: [
             const AppHeader(),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: R.width(24),
-                  vertical: R.height(8),
-                ),
-                child: Text(
-                  "Talk",
-                  style: AppTypography.h5.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
+            const DashboardPageTitle(title: 'Talk'),
             Expanded(
               child: _buildInteractiveState(),
             ),

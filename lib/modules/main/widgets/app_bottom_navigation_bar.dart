@@ -15,8 +15,8 @@ class AppBottomNavigationBar extends GetView<MainController> {
         padding: EdgeInsets.only(
           left: R.width(24),
           right: R.width(24),
-          bottom: R.height(16),
-          top: R.height(8),
+          bottom: R.height(8),
+          top: R.height(4),
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -34,7 +34,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: Container(
-                height: R.height(72),
+                padding: EdgeInsets.symmetric(vertical: R.height(8)),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
                   border: Border.all(
@@ -51,8 +51,10 @@ class AppBottomNavigationBar extends GetView<MainController> {
                   ),
                 ),
                 child: Obx(
-                  () => Stack(
-                    children: [
+                  () => SizedBox(
+                    height: R.height(40),
+                    child: Stack(
+                      children: [
                       AnimatedAlign(
                         duration: const Duration(milliseconds: 250),
                         curve: Curves.easeInOutCubic,
@@ -65,7 +67,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
                           child: Center(
                             child: Container(
                               width: R.width(52),
-                              height: R.height(44),
+                              height: R.height(40),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF9F82CE),
                                 borderRadius: BorderRadius.circular(22),
@@ -118,6 +120,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
                         ),
                       ),
                     ],
+                    ),
                   ),
                 ),
               ),
@@ -137,7 +140,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
       child: Center(
         child: SizedBox(
           width: R.width(52),
-          height: R.height(44),
+          height: R.height(40),
           child: Center(
             child: TweenAnimationBuilder<Color?>(
               duration: const Duration(milliseconds: 250),
@@ -148,8 +151,8 @@ class AppBottomNavigationBar extends GetView<MainController> {
               builder: (context, color, child) {
                 return Image.asset(
                   assetPath,
-                  width: R.width(24),
-                  height: R.height(24),
+                  width: R.width(32),
+                  height: R.height(32),
                   fit: BoxFit.contain,
                   color: color,
                   colorBlendMode: BlendMode.srcIn,
