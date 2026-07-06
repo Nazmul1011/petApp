@@ -1,10 +1,10 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/shared/widgets/dashboard_page_title.dart';
+import 'package:petapp/shared/widgets/glass_container.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -70,62 +70,73 @@ class DashboardView extends GetView<DashboardController> {
           onPointerDown: (_) => controller.startRecording(),
           onPointerUp: (_) => controller.stopRecording(),
           onPointerMove: (event) {
-            final double limit = isRecording ? 180.0 : 160.0;
+            const double glassSize = 200.0;
             if (event.localPosition.dx < 0 ||
-                event.localPosition.dx > R.width(limit) ||
+                event.localPosition.dx > R.width(glassSize) ||
                 event.localPosition.dy < 0 ||
-                event.localPosition.dy > R.height(limit)) {
+                event.localPosition.dy > R.height(glassSize)) {
               controller.stopRecording();
             }
           },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Outer Pulse Circle
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: isRecording ? R.width(180) : R.width(160),
-                height: isRecording ? R.width(180) : R.width(160),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isRecording
-                      ? AppColors.primaryColor.withValues(alpha: 0.15)
-                      : Colors.transparent,
-                  border: isRecording
-                      ? Border.all(
-                          color: AppColors.primaryColor.withValues(alpha: 0.2),
-                          width: 1,
-                        )
-                      : null,
-                ),
-              ),
-              // Main Circle
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: R.width(160),
-                height: R.width(160),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isRecording ? AppColors.primaryColor : Colors.white,
-                  boxShadow: [
-                    if (!isRecording)
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 20,
-                      ),
-                  ],
-                ),
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/onboarding_1/microphone.png',
-                    width: R.width(50),
-                    height: R.width(50),
-                    fit: BoxFit.contain,
-                    color: isRecording ? Colors.white : AppColors.primaryColor,
+          child: GlassContainer(
+            width: R.width(200),
+            height: R.width(200),
+            borderRadius: 100,
+            child: Center(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Outer Pulse Circle
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: isRecording ? R.width(180) : R.width(160),
+                    height: isRecording ? R.width(180) : R.width(160),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isRecording
+                          ? AppColors.primaryColor.withValues(alpha: 0.15)
+                          : Colors.transparent,
+                      border: isRecording
+                          ? Border.all(
+                              color: AppColors.primaryColor.withValues(
+                                alpha: 0.2,
+                              ),
+                              width: 1,
+                            )
+                          : null,
+                    ),
                   ),
-                ),
+                  // Main Circle
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: R.width(160),
+                    height: R.width(160),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isRecording ? AppColors.primaryColor : Colors.white,
+                      boxShadow: [
+                        if (!isRecording)
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 20,
+                          ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        'assets/images/onboarding_1/microphone.png',
+                        width: R.width(50),
+                        height: R.width(50),
+                        fit: BoxFit.contain,
+                        color: isRecording
+                            ? Colors.white
+                            : AppColors.primaryColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       );
@@ -139,21 +150,10 @@ class DashboardView extends GetView<DashboardController> {
       opacity: isRecording ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
       child: Center(
-        child: Container(
+        child: GlassContainer(
           width: R.width(361),
           height: R.height(48),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade100),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+          borderRadius: 16,
           child: Center(
             child: CustomPaint(
               size: Size(R.width(361), R.height(48)),
@@ -172,64 +172,30 @@ class DashboardView extends GetView<DashboardController> {
   Widget _buildModeToggle() {
     return GestureDetector(
       onTap: controller.toggleMode,
-      child: Container(
+      child: GlassContainer(
         width: R.width(192),
         height: R.height(66),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(33),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
+        borderRadius: 33,
+        padding: EdgeInsets.symmetric(
+          horizontal: R.width(8),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(33),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-            child: Container(
-              width: R.width(192),
-              height: R.height(66),
-              padding: EdgeInsets.symmetric(
-                horizontal: R.width(8),
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(33),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  width: 1.5,
-                ),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.25),
-                    Colors.white.withValues(alpha: 0.08),
-                  ],
+        child: Obx(
+          () => Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
+              AnimatedRotation(
+                turns: controller.isHumanToDog.value ? 0.0 : 0.5,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: const Icon(
+                  Icons.swap_horiz,
+                  color: Colors.black,
+                  size: 24,
                 ),
               ),
-              child: Obx(
-                () => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
-                    AnimatedRotation(
-                      turns: controller.isHumanToDog.value ? 0.0 : 0.5,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: const Icon(
-                        Icons.swap_horiz,
-                        color: Colors.black,
-                        size: 24,
-                      ),
-                    ),
-                    _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
-                  ],
-                ),
-              ),
-            ),
+              _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
+            ],
           ),
         ),
       ),

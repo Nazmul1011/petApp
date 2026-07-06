@@ -77,6 +77,13 @@ flutter:
     - assets/
     - assets/images/
     - assets/images/icon/
+    - assets/images/icon/pet_profile.png
+    - assets/images/icon/mood_history.png
+    - assets/images/icon/saved_talk.png
+    - assets/images/icon/Subscription.png
+    - assets/images/icon/Support.png
+    - assets/images/icon/rate_us.png
+    - assets/images/icon/share_app.png
     - assets/images/bottom_navigation/
     - assets/images/country_icon/
     - assets/images/onbarding-4/

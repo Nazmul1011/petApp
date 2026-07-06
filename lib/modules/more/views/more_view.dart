@@ -42,22 +42,16 @@ class MoreView extends GetView<MoreController> {
             _buildGridItem(
               imagePath: "assets/images/icon/pet_profile.png",
               label: "Pet profile",
-              iconColor: const Color(0xFF8B78E6),
-              bgColor: const Color(0xFF8B78E6).withValues(alpha: 0.12),
               onTap: () => Get.toNamed(AppRoutes.petProfile),
             ),
             _buildGridItem(
               imagePath: "assets/images/icon/mood_history.png",
               label: "Mood History",
-              iconColor: const Color(0xFFFF8A65),
-              bgColor: const Color(0xFFFF8A65).withValues(alpha: 0.12),
               onTap: () => Get.to(() => const MoodHistoryView()),
             ),
             _buildGridItem(
-              imagePath: "assets/images/icon/Saved_talk.png",
+              imagePath: "assets/images/icon/saved_talk.png",
               label: "Saved Talks",
-              iconColor: const Color(0xFFF06292),
-              bgColor: const Color(0xFFF06292).withValues(alpha: 0.12),
               onTap: () => Get.toNamed(AppRoutes.savedTalks),
             ),
             // _buildGridItem(
@@ -70,8 +64,6 @@ class MoreView extends GetView<MoreController> {
             _buildGridItem(
               imagePath: "assets/images/icon/Subscription.png",
               label: "Subscription",
-              iconColor: const Color(0xFF4DD0E1),
-              bgColor: const Color(0xFF4DD0E1).withValues(alpha: 0.12),
               onTap: () => Get.toNamed(AppRoutes.subscription),
             ),
             // _buildGridItem(
@@ -82,24 +74,13 @@ class MoreView extends GetView<MoreController> {
             //   onTap: () {},
             // ),
             _buildGridItem(
-              imagePath: "assets/images/icon/Support.png",
-              label: "Support",
-              iconColor: const Color(0xFFFF8A65),
-              bgColor: const Color(0xFFFF8A65).withValues(alpha: 0.12),
-              onTap: () => controller.launchEmailSupport(),
-            ),
-            _buildGridItem(
-              imagePath: "assets/images/icon/Rate_Us.png",
+              imagePath: "assets/images/icon/rate_us.png",
               label: "Rate us",
-              iconColor: const Color(0xFFFFB300),
-              bgColor: const Color(0xFFFFB300).withValues(alpha: 0.12),
               onTap: () => _showRateUsSheet(context),
             ),
             _buildGridItem(
-              imagePath: "assets/images/icon/Share_app.png",
+              imagePath: "assets/images/icon/share_app.png",
               label: "Share app",
-              iconColor: const Color(0xFF5C6BC0),
-              bgColor: const Color(0xFF5C6BC0).withValues(alpha: 0.12),
               onTap: () {
                 Share.share(
                   'Check out the PawLingo app! It helps you communicate with your pet.',
@@ -136,8 +117,6 @@ class MoreView extends GetView<MoreController> {
     Widget? customIcon,
     String? imagePath,
     required String label,
-    required Color iconColor,
-    required Color bgColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -161,21 +140,15 @@ class MoreView extends GetView<MoreController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: R.width(48),
-              height: R.width(48),
-              decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-              child: Center(
-                child: imagePath != null
-                    ? Image.asset(
-                        imagePath,
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.contain,
-                      )
-                    : (customIcon ?? Icon(icon, color: iconColor, size: 24)),
-              ),
-            ),
+            imagePath != null
+                ? Image.asset(
+                    imagePath,
+                    width: R.width(40),
+                    height: R.height(40),
+                    fit: BoxFit.contain,
+                  )
+                : (customIcon ??
+                    Icon(icon, color: Colors.black87, size: R.width(40))),
             SizedBox(height: R.height(12)),
             Text(
               label,
