@@ -343,9 +343,17 @@ class ApiService {
         },
         onResponse: (response, handler) {
           logger.logApi(requestOptions: response.requestOptions, response: response);
-          if (response.statusCode == 401 ||
-              (response.statusCode == 403 &&
-                  isUnauthorizedError(response.data))) {
+          final hadToken =
+              (response.requestOptions.headers['Authorization']?.toString().isNotEmpty ?? false) ||
+              ((authStorage.accessToken?.isNotEmpty ?? false));
+
+          // Only force logout if we were actually authenticated.
+          // Some private endpoints can be hit before login finishes (startup),
+          // and those 401s should not kick the user back to onboarding.
+          if (hadToken &&
+              (response.statusCode == 401 ||
+                  (response.statusCode == 403 &&
+                      isUnauthorizedError(response.data)))) {
             logger.error('[PRIVATE API] Unauthorized response. Logging out.');
             AuthTokenService().logOut();
           }
@@ -353,11 +361,21 @@ class ApiService {
         },
         onError: (e, handler) {
           logger.logApi(requestOptions: e.requestOptions, error: e);
-          if (e.response?.statusCode == 401 ||
-              (e.response?.statusCode == 403 &&
-                  isUnauthorizedError(e.response?.data))) {
+          final is401 = e.response?.statusCode == 401;
+          final is403Unauthorized =
+              e.response?.statusCode == 403 && isUnauthorizedError(e.response?.data);
+
+          // Try one refresh + retry before logging out.
+          if (is401 || is403Unauthorized) {
+            final alreadyRetried = e.requestOptions.extra['__retried'] == true;
+            if (!alreadyRetried) {
+              e.requestOptions.extra['__retried'] = true;
+              _refreshTokensAndRetry(e, handler);
+              return;
+            }
+
             logger.error(
-              '[PRIVATE API ERROR] Unauthorized (onError). Logging out.',
+              '[PRIVATE API ERROR] Unauthorized (after retry). Logging out.',
             );
             AuthTokenService().logOut();
           }
@@ -376,6 +394,74 @@ class ApiService {
         },
       ),
     ]);
+  }
+
+  Future<void> _refreshTokensAndRetry(
+    DioException error,
+    ErrorInterceptorHandler handler,
+  ) async {
+    final rt = authStorage.refreshToken;
+    if (rt == null || rt.isEmpty) {
+      handler.next(error);
+      return;
+    }
+
+    try {
+      final refreshRes = await publicClient.post(
+        '/auth/refresh',
+        data: {'refreshToken': rt},
+      );
+
+      final raw = refreshRes.data;
+      dynamic data = raw;
+      if (raw is Map && raw.containsKey('data')) data = raw['data'];
+
+      final accessToken = (data is Map) ? (data['accessToken'] ?? data['token']) : null;
+      final refreshToken = (data is Map) ? data['refreshToken'] : null;
+
+      if (accessToken is! String || accessToken.isEmpty) {
+        handler.next(error);
+        return;
+      }
+
+      if (refreshToken is String && refreshToken.isNotEmpty) {
+        authStorage.setTokens(
+          sessionToken: accessToken,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        );
+      } else {
+        authStorage.setAccessToken(accessToken);
+        authStorage.setSessionToken(accessToken);
+      }
+
+      final opts = Options(
+        method: error.requestOptions.method,
+        headers: {
+          ...error.requestOptions.headers,
+          'Authorization': 'Bearer $accessToken',
+        },
+        responseType: error.requestOptions.responseType,
+        contentType: error.requestOptions.contentType,
+        validateStatus: error.requestOptions.validateStatus,
+        receiveDataWhenStatusError:
+            error.requestOptions.receiveDataWhenStatusError,
+        followRedirects: error.requestOptions.followRedirects,
+        receiveTimeout: error.requestOptions.receiveTimeout,
+        sendTimeout: error.requestOptions.sendTimeout,
+      );
+
+      final retryResponse = await privateClient.request(
+        error.requestOptions.path,
+        data: error.requestOptions.data,
+        queryParameters: error.requestOptions.queryParameters,
+        options: opts,
+      );
+
+      handler.resolve(retryResponse);
+    } catch (e2) {
+      handler.next(error);
+    }
   }
 
   static bool isUnauthorizedError(dynamic data) {

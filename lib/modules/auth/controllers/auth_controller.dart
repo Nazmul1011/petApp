@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/services/push_notification_service.dart';
 import '../model/user_model.dart';
 import '../services/auth_api_service.dart';
 import '../../subscription/services/subscription_service.dart' as sub_service;
@@ -122,6 +123,7 @@ class AuthController extends GetxController {
         );
 
         user.value = authData.user;
+        await PushNotificationService.instance.syncWithBackend();
         return true;
       }
       return false;
@@ -148,6 +150,7 @@ class AuthController extends GetxController {
       if (user.value == null) {
         await fetchUserProfile();
       }
+      await PushNotificationService.instance.syncWithBackend();
       return true;
     } else {
       // Refresh failed, maybe logout
@@ -178,6 +181,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
+    await PushNotificationService.instance.unregisterFromBackend();
     await _authApi.logout();
     _tokenService.logOut();
     user.value = null;

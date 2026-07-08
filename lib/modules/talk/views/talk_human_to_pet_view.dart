@@ -208,7 +208,7 @@ class TalkHumanToPetView extends GetView<DashboardController> {
                 ? "Saving…"
                 : isLabelEmpty
                 ? "Talk again"
-                : "Save and continue",
+                : "Save sound",
             onPressed: isSaving
                 ? null
                 : () {

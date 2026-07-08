@@ -43,4 +43,40 @@ class NotificationApiService {
       return false;
     }
   }
+
+  Future<bool> registerPushToken({
+    required String deviceId,
+    required String token,
+    required String platform,
+    String? appVersion,
+  }) async {
+    try {
+      final response = await _apiService.post(
+        '/notifications/push-token',
+        data: {
+          'deviceId': deviceId,
+          'token': token,
+          'platform': platform,
+          if (appVersion != null) 'appVersion': appVersion,
+        },
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print('[NotificationApiService] registerPushToken error: $e');
+      return false;
+    }
+  }
+
+  Future<bool> unregisterPushToken({required String token}) async {
+    try {
+      final response = await _apiService.delete(
+        '/notifications/push-token',
+        data: {'token': token},
+      );
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      print('[NotificationApiService] unregisterPushToken error: $e');
+      return false;
+    }
+  }
 }

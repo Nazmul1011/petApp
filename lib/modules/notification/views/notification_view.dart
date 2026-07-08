@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
@@ -13,6 +14,9 @@ import '../models/notification_model.dart';
 class NotificationView extends GetView<NotificationController> {
   const NotificationView({super.key});
 
+  static const _notificationIconAsset =
+      'assets/images/bottom_navigation/notification.png';
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -20,7 +24,7 @@ class NotificationView extends GetView<NotificationController> {
       body: Column(
         children: [
           const AppHeader(),
-          const DashboardPageTitle(title: 'Notification'),
+          const DashboardPageTitle(title: 'Notifications'),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value &&
@@ -34,8 +38,7 @@ class NotificationView extends GetView<NotificationController> {
                   Expanded(
                     child: controller.notifications.isEmpty
                         ? const AppEmptyState(
-                            iconAsset:
-                                'assets/images/bottom_navigation/notification.png',
+                            iconAsset: _notificationIconAsset,
                             title: 'No Notifications Yet',
                             description:
                                 'New alerts and updates will show up here as they happen.',
@@ -62,7 +65,7 @@ class NotificationView extends GetView<NotificationController> {
             ...controller.todayNotifications.map(
               (n) => _buildNotificationCard(n),
             ),
-            SizedBox(height: R.height(24)),
+            SizedBox(height: R.height(12)),
           ],
           if (controller.previousNotifications.isNotEmpty) ...[
             _buildSectionHeader("PREVIOUS"),
@@ -70,6 +73,7 @@ class NotificationView extends GetView<NotificationController> {
               (n) => _buildNotificationCard(n),
             ),
           ],
+          SizedBox(height: R.height(16)),
         ],
       ),
     );
@@ -82,11 +86,9 @@ class NotificationView extends GetView<NotificationController> {
         vertical: R.height(12),
       ),
       child: Text(
-        title,
-        style: AppTypography.overlineXs.copyWith(
-          color: Colors.grey.shade600,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.2,
+        title.toUpperCase(),
+        style: AppTypography.overlineSm.copyWith(
+          color: AppColors.headingText, // Text/text-strong #0A0A0A
         ),
       ),
     );
@@ -95,14 +97,17 @@ class NotificationView extends GetView<NotificationController> {
   Widget _buildNotificationCard(NotificationModel notification) {
     final timeStr = DateFormat('h:mm a').format(notification.createdAt);
 
-    // Choose icon background based on type
-    Color bgColor = const Color(0xFFF3F4F6);
-    Color iconColor = Colors.grey.shade600;
-
-    if (notification.type == NotificationType.TRAINING_REMINDER) {
-      bgColor = const Color(0xFFEBE4FA); // Light purple from design
-      iconColor = const Color(0xFF6C3BAA);
-    }
+    // Unread = not selected → bold/strong text
+    // Read/selected → soft text (Body/sm #525252)
+    final bool isSelected = notification.isRead;
+    final Color textColor =
+        isSelected ? AppColors.bodyText : AppColors.headingText;
+    final Color rowBg =
+        isSelected ? Colors.white : const Color(0xFFF4F0FC);
+    final Color iconBg =
+        isSelected ? const Color(0xFFF3F4F6) : const Color(0xFFEBE4FA);
+    final Color iconColor =
+        isSelected ? const Color(0xFF0A0A0A) : const Color(0xFF6C3BAA);
 
     return InkWell(
       onTap: () => controller.markAsRead(notification.id),
@@ -111,51 +116,32 @@ class NotificationView extends GetView<NotificationController> {
           horizontal: R.width(20),
           vertical: R.height(16),
         ),
-        color: notification.isRead
-            ? Colors.transparent
-            : const Color(0xFFF4F0FC),
+        color: rowBg,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Layered Icon
             Container(
               width: R.width(48),
               height: R.width(48),
-              decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-              child: Icon(
-                Icons.notifications,
+              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+              alignment: Alignment.center,
+              child: Image.asset(
+                _notificationIconAsset,
+                width: R.width(24),
+                height: R.width(24),
                 color: iconColor,
-                size: R.width(24),
               ),
             ),
             SizedBox(width: R.width(16)),
-
-            // Text Content
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: AppTypography.bodySm.copyWith(
-                        color: Colors.black87,
-                        height: 1.4,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "${notification.message} ",
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        TextSpan(
-                          text: timeStr,
-                          style: AppTypography.bodyXs.copyWith(
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              child: RichText(
+                text: TextSpan(
+                  style: AppTypography.bodySm.copyWith(color: textColor),
+                  children: [
+                    TextSpan(text: '${notification.message} '),
+                    TextSpan(text: timeStr),
+                  ],
+                ),
               ),
             ),
           ],

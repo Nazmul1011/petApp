@@ -298,7 +298,7 @@ class TalkResultView extends GetView<DashboardController> {
                 ? "Saving…"
                 : (isNoSoundDetected
                       ? "Cannot save (No sound)"
-                      : (isLabelEmpty ? "Talk again" : "Save and continue")),
+                      : (isLabelEmpty ? "Talk again" : "Save sound")),
             onPressed: (isSaving || isNoSoundDetected)
                 ? null
                 : () {

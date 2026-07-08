@@ -54,6 +54,9 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   audio_session: ^0.2.3
   flutter_tts: ^4.2.5
+  firebase_core: ^4.11.0
+  firebase_messaging: ^16.4.1
+  package_info_plus: ^9.0.1
 
 dependency_overrides:
   path_provider_foundation: 2.5.1

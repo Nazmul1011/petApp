@@ -87,10 +87,13 @@ class DashboardController extends GetxController with BaseController {
     // Listen to changes in the active user's profile to dynamically update selectedPet
     ever(AuthController.to.user, (_) {
       _updateSelectedPetFromUser();
+      // Ensure we only create a talk session once the user is authenticated.
+      if (AuthController.to.user.value != null && _sessionId == null) {
+        _initTalkSession();
+      }
     });
 
     classifierService.init();
-    _initTalkSession();
 
     _recordSub = audioRecorder.onStateChanged().listen((RecordState state) {
       if (state == RecordState.stop) {
