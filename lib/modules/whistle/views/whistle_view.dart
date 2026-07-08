@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/whistle_controller.dart';
 
 class WhistleView extends GetView<WhistleController> {
@@ -11,109 +12,115 @@ class WhistleView extends GetView<WhistleController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const AppHeader(),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: R.width(24),
-              vertical: R.height(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Whistle",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 24,
+      horizontalPadding: 0,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: R.height(24)),
+        child: Column(
+          children: [
+            const AppHeader(),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: R.width(24),
+                vertical: R.height(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Whistle",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 24,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => _showInfoSheet(context),
-                  behavior: HitTestBehavior.opaque,
-                  child: Image.asset(
-                    'assets/images/Info icon.png',
-                    width: R.width(24),
-                    height: R.width(24),
-                    fit: BoxFit.contain,
+                  GestureDetector(
+                    onTap: () => _showInfoSheet(context),
+                    behavior: HitTestBehavior.opaque,
+                    child: Image.asset(
+                      'assets/images/Info icon.png',
+                      width: R.width(24),
+                      height: R.width(24),
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: R.height(80)),
-          // Whistle Pulse Button Area
-          AnimatedBuilder(
-            animation: controller.pulseController,
-            builder: (context, child) {
-              return GestureDetector(
-                onTap: () {
-                  controller.toggleWhistle();
-                },
-                child: Obx(() {
-                  final isplaying = controller.isPlaying.value;
-                  // When playing, the pulse circle expands and fades
-                  final pulseScale =
-                      1.0 + (controller.pulseController.value * 0.3);
-                  final pulseOpacity = 1.0 - controller.pulseController.value;
+            SizedBox(height: R.height(80)),
+            // Whistle Pulse Button Area
+            AnimatedBuilder(
+              animation: controller.pulseController,
+              builder: (context, child) {
+                return GestureDetector(
+                  onTap: () {
+                    controller.toggleWhistle();
+                  },
+                  child: Obx(() {
+                    final isplaying = controller.isPlaying.value;
+                    // When playing, the pulse circle expands and fades
+                    final pulseScale =
+                        1.0 + (controller.pulseController.value * 0.3);
+                    final pulseOpacity = 1.0 - controller.pulseController.value;
  
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Outer pulse ring (removed instantly on stop)
-                      if (isplaying)
-                        Transform.scale(
-                          scale: pulseScale,
-                          child: Container(
-                            width: R.width(180),
-                            height: R.width(180),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.primaryColor.withValues(alpha: pulseOpacity * 0.4),
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Outer pulse ring (removed instantly on stop)
+                        if (isplaying)
+                          Transform.scale(
+                            scale: pulseScale,
+                            child: Container(
+                              width: R.width(180),
+                              height: R.width(180),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primaryColor
+                                    .withValues(alpha: pulseOpacity * 0.4),
+                              ),
+                            ),
+                          ),
+                        // Main central button (snaps instantly to off state on stop)
+                        AnimatedContainer(
+                          duration: isplaying
+                              ? const Duration(milliseconds: 300)
+                              : Duration.zero,
+                          width: R.width(180),
+                          height: R.width(180),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isplaying
+                                ? AppColors.primaryColor
+                                : Colors.transparent,
+                            border: Border.all(
+                              color: isplaying
+                                  ? AppColors.primaryColor
+                                  : Colors.grey.withValues(alpha: 0.1),
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/whistle 2.png',
+                              width: R.width(60),
+                              height: R.width(60),
+                              color: isplaying
+                                  ? Colors.white
+                                  : AppColors.primaryColor,
+                              colorBlendMode: BlendMode.srcIn,
                             ),
                           ),
                         ),
-                      // Main central button (snaps instantly to off state on stop)
-                      AnimatedContainer(
-                        duration: isplaying
-                            ? const Duration(milliseconds: 300)
-                            : Duration.zero,
-                        width: R.width(180),
-                        height: R.width(180),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isplaying
-                              ? AppColors.primaryColor
-                              : Colors.transparent,
-                          border: Border.all(
-                            color: isplaying
-                                ? AppColors.primaryColor
-                                : Colors.grey.withValues(alpha: 0.1),
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/whistle 2.png',
-                            width: R.width(60),
-                            height: R.width(60),
-                            color: isplaying ? Colors.white : AppColors.primaryColor,
-                            colorBlendMode: BlendMode.srcIn,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              );
-            },
-          ),
+                      ],
+                    );
+                  }),
+                );
+              },
+            ),
  
-          SizedBox(height: R.height(100)),
+            SizedBox(height: R.height(60)),
 
           // Frequency Display
           Obx(
@@ -157,8 +164,9 @@ class WhistleView extends GetView<WhistleController> {
             }),
           ),
 
-          SizedBox(height: R.height(120)),
-        ],
+          SizedBox(height: R.height(48)),
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import 'package:petapp/shared/widgets/glass_container.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
@@ -13,8 +14,11 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // Keep the existing custom SafeArea behavior (top: false).
+      useSafeArea: false,
       body: SafeArea(
         top: false, // Handle top spacing manually for Figma accuracy
         child: Column(

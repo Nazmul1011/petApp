@@ -5,14 +5,18 @@ import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
 class TalkHumanToPetView extends GetView<DashboardController> {
   const TalkHumanToPetView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // Keep the existing SafeArea wrapper below to avoid changing layout.
+      useSafeArea: false,
       body: PopScope(
         canPop: true,
         onPopInvokedWithResult: (didPop, result) {
@@ -28,7 +32,7 @@ class TalkHumanToPetView extends GetView<DashboardController> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-                child: Column(
+                  child: Column(
                   children: [
                     SizedBox(height: R.height(40)),
 

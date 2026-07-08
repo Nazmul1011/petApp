@@ -5,6 +5,7 @@ import 'package:petapp/modules/onboarding/controllers/onboarding_four_controller
 import 'package:petapp/modules/onboarding/widgets/feature_card.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
 class OnboardingFourView extends GetView<OnboardingFourController> {
   const OnboardingFourView({super.key});
@@ -15,8 +16,11 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
       Get.put(OnboardingFourController());
     }
 
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // Keep the existing SafeArea wrapper below to avoid changing layout.
+      useSafeArea: false,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: R.width(10.0)),

@@ -4,6 +4,7 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/shared/widgets/dashboard_page_title.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
 import 'package:petapp/core/routes/app_routes.dart';
@@ -14,15 +15,26 @@ class TrainingView extends GetView<TrainingController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // This page lives inside `MainView` which already uses `extendBody: true`
+      // with the floating bottom nav. Avoid adding bottom SafeArea padding here,
+      // otherwise you get an extra "white strip" under the nav.
+      useSafeArea: false,
       body: Column(
         children: [
           const AppHeader(),
           const DashboardPageTitle(title: 'Training'),
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+              padding: EdgeInsets.only(
+                left: R.width(24),
+                right: R.width(24),
+                // Keep content above the floating bottom nav, but let background
+                // extend behind it.
+                bottom: MediaQuery.of(context).padding.bottom + R.height(56),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -73,9 +85,6 @@ class TrainingView extends GetView<TrainingController> {
                       },
                     );
                   }),
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.bottom + R.height(100),
-                  ),
                 ],
               ),
             ),

@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../../talk/models/translation_model.dart';
 import '../../talk/services/talk_api_service.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -42,7 +43,7 @@ class SavedTalksController extends GetxController {
       if (user != null) {
         final activePetId = user.activePetId;
         final pets = user.pets;
-        if (activePetId != null && pets != null) {
+        if (activePetId != null) {
           final activePet = pets.firstWhere(
             (p) => p['id'] == activePetId,
             orElse: () => pets.first,
@@ -174,8 +175,11 @@ class SavedTalksView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SavedTalksController());
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // Keep the existing SafeArea wrapper below to avoid changing layout.
+      useSafeArea: false,
       body: SafeArea(
         child: Stack(
           children: [

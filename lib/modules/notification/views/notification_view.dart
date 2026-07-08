@@ -21,6 +21,10 @@ class NotificationView extends GetView<NotificationController> {
   Widget build(BuildContext context) {
     return AppScaffold(
       horizontalPadding: 0,
+      // This page lives inside `MainView` which already uses `extendBody: true`
+      // with the floating bottom nav. Avoid adding bottom SafeArea padding here,
+      // otherwise you get an extra "white strip" under the nav.
+      useSafeArea: false,
       body: Column(
         children: [
           const AppHeader(),
@@ -58,7 +62,9 @@ class NotificationView extends GetView<NotificationController> {
     return RefreshIndicator(
       onRefresh: controller.fetchNotifications,
       child: ListView(
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(Get.context!).padding.bottom + R.height(56),
+        ),
         children: [
           if (controller.todayNotifications.isNotEmpty) ...[
             _buildSectionHeader("TODAY"),
@@ -73,7 +79,6 @@ class NotificationView extends GetView<NotificationController> {
               (n) => _buildNotificationCard(n),
             ),
           ],
-          SizedBox(height: R.height(16)),
         ],
       ),
     );

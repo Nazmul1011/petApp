@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../controllers/more_controller.dart';
@@ -13,8 +14,9 @@ class MoreView extends GetView<MoreController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

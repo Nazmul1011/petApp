@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,8 +15,11 @@ class TrainingDetailView extends GetView<TrainingController> {
     final item = Get.arguments as TrainingItem;
     final prefix = item.category == 'BASIC' ? "Basic Command" : "Trick";
 
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // Keep the existing SafeArea wrapper below to avoid changing layout.
+      useSafeArea: false,
       body: SafeArea(
         child: Column(
           children: [

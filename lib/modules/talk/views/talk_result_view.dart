@@ -5,14 +5,16 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
 class TalkResultView extends GetView<DashboardController> {
   const TalkResultView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
       body: PopScope(
         canPop: true,
         onPopInvokedWithResult: (didPop, result) {
@@ -20,14 +22,12 @@ class TalkResultView extends GetView<DashboardController> {
             controller.reset();
           }
         },
-        child: SafeArea(
-          top: true,
-          child: Column(
-            children: [
-              // const AppHeader(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+        child: Column(
+          children: [
+            // const AppHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: R.width(24)),
                 child: Column(
                   children: [
                     SizedBox(height: R.height(40)),
@@ -97,9 +97,8 @@ class TalkResultView extends GetView<DashboardController> {
           ],
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildPetWithWaves() {
     return Obx(() {

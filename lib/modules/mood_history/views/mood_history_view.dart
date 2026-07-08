@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/mood_history_controller.dart';
 import '../models/mood_analytics_model.dart';
 import 'dart:math';
@@ -12,8 +13,11 @@ class MoodHistoryView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(MoodHistoryController());
 
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
+      horizontalPadding: 0,
+      // Keep the existing SafeArea wrapper below to avoid changing layout.
+      useSafeArea: false,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

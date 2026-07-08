@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/routes/app_routes.dart';
-import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_three_controller.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
 class OnboardingThreeView extends GetView<OnboardingThreeController> {
   const OnboardingThreeView({super.key});
@@ -20,7 +19,10 @@ class OnboardingThreeView extends GetView<OnboardingThreeController> {
     return Obx(() {
       final backgroundColor = controller.getInterpolatedBackgroundColor();
 
-      return Scaffold(
+      return AppScaffold(
+        horizontalPadding: 0,
+        // Keep the existing SafeArea wrapper below to avoid changing layout.
+        useSafeArea: false,
         body: Stack(
           children: [
             // Background Gradient shifting

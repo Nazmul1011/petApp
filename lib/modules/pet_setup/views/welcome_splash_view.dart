@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 
 class WelcomeSplashView extends StatefulWidget {
   const WelcomeSplashView({super.key});
@@ -23,8 +24,9 @@ class _WelcomeSplashViewState extends State<WelcomeSplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColors.primaryColor, // Purple background
+      horizontalPadding: 0,
       body: Stack(
         children: [
           // Centered Content
