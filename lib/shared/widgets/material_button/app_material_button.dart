@@ -123,7 +123,7 @@ class AppMaterialButton extends StatelessWidget {
         ? SizedBox(
             width: R.width(24),
             height: R.width(24),
-            child: showLoader(progressColor: Colors.white),
+            child: showLoader(progressColor: textColor ?? Colors.white),
           )
         : _buildAlignedContent(labelWidget);
 
@@ -164,33 +164,39 @@ class AppMaterialButton extends StatelessWidget {
 
   Widget _buildMorphingButton(BuildContext context) {
     final effectiveOnPressed = _isEffectivelyDisabled ? null : (onPressed ?? () {});
+    final loaderColor = textColor ?? Colors.white;
 
     final labelWidget = Text(
       label,
-      style: TextStyle(
-        fontFamily: 'NationalPark',
-        color: textColor,
-        fontSize: 16,
-        height: 20 / 16,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.34,
-      ),
+      style: textStyle ??
+          TextStyle(
+            fontFamily: 'NationalPark',
+            color: textColor,
+            fontSize: 16,
+            height: 20 / 16,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.34,
+          ),
     );
 
     final content = _buildAlignedContent(labelWidget);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final actualWidth = width == double.infinity ? constraints.maxWidth : width;
+        final actualWidth =
+            width == double.infinity ? constraints.maxWidth : width;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           width: isLoading ? height : actualWidth,
           height: height,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: backgroundColor ?? const Color(0xFF6C3BAA),
-            borderRadius: BorderRadius.circular(isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius)),
+            borderRadius: BorderRadius.circular(
+              isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius),
+            ),
             border: Border.all(
               color: const Color(0xFFB398D9),
               width: 0.5,
@@ -207,19 +213,31 @@ class AppMaterialButton extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: effectiveOnPressed,
-              borderRadius: BorderRadius.circular(isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius)),
+              borderRadius: BorderRadius.circular(
+                isLoading ? height / 2 : (borderRadius > 50 ? 999 : borderRadius),
+              ),
+              // While loading: circle + spinner only. Label never shows in
+              // the loading state (avoids "Continue" flashing in the circle).
               child: Center(
-                child: isLoading
-                    ? SizedBox(
-                        key: const ValueKey('loader'),
-                        width: R.width(24),
-                        height: R.width(24),
-                        child: showLoader(progressColor: Colors.white),
-                      )
-                    : AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: content,
-                      ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: isLoading
+                      ? SizedBox(
+                          key: const ValueKey('loader'),
+                          width: R.width(24),
+                          height: R.width(24),
+                          child: showLoader(progressColor: loaderColor),
+                        )
+                      : KeyedSubtree(
+                          key: const ValueKey('label'),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: R.width(16),
+                            ),
+                            child: child ?? content,
+                          ),
+                        ),
+                ),
               ),
             ),
           ),

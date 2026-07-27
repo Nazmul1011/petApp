@@ -29,7 +29,7 @@ class PaymentRequiredModal extends StatelessWidget {
             ),
             SizedBox(height: R.height(8)),
             Text(
-              "To subscribe, add a new payment method. You'll be charged when your trial ends.",
+              "Subscribe to unlock full Pro access. Your free trial includes limited samples only.",
               style: AppTypography.bodySm.copyWith(
                 color: Colors.grey[400],
                 height: 1.4,

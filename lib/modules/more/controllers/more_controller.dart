@@ -4,14 +4,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:petapp/shared/widgets/snack_bar/app_snack_bar.dart';
 
 class MoreController extends GetxController with BaseController {
-  final String supportEmail = "support@example.com";
-  final String appleAppId = "YOUR_APP_ID_HERE"; // e.g. 6443831968
+  final String supportEmail = "Tanjim@gr8rstudio.com";
+  final String appleAppId = "6769427885";
 
   Future<void> launchEmailSupport() async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: supportEmail,
-      query: 'subject=Support Request - PetApp',
+      query: 'subject=Support Request - PawTranslator',
     );
 
     try {

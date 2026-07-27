@@ -7,6 +7,15 @@ import '../models/subscription_plan.dart';
 class PaymentController extends GetxController with BaseController {
   final Rx<SubscriptionPlan> selectedPlan = SubscriptionPlan.yearlyRegular.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    // Refresh trial availability each time payment is opened.
+    if (Get.isRegistered<SubscriptionModuleController>()) {
+      Get.find<SubscriptionModuleController>().loadTrialAvailability();
+    }
+  }
+
   void selectPlan(SubscriptionPlan plan) {
     selectedPlan.value = plan;
   }
@@ -17,6 +26,14 @@ class PaymentController extends GetxController with BaseController {
     subController.continueSubscription(fromOnboarding: true);
   }
 
+  /// Close / cancel on the onboarding paywall.
+  /// If a free trial is available, starts it (no silent skip).
+  /// Otherwise continues on the free tier into pet setup.
+  Future<void> dismissPaywall() async {
+    final subController = Get.find<SubscriptionModuleController>();
+    await subController.dismissOnboardingPaywall();
+  }
+
   void openPrivacyPolicy() {
     Get.toNamed(AppRoutes.legal, arguments: {'tab': 0});
   }
@@ -25,7 +42,8 @@ class PaymentController extends GetxController with BaseController {
     Get.toNamed(AppRoutes.legal, arguments: {'tab': 1});
   }
 
-  void restorePurchase() {
-    // Logic for restoring purchase
+  Future<void> restorePurchase() async {
+    final subController = Get.find<SubscriptionModuleController>();
+    await subController.restorePurchase();
   }
 }

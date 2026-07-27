@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -131,15 +132,32 @@ class PushNotificationService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    if (Get.isRegistered<NotificationController>()) {
-      Get.find<NotificationController>().fetchNotifications();
-    }
+    LoggerService().info(
+      '[Push] Foreground message received: ${message.messageId}',
+    );
+    _applyIncomingPush(message);
   }
 
   void _handleNotificationOpen(RemoteMessage message) {
+    LoggerService().info(
+      '[Push] Notification opened: ${message.messageId}',
+    );
+    _applyIncomingPush(message);
+  }
+
+  void _applyIncomingPush(RemoteMessage message) {
+    final controller = _ensureNotificationController();
+    // Run after the current frame so GetX/UI listeners are ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.applyIncomingPush(message);
+    });
+  }
+
+  NotificationController _ensureNotificationController() {
     if (Get.isRegistered<NotificationController>()) {
-      Get.find<NotificationController>().fetchNotifications();
+      return Get.find<NotificationController>();
     }
+    return Get.put(NotificationController(), permanent: true);
   }
 
   Future<String> _getOrCreateDeviceId() async {

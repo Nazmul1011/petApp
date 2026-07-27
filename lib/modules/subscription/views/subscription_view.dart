@@ -14,7 +14,10 @@ import '../widgets/subscription_alert_box.dart';
 import '../widgets/subscription_header_card.dart';
 
 class SubscriptionView extends GetView<SubscriptionModuleController> {
-  const SubscriptionView({super.key});
+  SubscriptionView({super.key}) {
+    // Refresh eligibility when the paywall route is opened.
+    Future.microtask(() => controller.loadTrialAvailability());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +88,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         Obx(
                           () => SubscriptionHeaderCard(
                             plan: controller.selectedPlan.value,
+                            trialAvailable: controller.trialAvailable.value,
                           ),
                         ),
                       ],
@@ -101,6 +105,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         Obx(
                           () => SubscriptionAlertBox(
                             plan: controller.selectedPlan.value,
+                            trialAvailable: controller.trialAvailable.value,
                           ),
                         ),
 
@@ -117,41 +122,49 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
 
                         // Subscription Cards
                         Obx(
-                          () => Column(
-                            children: [
-                              SubscriptionCard(
-                                title: "7 days free trial",
-                                subtitle: "then \$40/year",
-                                rightText: "Full Pro access",
-                                badgeText: "Popular",
-                                isSelected:
-                                    controller.selectedPlan.value ==
+                          () {
+                            final trialAvailable =
+                                controller.trialAvailable.value;
+                            return Column(
+                              children: [
+                                SubscriptionCard(
+                                  title: "7 days free trial",
+                                  subtitle: trialAvailable
+                                      ? "No payment required"
+                                      : "then \$40/year",
+                                  rightText: trialAvailable
+                                      ? "Limited Pro samples"
+                                      : "Full Pro access",
+                                  badgeText: "Popular",
+                                  isSelected:
+                                      controller.selectedPlan.value ==
+                                      SubscriptionPlan.yearlyRegular,
+                                  onTap: () => controller.selectPlan(
                                     SubscriptionPlan.yearlyRegular,
-                                onTap: () => controller.selectPlan(
-                                  SubscriptionPlan.yearlyRegular,
+                                  ),
                                 ),
-                              ),
-                              SubscriptionCard(
-                                title: "Standard",
-                                subtitle: "\$25/year",
-                                rightText: "Full Pro access for 1 year",
-                                rightTextColor: AppColors.textGreen,
-                                isSelected:
-                                    controller.selectedPlan.value ==
+                                SubscriptionCard(
+                                  title: "Standard",
+                                  subtitle: "\$25/year",
+                                  rightText: "Full Pro access for 1 year",
+                                  rightTextColor: AppColors.textGreen,
+                                  isSelected:
+                                      controller.selectedPlan.value ==
+                                      SubscriptionPlan.yearlyStandard,
+                                  onTap: () => controller.selectPlan(
                                     SubscriptionPlan.yearlyStandard,
-                                onTap: () => controller.selectPlan(
-                                  SubscriptionPlan.yearlyStandard,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            );
+                          },
                         ),
 
                         // Bottom Actions
                         SizedBox(height: R.height(30)),
                         Obx(
                           () => AppMaterialButton(
-                            label: "Continue",
+                            label: controller.continueButtonLabel,
                             onPressed: controller.isLoading.value
                                 ? null
                                 : () => controller.continueSubscription(),
@@ -190,24 +203,28 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           ),
                         ),
                         SizedBox(height: R.height(28)),
-                        Wrap(
-                          alignment: WrapAlignment.center,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: R.width(2),
-                          runSpacing: R.height(2),
-                          children: [
-                            _buildFooterLink("PRIVACY POLICY", () {
-                              Get.toNamed('/legal', arguments: {'tab': 0});
-                            }),
-                            _buildDot(),
-                            _buildFooterLink("TERMS AND CONDITIONS", () {
-                              Get.toNamed('/legal', arguments: {'tab': 1});
-                            }),
-                            _buildDot(),
-                            _buildFooterLink("RESTORE", () {
-                              controller.restorePurchase();
-                            }),
-                          ],
+                        SizedBox(
+                          width: double.infinity,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildFooterLink("PRIVACY POLICY", () {
+                                  Get.toNamed('/legal', arguments: {'tab': 0});
+                                }),
+                                _buildDot(),
+                                _buildFooterLink("TERMS AND CONDITIONS", () {
+                                  Get.toNamed('/legal', arguments: {'tab': 1});
+                                }),
+                                _buildDot(),
+                                _buildFooterLink("RESTORE", () {
+                                  controller.restorePurchase();
+                                }),
+                              ],
+                            ),
+                          ),
                         ),
                         SizedBox(height: R.height(20)),
                       ],
@@ -229,6 +246,8 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
         padding: EdgeInsets.symmetric(vertical: R.height(4)),
         child: Text(
           text,
+          maxLines: 1,
+          softWrap: false,
           style: AppTypography.overlineSm.copyWith(color: Colors.white),
         ),
       ),

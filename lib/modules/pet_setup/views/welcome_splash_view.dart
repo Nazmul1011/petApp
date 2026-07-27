@@ -27,43 +27,12 @@ class _WelcomeSplashViewState extends State<WelcomeSplashView> {
     return AppScaffold(
       backgroundColor: AppColors.primaryColor, // Purple background
       horizontalPadding: 0,
-      body: Stack(
-        children: [
-          // Centered Content
-          Center(
-            child: Image.asset(
-              'assets/images/Logo Container.png',
-              height: R.height(
-                150,
-              ), // Made it a bit larger since it's the only content now
-              color: Colors.white,
-            ),
-          ),
-
-          // Bottom Content
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: R.height(60)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                  (index) => Padding(
-                    padding: EdgeInsets.symmetric(horizontal: R.width(4)),
-                    child: Icon(
-                      Icons.pets,
-                      color: Colors.white.withValues(
-                        alpha: index == 4 ? 0.3 : 1.0,
-                      ),
-                      size: R.width(18),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+      body: Center(
+        child: Image.asset(
+          'assets/images/Logo Container.png',
+          height: R.height(260),
+          color: Colors.white,
+        ),
       ),
     );
   }

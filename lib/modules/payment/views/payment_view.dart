@@ -105,12 +105,17 @@ class PaymentView extends GetView<PaymentController> {
 
                     // Subscriptions
                     Obx(() {
+                      final trialAvailable = subController.trialAvailable.value;
                       return Column(
                         children: [
                           SubscriptionCard(
                             title: "7 days free trial",
-                            subtitle: "then \$40/year",
-                            rightText: "Full Pro access",
+                            subtitle: trialAvailable
+                                ? "No payment required"
+                                : "then \$40/year",
+                            rightText: trialAvailable
+                                ? "Limited Pro samples"
+                                : "Full Pro access",
                             badgeText: "Popular",
                             isSelected:
                                 controller.selectedPlan.value ==
@@ -141,7 +146,7 @@ class PaymentView extends GetView<PaymentController> {
                           controller.isLoading.value ||
                           subController.isLoading.value;
                       return AppMaterialButton(
-                        label: "Continue",
+                        label: subController.continueButtonLabel,
                         onPressed: isLoading
                             ? null
                             : () => controller.handleButtonTap(),
@@ -158,49 +163,61 @@ class PaymentView extends GetView<PaymentController> {
                       );
                     }),
                     SizedBox(height: R.height(16)),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/Vector.png',
-                            width: R.width(20),
-                            height: R.width(20),
-                            fit: BoxFit.contain,
-                          ),
-                          SizedBox(width: R.width(8)),
-                          Text(
-                            "Cancel anytime",
-                            style: AppTypography.labelSm.copyWith(
-                              color: AppColors.textWhite,
+                    Obx(() {
+                      final trialAvailable = subController.trialAvailable.value;
+                      return GestureDetector(
+                        onTap: subController.isLoading.value ||
+                                controller.isLoading.value
+                            ? null
+                            : () => controller.dismissPaywall(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/Vector.png',
+                              width: R.width(20),
+                              height: R.width(20),
+                              fit: BoxFit.contain,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                            SizedBox(width: R.width(8)),
+                            Text(
+                              trialAvailable
+                                  ? "Start free trial & continue"
+                                  : "Continue with free plan",
+                              style: AppTypography.labelSm.copyWith(
+                                color: AppColors.textWhite,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                     SizedBox(height: R.height(28)),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: R.width(2),
-                      runSpacing: R.height(2),
-                      children: [
-                        _buildFooterLink(
-                          "PRIVACY POLICY",
-                          onTap: controller.openPrivacyPolicy,
+                    SizedBox(
+                      width: double.infinity,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildFooterLink(
+                              "PRIVACY POLICY",
+                              onTap: controller.openPrivacyPolicy,
+                            ),
+                            _buildDot(),
+                            _buildFooterLink(
+                              "TERMS AND CONDITIONS",
+                              onTap: controller.openTermsConditions,
+                            ),
+                            _buildDot(),
+                            _buildFooterLink(
+                              "RESTORE",
+                              onTap: controller.restorePurchase,
+                            ),
+                          ],
                         ),
-                        _buildDot(),
-                        _buildFooterLink(
-                          "TERMS AND CONDITIONS",
-                          onTap: controller.openTermsConditions,
-                        ),
-                        _buildDot(),
-                        _buildFooterLink(
-                          "RESTORE",
-                          onTap: controller.restorePurchase,
-                        ),
-                      ],
+                      ),
                     ),
                     SizedBox(height: R.height(20)),
                   ],
@@ -217,28 +234,32 @@ class PaymentView extends GetView<PaymentController> {
                   horizontal: R.width(20),
                   vertical: R.height(10),
                 ),
-                child: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withValues(alpha: 0.8),
-                      border: Border.all(color: Colors.grey.shade200),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                        ),
-                      ],
+                child: Obx(() {
+                  final busy = controller.isLoading.value ||
+                      subController.isLoading.value;
+                  return GestureDetector(
+                    onTap: busy ? null : () => controller.dismissPaywall(),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        border: Border.all(color: Colors.grey.shade200),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.black,
+                        size: 20,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.black,
-                      size: 20,
-                    ),
-                  ),
-                ),
+                  );
+                }),
               ),
             ),
           ),
@@ -254,6 +275,8 @@ class PaymentView extends GetView<PaymentController> {
         padding: EdgeInsets.symmetric(vertical: R.height(4)),
         child: Text(
           text,
+          maxLines: 1,
+          softWrap: false,
           style: AppTypography.overlineSm.copyWith(
             color: Colors.white,
           ),

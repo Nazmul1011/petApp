@@ -6,6 +6,7 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_two_controller.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
+import 'package:petapp/shared/widgets/glass_container.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
@@ -124,71 +125,81 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
 
         const SizedBox(height: 24),
 
-        // Mic Button
+        // Mic Button (same circular glass halo as dashboard)
         GestureDetector(
           onLongPressStart: (_) => controller.startListening(),
           onLongPressEnd: (_) => controller.stopListening(),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Outer Pulse Circle
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: isListening ? R.width(180) : R.width(160),
-                height: isListening ? R.width(180) : R.width(160),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isListening
-                      ? AppColors.primaryColor.withValues(alpha: 0.15)
-                      : Colors.transparent,
-                  border: isListening
-                      ? Border.all(
-                          color: AppColors.primaryColor.withValues(alpha: 0.2),
-                          width: 1,
-                        )
-                      : null,
-                ),
-              ),
-              // Main Circle
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: R.width(160),
-                height: R.width(160),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isListening ? AppColors.primaryColor : Colors.white,
-                  boxShadow: [
-                    if (!isListening)
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 20,
-                      ),
-                  ],
-                ),
-                child: Center(
-                  child: isProcessing
-                      ? SizedBox(
-                          width: R.width(40),
-                          height: R.width(40),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
+          child: GlassContainer(
+            width: R.width(200),
+            height: R.width(200),
+            borderRadius: 100,
+            child: Center(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Outer Pulse Circle
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: isListening ? R.width(180) : R.width(160),
+                    height: isListening ? R.width(180) : R.width(160),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isListening
+                          ? AppColors.primaryColor.withValues(alpha: 0.15)
+                          : Colors.transparent,
+                      border: isListening
+                          ? Border.all(
+                              color: AppColors.primaryColor.withValues(
+                                alpha: 0.2,
+                              ),
+                              width: 1,
+                            )
+                          : null,
+                    ),
+                  ),
+                  // Main Circle
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: R.width(160),
+                    height: R.width(160),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          isListening ? AppColors.primaryColor : Colors.white,
+                      boxShadow: [
+                        if (!isListening)
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 20,
                           ),
-                        )
-                      : Image.asset(
-                          'assets/images/onboarding_1/microphone.png',
-                          width: R.width(50),
-                          height: R.width(50),
-                          fit: BoxFit.contain,
-                          color: isListening
-                              ? Colors.white
-                              : AppColors.primaryColor,
-                        ),
-                ),
+                      ],
+                    ),
+                    child: Center(
+                      child: isProcessing
+                          ? SizedBox(
+                              width: R.width(40),
+                              height: R.width(40),
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 3,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : Image.asset(
+                              'assets/images/onboarding_1/microphone.png',
+                              width: R.width(50),
+                              height: R.width(50),
+                              fit: BoxFit.contain,
+                              color: isListening
+                                  ? Colors.white
+                                  : AppColors.primaryColor,
+                            ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
 

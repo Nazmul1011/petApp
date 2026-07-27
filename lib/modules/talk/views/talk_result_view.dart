@@ -10,6 +10,28 @@ import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 class TalkResultView extends GetView<DashboardController> {
   const TalkResultView({super.key});
 
+  bool get _isNoSoundMessage {
+    final resultTextLower = controller.resultText.value.toLowerCase();
+    if (controller.resultText.value.isEmpty) return true;
+    return resultTextLower.contains('no dog sound detected') ||
+        resultTextLower.contains('no cat sound detected') ||
+        resultTextLower.contains('silence') ||
+        resultTextLower.contains('blocked') ||
+        resultTextLower.contains('error');
+  }
+
+  /// Only show play + save after a real pet→human match.
+  /// Loading / no sound → retry only (no flash of save UI).
+  bool get _hasSuccessfulResult =>
+      !controller.isHumanToDog.value &&
+      !controller.isLoading.value &&
+      !_isNoSoundMessage;
+
+  void _retry() {
+    controller.reset();
+    Get.back();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -22,80 +44,97 @@ class TalkResultView extends GetView<DashboardController> {
             controller.reset();
           }
         },
-        child: Column(
-          children: [
-            // const AppHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-                child: Column(
-                  children: [
-                    SizedBox(height: R.height(40)),
+        child: Obx(() {
+          final hasSuccess = _hasSuccessfulResult;
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                  child: Column(
+                    children: [
+                      SizedBox(height: R.height(40)),
 
-                    // Large Pet Image (only for Human-to-Pet)
-                    _buildPetWithWaves(),
+                      // Large Pet Image (only for Human-to-Pet)
+                      _buildPetWithWaves(),
 
-                    Obx(
-                      () => SizedBox(
-                        height: controller.isHumanToDog.value
-                            ? R.height(20)
-                            : 0,
+                      Obx(
+                        () => SizedBox(
+                          height: controller.isHumanToDog.value
+                              ? R.height(20)
+                              : 0,
+                        ),
                       ),
-                    ),
 
-                    // Translation Result Text (Pet to Human)
-                    Obx(() {
-                      if (controller.isHumanToDog.value)
-                        return const SizedBox.shrink();
-                      return Column(
-                        children: [
-                          if (controller.detectedFrequency.value > 0)
-                            Padding(
-                              padding: EdgeInsets.only(bottom: R.height(8)),
-                              child: Text(
-                                "${controller.detectedFrequency.value.toStringAsFixed(0)} Hz",
-                                style: AppTypography.labelXs.copyWith(
-                                  color: const Color(0xFF6C3BAA),
-                                  fontWeight: FontWeight.w600,
+                      // Translation Result Text (Pet to Human)
+                      Obx(() {
+                        if (controller.isHumanToDog.value) {
+                          return const SizedBox.shrink();
+                        }
+                        // While loading, don't claim "no sound" yet
+                        if (controller.isLoading.value &&
+                            controller.resultText.value.isEmpty) {
+                          return SizedBox(height: R.height(20));
+                        }
+                        final petLabel =
+                            controller.selectedPet.value == PetType.dog
+                            ? 'Dog'
+                            : 'Cat';
+                        final text = controller.resultText.value.isEmpty
+                            ? "No $petLabel sound detected"
+                            : controller.resultText.value;
+                        final isNoSound = _isNoSoundMessage;
+                        return Column(
+                          children: [
+                            if (controller.detectedFrequency.value > 0)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: R.height(8)),
+                                child: Text(
+                                  "${controller.detectedFrequency.value.toStringAsFixed(0)} Hz",
+                                  style: AppTypography.labelXs.copyWith(
+                                    color: const Color(0xFF6C3BAA),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
+                            Text(
+                              text,
+                              style: AppTypography.h4.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: isNoSound
+                                    ? Colors.grey
+                                    : Colors.black87,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          Text(
-                            controller.resultText.value.isEmpty
-                                ? "No ${controller.selectedPet.value == PetType.dog ? 'Dog' : 'Cat'} sound detected"
-                                : controller.resultText.value,
-                            style: AppTypography.h4.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: controller.resultText.value.isEmpty
-                                  ? Colors.grey
-                                  : Colors.black87,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: R.height(20)),
-                        ],
-                      );
-                    }),
+                            SizedBox(height: R.height(20)),
+                          ],
+                        );
+                      }),
 
-                    // Boxed Waveform
-                    _buildBoxedWaveform(),
+                      // Boxed Waveform
+                      _buildBoxedWaveform(),
 
-                    SizedBox(height: R.height(30)),
+                      SizedBox(height: R.height(30)),
 
-                    // Playback Controls
-                    _buildResultIcons(),
+                      if (hasSuccess)
+                        _buildResultIcons()
+                      else
+                        _buildNoSoundRetryIcon(),
 
-                    SizedBox(height: R.height(20)),
-                  ],
+                      SizedBox(height: R.height(20)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-              child: _buildSaveVoiceSection(),
-            ),
-          ],
-        ),
+              if (hasSuccess)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                  child: _buildSaveVoiceSection(),
+                ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -120,23 +159,6 @@ class TalkResultView extends GetView<DashboardController> {
                 height: R.height(224),
                 fit: BoxFit.contain,
               ),
-              /* 
-              // Sound Waves from ear on the right side
-              Positioned(
-                right: -R.width(50),
-                top: R.height(20),
-                child: SizedBox(
-                  width: R.width(80),
-                  height: R.height(80),
-                  child: CustomPaint(
-                    painter: SoundWavePainter(
-                      color: const Color(0xFFFFD700),
-                      animationValue: 0.5,
-                    ),
-                  ),
-                ),
-              ),
-              */
             ],
           ),
         ),
@@ -147,7 +169,7 @@ class TalkResultView extends GetView<DashboardController> {
   Widget _buildBoxedWaveform() {
     return Container(
       width: R.width(361),
-      height: R.height(48), // Slightly larger container for padding/shadow
+      height: R.height(48),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -179,25 +201,24 @@ class TalkResultView extends GetView<DashboardController> {
     );
   }
 
+  Widget _buildNoSoundRetryIcon() {
+    return Center(
+      child: _assetIconButton(
+        assetPath: 'assets/images/audio_button/retry.png',
+        onTap: _retry,
+      ),
+    );
+  }
+
   Widget _buildResultIcons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _assetIconButton(
           assetPath: 'assets/images/audio_button/retry.png',
-          onTap: () {
-            controller.reset();
-            Get.back();
-          },
+          onTap: _retry,
         ),
         SizedBox(width: R.width(24)),
-        /*
-        _assetIconButton(
-          assetPath: 'assets/images/audio_button/hold.png',
-          onTap: () => controller.stopAudio(),
-        ),
-        SizedBox(width: R.width(24)),
-        */
         Obx(
           () => _assetIconButton(
             assetPath: controller.isPlaying.value
@@ -229,16 +250,6 @@ class TalkResultView extends GetView<DashboardController> {
 
   Widget _buildSaveVoiceSection() {
     return Obx(() {
-      final resultTextLower = controller.resultText.value.toLowerCase();
-      final isNoSoundDetected =
-          !controller.isHumanToDog.value &&
-          (controller.resultText.value.isEmpty ||
-              resultTextLower.contains("no dog sound detected") ||
-              resultTextLower.contains("no cat sound detected") ||
-              resultTextLower.contains("silence") ||
-              resultTextLower.contains("blocked") ||
-              resultTextLower.contains("error"));
-
       final isLabelEmpty = controller.voiceLabel.value.isEmpty;
       final isSaving = controller.isSaving.value;
 
@@ -248,20 +259,15 @@ class TalkResultView extends GetView<DashboardController> {
           Text(
             "Save voice",
             style: AppTypography.labelXs.copyWith(
-              color: isNoSoundDetected
-                  ? Colors.grey.shade400
-                  : Colors.grey.shade600,
+              color: Colors.grey.shade600,
               fontWeight: FontWeight.w600,
             ),
           ),
           SizedBox(height: R.height(8)),
           TextFormField(
-            enabled: !isNoSoundDetected,
             onChanged: (val) => controller.voiceLabel.value = val,
             decoration: InputDecoration(
-              hintText: controller.isHumanToDog.value
-                  ? "ie. Hello boy"
-                  : (isNoSoundDetected ? "No sound detected" : "Snack"),
+              hintText: "Snack",
               hintStyle: AppTypography.bodyMd.copyWith(
                 color: Colors.grey.shade400,
               ),
@@ -273,10 +279,6 @@ class TalkResultView extends GetView<DashboardController> {
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: Colors.grey.shade200),
               ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.grey.shade100),
-              ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: Color(0xFF6C3BAA)),
@@ -285,20 +287,14 @@ class TalkResultView extends GetView<DashboardController> {
                 horizontal: R.width(20),
                 vertical: R.height(18),
               ),
-              fillColor: isNoSoundDetected
-                  ? Colors.grey.shade50
-                  : Colors.transparent,
-              filled: isNoSoundDetected,
             ),
           ),
           SizedBox(height: R.height(24)),
           AppMaterialButton(
             label: isSaving
                 ? "Saving…"
-                : (isNoSoundDetected
-                      ? "Cannot save (No sound)"
-                      : (isLabelEmpty ? "Talk again" : "Save sound")),
-            onPressed: (isSaving || isNoSoundDetected)
+                : (isLabelEmpty ? "Talk again" : "Save sound"),
+            onPressed: isSaving
                 ? null
                 : () {
                     if (isLabelEmpty) {
@@ -310,10 +306,8 @@ class TalkResultView extends GetView<DashboardController> {
                   },
             height: R.height(56),
             borderRadius: 30,
-            backgroundColor: isNoSoundDetected
-                ? Colors.grey.shade200
-                : const Color(0xFF6C3BAA),
-            textColor: isNoSoundDetected ? Colors.grey.shade400 : Colors.white,
+            backgroundColor: const Color(0xFF6C3BAA),
+            textColor: Colors.white,
           ),
           SizedBox(height: R.height(20)),
         ],

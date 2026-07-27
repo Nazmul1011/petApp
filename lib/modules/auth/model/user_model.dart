@@ -13,7 +13,14 @@ class UserModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// Paid subscription only (`state == active`). Not true during free trial.
   bool isPremium;
+
+  /// Backend free trial (`state == trial`). Limited sample access, not full Pro.
+  bool isOnTrial;
+
+  /// Whether the user can keep using elevated free-trial quotas.
+  bool get hasTrialOrPremium => isPremium || isOnTrial;
 
   UserModel({
     required this.id,
@@ -28,6 +35,7 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     this.isPremium = false,
+    this.isOnTrial = false,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -47,7 +55,9 @@ class UserModel {
       pets: json['pets'] ?? [],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      isPremium: json['isPremium'] ?? subscriptions.isNotEmpty,
+      // Prefer explicit flag; never treat "has subscription row" as paid Pro.
+      isPremium: json['isPremium'] == true,
+      isOnTrial: json['isOnTrial'] == true,
     );
   }
 

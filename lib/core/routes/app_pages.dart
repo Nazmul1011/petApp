@@ -43,7 +43,7 @@ class AppPages {
     GetPage(name: AppRoutes.payment, page: () => const PaymentView()),
     GetPage(name: AppRoutes.language, page: () => const LanguageView()),
     GetPage(name: AppRoutes.legal, page: () => const LegalView()),
-    GetPage(name: AppRoutes.subscription, page: () => const SubscriptionView()),
+    GetPage(name: AppRoutes.subscription, page: () => SubscriptionView()),
     GetPage(
       name: AppRoutes.trainingDetail,
       page: () => const TrainingDetailView(),

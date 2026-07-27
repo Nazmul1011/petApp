@@ -217,7 +217,11 @@ class DashboardController extends GetxController with BaseController {
       print('[Dashboard] Recording stopped, review path: $path');
 
       if (isHumanToDog.value) {
-        // Human to Pet: Navigate to the specialized logo view
+        // Human to Pet: clear prior result so UI never flashes old play/save
+        resultText.value = '';
+        recognizedText.value = '';
+        responseAssetPath.value = '';
+        voiceLabel.value = '';
         uiState.value = TranslationUIState.idle;
         Get.toNamed(AppRoutes.talkHumanToPet);
         await _processHumanToPet(path);
@@ -290,31 +294,32 @@ class DashboardController extends GetxController with BaseController {
       final text = await classifierService.recognizeSpeech(path);
       recognizedText.value = text?.toLowerCase().trim() ?? '';
 
-      if (recognizedText.value.isNotEmpty) {
-        resultText.value = 'You said: "${recognizedText.value}"';
-
-        // 2. Check if we have a LEARNED translation for this specific phrase
-        final box = GetStorage();
-        final String storageKey =
-            'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
-        final savedAsset = box.read<String>(storageKey);
-
-        if (savedAsset != null) {
-          responseAssetPath.value = savedAsset;
-        } else {
-          // 3. No learned phrase? Pick a random sound
-          final randomList = isDog ? _dogRandomSounds : _catRandomSounds;
-          responseAssetPath.value =
-              randomList[Random().nextInt(randomList.length)];
-        }
-
-        // 4. Play the resulting pet sound
-        playResponse();
-      } else {
-        // Fallback if no speech recognized
+      if (recognizedText.value.isEmpty) {
+        // No speech → settle UI immediately (retry-only screen, no save flash)
         resultText.value = 'No voice detected';
-        responseAssetPath.value = ''; // No sound to play
+        responseAssetPath.value = '';
+        return;
       }
+
+      resultText.value = 'You said: "${recognizedText.value}"';
+
+      // 2. Check if we have a LEARNED translation for this specific phrase
+      final box = GetStorage();
+      final String storageKey =
+          'learned_${isDog ? "dog" : "cat"}_${recognizedText.value}';
+      final savedAsset = box.read<String>(storageKey);
+
+      if (savedAsset != null) {
+        responseAssetPath.value = savedAsset;
+      } else {
+        // 3. No learned phrase? Pick a random sound
+        final randomList = isDog ? _dogRandomSounds : _catRandomSounds;
+        responseAssetPath.value =
+            randomList[Random().nextInt(randomList.length)];
+      }
+
+      // 4. Play the resulting pet sound
+      playResponse();
 
       // 5. Prepare the Pet Sound file to be saved to the backend (replacing human voice)
       String uploadPath = path;

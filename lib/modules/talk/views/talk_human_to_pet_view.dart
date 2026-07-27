@@ -10,6 +10,11 @@ import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 class TalkHumanToPetView extends GetView<DashboardController> {
   const TalkHumanToPetView({super.key});
 
+  void _retry() {
+    controller.reset();
+    Get.back();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -26,44 +31,52 @@ class TalkHumanToPetView extends GetView<DashboardController> {
         },
         child: SafeArea(
           top: true,
-          child: Column(
-            children: [
-              // const AppHeader(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-                  child: Column(
-                  children: [
-                    SizedBox(height: R.height(40)),
+          child: Obx(() {
+            // Only show play/save once a pet sound exists.
+            // While loading or when no voice → image + wave + retry only (no flash).
+            final hasVoiceResult =
+                controller.responseAssetPath.value.isNotEmpty;
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                    child: Column(
+                      children: [
+                        SizedBox(height: R.height(40)),
 
-                    // Large Pet Image with Sound Waves
-                    _buildPetLogo(),
+                        // Large Pet Image with Sound Waves
+                        _buildPetLogo(),
 
-                    SizedBox(height: R.height(30)),
+                        SizedBox(height: R.height(30)),
 
-                    // Boxed Waveform
-                    _buildBoxedWaveform(),
+                        // Boxed Waveform
+                        _buildBoxedWaveform(),
 
-                    SizedBox(height: R.height(30)),
+                        SizedBox(height: R.height(30)),
 
-                    // Playback Controls
-                    _buildResultIcons(),
+                        if (hasVoiceResult)
+                          _buildResultIcons()
+                        else
+                          _buildNoVoiceRetryIcon(),
 
-                    SizedBox(height: R.height(20)),
-                  ],
+                        SizedBox(height: R.height(20)),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: R.width(24)),
-              child: _buildSaveVoiceSection(),
-            ),
-          ],
+                if (hasVoiceResult)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: R.width(24)),
+                    child: _buildSaveVoiceSection(),
+                  ),
+              ],
+            );
+          }),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildPetLogo() {
     return Obx(() {
@@ -118,16 +131,22 @@ class TalkHumanToPetView extends GetView<DashboardController> {
     );
   }
 
+  Widget _buildNoVoiceRetryIcon() {
+    return Center(
+      child: _assetIconButton(
+        assetPath: 'assets/images/audio_button/retry.png',
+        onTap: _retry,
+      ),
+    );
+  }
+
   Widget _buildResultIcons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _assetIconButton(
           assetPath: 'assets/images/audio_button/retry.png',
-          onTap: () {
-            controller.reset();
-            Get.back();
-          },
+          onTap: _retry,
         ),
         SizedBox(width: R.width(24)),
         /*

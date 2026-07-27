@@ -31,54 +31,48 @@ class NotificationView extends GetView<NotificationController> {
           const DashboardPageTitle(title: 'Notifications'),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value &&
-                  controller.notifications.isEmpty) {
+              // Explicitly read reactive fields so the list rebuilds on push/sync.
+              final _ = controller.listVersion.value;
+              final loading = controller.isLoading.value;
+              final today = controller.todayNotifications.toList();
+              final previous = controller.previousNotifications.toList();
+              final isEmpty = today.isEmpty && previous.isEmpty;
+
+              if (loading && isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: controller.notifications.isEmpty
-                        ? const AppEmptyState(
-                            iconAsset: _notificationIconAsset,
-                            title: 'No Notifications Yet',
-                            description:
-                                'New alerts and updates will show up here as they happen.',
-                          )
-                        : _buildNotificationList(),
+              if (isEmpty) {
+                return const AppEmptyState(
+                  iconAsset: _notificationIconAsset,
+                  title: 'No Notifications Yet',
+                  description:
+                      'New alerts and updates will show up here as they happen.',
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: controller.fetchNotifications,
+                child: ListView(
+                  padding: EdgeInsets.only(
+                    bottom:
+                        MediaQuery.of(context).padding.bottom + R.height(56),
                   ),
-                ],
+                  children: [
+                    if (today.isNotEmpty) ...[
+                      _buildSectionHeader('TODAY'),
+                      ...today.map(_buildNotificationCard),
+                      SizedBox(height: R.height(12)),
+                    ],
+                    if (previous.isNotEmpty) ...[
+                      _buildSectionHeader('PREVIOUS'),
+                      ...previous.map(_buildNotificationCard),
+                    ],
+                  ],
+                ),
               );
             }),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNotificationList() {
-    return RefreshIndicator(
-      onRefresh: controller.fetchNotifications,
-      child: ListView(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(Get.context!).padding.bottom + R.height(56),
-        ),
-        children: [
-          if (controller.todayNotifications.isNotEmpty) ...[
-            _buildSectionHeader("TODAY"),
-            ...controller.todayNotifications.map(
-              (n) => _buildNotificationCard(n),
-            ),
-            SizedBox(height: R.height(12)),
-          ],
-          if (controller.previousNotifications.isNotEmpty) ...[
-            _buildSectionHeader("PREVIOUS"),
-            ...controller.previousNotifications.map(
-              (n) => _buildNotificationCard(n),
-            ),
-          ],
         ],
       ),
     );
@@ -115,6 +109,7 @@ class NotificationView extends GetView<NotificationController> {
         isSelected ? const Color(0xFF0A0A0A) : const Color(0xFF6C3BAA);
 
     return InkWell(
+      key: ValueKey(notification.id),
       onTap: () => controller.markAsRead(notification.id),
       child: Container(
         padding: EdgeInsets.symmetric(

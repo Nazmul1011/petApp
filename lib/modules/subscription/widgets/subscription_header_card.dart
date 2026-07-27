@@ -6,8 +6,13 @@ import 'package:petapp/shared/helpers/responsive.dart';
 
 class SubscriptionHeaderCard extends StatelessWidget {
   final SubscriptionPlan plan;
+  final bool trialAvailable;
 
-  const SubscriptionHeaderCard({super.key, required this.plan});
+  const SubscriptionHeaderCard({
+    super.key,
+    required this.plan,
+    this.trialAvailable = false,
+  });
 
   String get _planTitle {
     switch (plan) {
@@ -22,7 +27,9 @@ class SubscriptionHeaderCard extends StatelessWidget {
   String get _planPrice {
     switch (plan) {
       case SubscriptionPlan.yearlyRegular:
-        return '7 days free,\nthen \$40/year';
+        return trialAvailable
+            ? '7 days free,\nno card needed'
+            : '7 days free,\nthen \$40/year';
       case SubscriptionPlan.yearlyIntro:
         return '\$1 first month,\nthen \$40/year';
       case SubscriptionPlan.yearlyStandard:
@@ -30,16 +37,18 @@ class SubscriptionHeaderCard extends StatelessWidget {
     }
   }
 
-  String get _planDescription {
-    switch (plan) {
-      case SubscriptionPlan.yearlyRegular:
-        return '7-day free trial. Full access';
-      case SubscriptionPlan.yearlyIntro:
-        return '\$1 first month. Full premium access.';
-      case SubscriptionPlan.yearlyStandard:
-        return 'Full access to all premium features.';
-    }
-  }
+  // String get _planDescription {
+  //   switch (plan) {
+  //     case SubscriptionPlan.yearlyRegular:
+  //       return trialAvailable
+  //           ? 'Limited Pro samples. No payment required.'
+  //           : '7-day free trial. Full access';
+  //     case SubscriptionPlan.yearlyIntro:
+  //       return '\$1 first month. Full premium access.';
+  //     case SubscriptionPlan.yearlyStandard:
+  //       return 'Full access to all premium features.';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -121,16 +130,16 @@ class SubscriptionHeaderCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const Spacer(),
-                Text(
-                  _planDescription,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.bodyXs.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    height: 1.35,
-                  ),
-                ),
+                // const Spacer(),
+                // Text(
+                //   _planDescription,
+                //   maxLines: 2,
+                //   overflow: TextOverflow.ellipsis,
+                //   style: AppTypography.bodyXs.copyWith(
+                //     color: Colors.white.withValues(alpha: 0.9),
+                //     height: 1.35,
+                //   ),
+                // ),
               ],
             ),
           ),

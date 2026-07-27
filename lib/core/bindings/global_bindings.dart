@@ -32,10 +32,8 @@ class GlobalBindings extends Bindings {
     Get.lazyPut<EmotionsController>(() => EmotionsController(), fenix: true);
     Get.lazyPut<WhistleController>(() => WhistleController(), fenix: true);
     Get.lazyPut<TrainingController>(() => TrainingController(), fenix: true);
-    Get.lazyPut<NotificationController>(
-      () => NotificationController(),
-      fenix: true,
-    );
+    // Permanent so FCM can refresh unread badge before the user opens the tab.
+    Get.put<NotificationController>(NotificationController(), permanent: true);
     Get.lazyPut<MoreController>(() => MoreController(), fenix: true);
 
     // Payments

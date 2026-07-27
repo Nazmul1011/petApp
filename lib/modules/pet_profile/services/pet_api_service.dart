@@ -13,15 +13,14 @@ class PetApiService {
         'file': await MultipartFile.fromFile(
           file.path,
           filename: fileName,
+          contentType: DioMediaType.parse('image/jpeg'),
         ),
       });
 
+      // Do not set Content-Type manually — Dio must add the multipart boundary.
       final response = await _api.post(
         '/upload/image',
         data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
       );
 
       final dynamic dataWrapper = response.data['data'];

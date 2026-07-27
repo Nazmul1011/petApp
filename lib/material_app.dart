@@ -14,7 +14,7 @@ class Petapp extends StatelessWidget {
   Widget build(BuildContext context) {
     R.init(context);
     return GetMaterialApp(
-      title: 'petapp',
+      title: 'PawTranslator',
       theme: appTheme(context),
       initialBinding: GlobalBindings(),
       initialRoute: AppRoutes.appRoot,

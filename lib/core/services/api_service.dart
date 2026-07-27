@@ -546,11 +546,19 @@ class ApiService {
     Map<String, dynamic>? headers,
   }) async {
     final client = getClient(apiType, overrideBaseUrl);
-    final options = Options(
-      headers: headers != null
-          ? {...client.options.headers, ...headers}
-          : client.options.headers,
-    );
+    final mergedHeaders = <String, dynamic>{
+      ...client.options.headers,
+      if (headers != null) ...headers,
+    };
+
+    // FormData needs Dio to set multipart Content-Type with boundary.
+    // A bare application/json or multipart/form-data header breaks uploads.
+    if (data is FormData) {
+      mergedHeaders.remove('Content-Type');
+      mergedHeaders.remove('content-type');
+    }
+
+    final options = Options(headers: mergedHeaders);
 
     final response = await client.post(
       path,

@@ -10,6 +10,14 @@ class SubscriptionService extends BaseService {
     );
   }
 
+  /// Starts the one-time 7-day free trial (no payment required).
+  Future<BaseApiResponse<Map<String, dynamic>>> startFreeTrial() async {
+    return safeRequest(
+      request: () => api.post('/subscription/trial'),
+      fromJson: (json) => json as Map<String, dynamic>,
+    );
+  }
+
   /// Creates a Polar checkout session for the selected plan.
   /// [plan] should be "YEARLY_REGULAR" or "YEARLY_STANDARD".
   Future<BaseApiResponse<Map<String, dynamic>>> createCheckoutSession({

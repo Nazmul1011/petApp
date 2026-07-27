@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get_storage/get_storage.dart';
@@ -17,7 +16,15 @@ class AuthController extends GetxController {
   final AuthApiService _authApi = AuthApiService();
   final GetStorage _storage = GetStorage();
   final AuthTokenService _tokenService = AuthTokenService();
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  /// iOS Keychain: survives app delete/reinstall on the same device.
+  /// [first_unlock] keeps the item readable after reboot once the device
+  /// has been unlocked, which is safer for cold-start login.
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock,
+    ),
+  );
 
   static const String _gameIdKey = 'device_game_id';
   static const String _hasSeenOnboardingKey =
@@ -33,22 +40,23 @@ class AuthController extends GetxController {
     _autoLogin();
   }
 
-  /// Get or create a unique gameId for this device
+  /// Get or create a unique gameId for this device.
+  /// On iOS this is stored in Keychain so it can survive uninstall.
   Future<String> getOrCreateGameId() async {
-    // 1. Try reading from Secure Storage (Persistent across uninstalls on iOS)
+    // 1. Try reading from Secure Storage (Keychain on iOS)
     String? gameId = await _secureStorage.read(key: _gameIdKey);
 
     // 2. If not found in Secure Storage, check GetStorage (for migration/existing users)
-    if (gameId == null) {
+    if (gameId == null || gameId.isEmpty) {
       gameId = _storage.read<String>(_gameIdKey);
     }
 
     // 3. If still not found, generate a new random ID
-    if (gameId == null) {
+    if (gameId == null || gameId.isEmpty) {
       gameId = const Uuid().v4();
     }
 
-    // 4. Ensure it's saved in both places for reliability
+    // 4. Re-write to Keychain so accessibility options stay applied after upgrades
     await _secureStorage.write(key: _gameIdKey, value: gameId);
     _storage.write(_gameIdKey, gameId);
 
@@ -90,7 +98,11 @@ class AuthController extends GetxController {
         targetRoute = AppRoutes.onboarding;
       } else if (currentUser.activePetId == null ||
           currentUser.activePetId!.isEmpty) {
-        targetRoute = AppRoutes.payment;
+        // Already on trial/paid → continue pet setup. Otherwise show paywall
+        // so the user can start the free trial or subscribe.
+        targetRoute = currentUser.hasTrialOrPremium
+            ? AppRoutes.welcomeSplash
+            : AppRoutes.payment;
       } else {
         targetRoute = AppRoutes.dashboard;
       }
@@ -123,6 +135,8 @@ class AuthController extends GetxController {
         );
 
         user.value = authData.user;
+        // Always refresh profile + subscription for this gameId user
+        await fetchUserProfile();
         await PushNotificationService.instance.syncWithBackend();
         return true;
       }
@@ -146,10 +160,8 @@ class AuthController extends GetxController {
         refreshToken: authData.refreshToken,
       );
 
-      // Fetch user profile if not present
-      if (user.value == null) {
-        await fetchUserProfile();
-      }
+      // Always refresh profile + subscription after token refresh
+      await fetchUserProfile();
       await PushNotificationService.instance.syncWithBackend();
       return true;
     } else {
@@ -159,18 +171,29 @@ class AuthController extends GetxController {
     }
   }
 
+  /// Re-authenticate with the persisted gameId and reload subscription state.
+  /// Used by the RESTORE purchase flow after reinstall.
+  Future<bool> restoreSubscriptionForDevice() async {
+    final success = await loginWithDevice();
+    if (!success) return false;
+    // loginWithDevice already calls fetchUserProfile
+    return user.value?.isPremium == true;
+  }
+
   Future<void> fetchUserProfile() async {
     final response = await _authApi.getMe();
     if (response.success && response.data != null) {
       UserModel fetchedUser = response.data!;
 
-      // Also fetch subscription summary to update premium state
+      // Also fetch subscription summary to update premium / trial state.
+      // `isPremium` = paid only. Trial is limited and tracked separately.
       try {
         final subResponse = await sub_service.SubscriptionService()
             .getSummary();
         if (subResponse.success && subResponse.data != null) {
           final state = subResponse.data!['state'];
-          fetchedUser.isPremium = (state == 'active' || state == 'trial');
+          fetchedUser.isPremium = state == 'active';
+          fetchedUser.isOnTrial = state == 'trial';
         }
       } catch (e) {
         LoggerService().error('Failed to fetch subscription summary: $e');
@@ -198,8 +221,10 @@ class AuthController extends GetxController {
 
     if (response.success && response.data != null) {
       final isPremium = user.value?.isPremium ?? false;
+      final isOnTrial = user.value?.isOnTrial ?? false;
       user.value = response.data;
       user.value!.isPremium = isPremium;
+      user.value!.isOnTrial = isOnTrial;
       handleRouting();
     }
   }
@@ -211,10 +236,12 @@ class AuthController extends GetxController {
     final response = await _authApi.updateProfile({'activePetId': petId});
 
     if (response.success && response.data != null) {
-      // Retain the isPremium flag since updateProfile response might not re-calculate it locally
+      // Retain flags — updateProfile response may not include subscription state.
       final isPremium = user.value?.isPremium ?? false;
+      final isOnTrial = user.value?.isOnTrial ?? false;
       user.value = response.data!;
       user.value!.isPremium = isPremium;
+      user.value!.isOnTrial = isOnTrial;
       user.refresh();
     }
     isLoading.value = false;

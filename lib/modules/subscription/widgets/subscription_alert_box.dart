@@ -5,8 +5,13 @@ import 'package:petapp/shared/helpers/responsive.dart';
 
 class SubscriptionAlertBox extends StatelessWidget {
   final SubscriptionPlan plan;
+  final bool trialAvailable;
 
-  const SubscriptionAlertBox({super.key, required this.plan});
+  const SubscriptionAlertBox({
+    super.key,
+    required this.plan,
+    this.trialAvailable = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +19,20 @@ class SubscriptionAlertBox extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final isNoPaymentTrial =
+        trialAvailable && plan == SubscriptionPlan.yearlyRegular;
+
+    final title = plan == SubscriptionPlan.yearlyIntro
+        ? 'Intro offer'
+        : isNoPaymentTrial
+            ? 'Free trial — no card needed'
+            : 'Free trial included';
+
     final message = plan == SubscriptionPlan.yearlyIntro
         ? 'After your \$1 first month, you will be charged \$40/year unless canceled at least 24 hours before the period ends.'
-        : 'After your 7-day free trial, you will be charged \$40/year unless canceled at least 24 hours before the period ends.';
+        : isNoPaymentTrial
+            ? 'Start a 7-day free trial with no payment. You get limited Pro samples (not full unlock). Subscribe anytime for unlimited access.'
+            : 'After your 7-day free trial, you will be charged \$40/year unless canceled at least 24 hours before the period ends.';
 
     return Container(
       width: double.infinity,
@@ -29,9 +45,7 @@ class SubscriptionAlertBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            plan == SubscriptionPlan.yearlyIntro
-                ? 'Intro offer'
-                : 'Free trial included',
+            title,
             style: AppTypography.subtitleSm.copyWith(
               color: const Color(0xFFFF7A00),
               fontWeight: FontWeight.bold,

@@ -85,7 +85,7 @@ class MoreView extends GetView<MoreController> {
               label: "Share app",
               onTap: () {
                 Share.share(
-                  'Check out the PawLingo app! It helps you communicate with your pet.',
+                  'Check out the PawTranslator app! It helps you communicate with your pet.',
                 );
               },
             ),
@@ -177,7 +177,14 @@ class _RateUsBottomSheet extends StatefulWidget {
 }
 
 class _RateUsBottomSheetState extends State<_RateUsBottomSheet> {
-  int _rating = 3;
+  int _rating = 0;
+  final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -260,6 +267,7 @@ class _RateUsBottomSheetState extends State<_RateUsBottomSheet> {
                 ),
                 SizedBox(height: R.height(4)),
                 TextField(
+                  controller: _commentController,
                   maxLines: 3,
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
                   decoration: InputDecoration(
