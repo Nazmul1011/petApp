@@ -22,15 +22,18 @@ class PaymentController extends GetxController with BaseController {
 
   void handleButtonTap() {
     final subController = Get.find<SubscriptionModuleController>();
+    // Ignore extra taps while Continue / close is already running.
+    if (subController.isLoading.value) return;
     subController.selectedPlan.value = selectedPlan.value;
     subController.continueSubscription(fromOnboarding: true);
   }
 
   /// Close / cancel on the onboarding paywall.
-  /// If a free trial is available, starts it (no silent skip).
-  /// Otherwise continues on the free tier into pet setup.
+  /// If trial already active → just close. If trial available → start once.
+  /// Otherwise continue on the free tier into pet setup.
   Future<void> dismissPaywall() async {
     final subController = Get.find<SubscriptionModuleController>();
+    if (subController.isLoading.value) return;
     await subController.dismissOnboardingPaywall();
   }
 

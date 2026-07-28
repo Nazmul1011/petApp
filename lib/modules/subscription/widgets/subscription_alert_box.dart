@@ -29,10 +29,10 @@ class SubscriptionAlertBox extends StatelessWidget {
             : 'Free trial included';
 
     final message = plan == SubscriptionPlan.yearlyIntro
-        ? 'After your \$1 first month, you will be charged \$40/year unless canceled at least 24 hours before the period ends.'
+        ? 'After your \$1 first month, you will be charged \$25/year unless canceled at least 24 hours before the period ends.'
         : isNoPaymentTrial
             ? 'Start a 7-day free trial with no payment. You get limited Pro samples (not full unlock). Subscribe anytime for unlimited access.'
-            : 'After your 7-day free trial, you will be charged \$40/year unless canceled at least 24 hours before the period ends.';
+            : 'After your 7-day free trial, you will be charged \$25/year unless canceled at least 24 hours before the period ends.';
 
     return Container(
       width: double.infinity,

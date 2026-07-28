@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
+import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
@@ -112,7 +113,7 @@ class PaymentView extends GetView<PaymentController> {
                             title: "7 days free trial",
                             subtitle: trialAvailable
                                 ? "No payment required"
-                                : "then \$40/year",
+                                : "then \$25/year",
                             rightText: trialAvailable
                                 ? "Limited Pro samples"
                                 : "Full Pro access",
@@ -126,7 +127,7 @@ class PaymentView extends GetView<PaymentController> {
                           ),
                           SubscriptionCard(
                             title: "1 month for \$1",
-                            subtitle: "then \$40/year",
+                            subtitle: "then \$25/year",
                             rightText: "Full Pro access",
                             isSelected:
                                 controller.selectedPlan.value ==
@@ -165,6 +166,16 @@ class PaymentView extends GetView<PaymentController> {
                     SizedBox(height: R.height(16)),
                     Obx(() {
                       final trialAvailable = subController.trialAvailable.value;
+                      final alreadyOnTrial =
+                          subController.isTrialActive.value ||
+                          (Get.isRegistered<AuthController>() &&
+                              (AuthController.to.user.value?.hasTrialOrPremium ??
+                                  false));
+                      final label = alreadyOnTrial
+                          ? 'Close'
+                          : trialAvailable
+                              ? 'Start free trial & continue'
+                              : 'Continue with free plan';
                       return GestureDetector(
                         onTap: subController.isLoading.value ||
                                 controller.isLoading.value
@@ -181,9 +192,7 @@ class PaymentView extends GetView<PaymentController> {
                             ),
                             SizedBox(width: R.width(8)),
                             Text(
-                              trialAvailable
-                                  ? "Start free trial & continue"
-                                  : "Continue with free plan",
+                              label,
                               style: AppTypography.labelSm.copyWith(
                                 color: AppColors.textWhite,
                               ),

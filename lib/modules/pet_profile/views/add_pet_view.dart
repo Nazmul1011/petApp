@@ -100,9 +100,14 @@ class AddPetView extends GetView<PetProfileController> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: R.width(2.0)),
-                    child: AppMaterialButton(
-                      label: "Create",
-                      onPressed: () => controller.savePet(isUpdating: false),
+                    child: Obx(
+                      () => AppMaterialButton(
+                        label: "Create",
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : () => controller.savePet(isUpdating: false),
+                        isLoading: controller.isLoading.value,
+                      ),
                     ),
                   ),
                   SizedBox(height: R.height(40.0)),

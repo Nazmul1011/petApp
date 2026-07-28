@@ -34,6 +34,9 @@ class PetProfileController extends GetxController with BaseController {
 
   final Rxn<XFile> imageFile = Rxn<XFile>();
 
+  /// Blocks double-taps on Update / Create before `isLoading` rebuilds the UI.
+  bool _saveInFlight = false;
+
   final List<String> petTypes = ['DOG', 'CAT'];
   final List<String> dogBreeds = [
     'Pitbull',
@@ -133,6 +136,8 @@ class PetProfileController extends GetxController with BaseController {
   }
 
   Future<void> savePet({bool isUpdating = false, String? id}) async {
+    if (_saveInFlight || isLoading.value) return;
+
     final name = isUpdating
         ? profileNameController.text.trim()
         : addNameController.text.trim();
@@ -150,6 +155,7 @@ class PetProfileController extends GetxController with BaseController {
       }
     }
 
+    _saveInFlight = true;
     try {
       setLoading(true);
 
@@ -204,6 +210,7 @@ class PetProfileController extends GetxController with BaseController {
     } catch (e) {
       showError(e.toString());
     } finally {
+      _saveInFlight = false;
       setLoading(false);
     }
   }

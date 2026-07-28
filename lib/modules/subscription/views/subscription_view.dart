@@ -62,7 +62,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: GestureDetector(
-                            onTap: () => Get.back(),
+                            onTap: () => controller.cancelSubscriptionPage(),
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
@@ -131,7 +131,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                                   title: "7 days free trial",
                                   subtitle: trialAvailable
                                       ? "No payment required"
-                                      : "then \$40/year",
+                                      : "then \$25/year",
                                   rightText: trialAvailable
                                       ? "Limited Pro samples"
                                       : "Full Pro access",
@@ -182,7 +182,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                         ),
                         SizedBox(height: R.height(24)),
                         GestureDetector(
-                          onTap: () => Get.back(),
+                          onTap: () => controller.cancelSubscriptionPage(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

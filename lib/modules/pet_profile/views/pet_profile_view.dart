@@ -245,11 +245,16 @@ class PetProfileView extends GetView<PetProfileController> {
           //     SizedBox(width: R.width(16)),
           //   ],
           // ),
-          AppMaterialButton(
-            label: "Update",
-            onPressed: () => controller.savePet(isUpdating: true, id: pet.id),
-            height: R.height(60),
-            borderRadius: 30,
+          Obx(
+            () => AppMaterialButton(
+              label: "Update",
+              onPressed: controller.isLoading.value
+                  ? null
+                  : () => controller.savePet(isUpdating: true, id: pet.id),
+              isLoading: controller.isLoading.value,
+              height: R.height(60),
+              borderRadius: 30,
+            ),
           ),
           SizedBox(height: R.height(40.0)),
         ],

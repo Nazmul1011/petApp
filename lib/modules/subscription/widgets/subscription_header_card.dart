@@ -29,9 +29,9 @@ class SubscriptionHeaderCard extends StatelessWidget {
       case SubscriptionPlan.yearlyRegular:
         return trialAvailable
             ? '7 days free,\nno card needed'
-            : '7 days free,\nthen \$40/year';
+            : '7 days free,\nthen \$25/year';
       case SubscriptionPlan.yearlyIntro:
-        return '\$1 first month,\nthen \$40/year';
+        return '\$1 first month,\nthen \$25/year';
       case SubscriptionPlan.yearlyStandard:
         return '\$25/year';
     }
