@@ -3,6 +3,7 @@ import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/payment/models/subscription_plan.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class SubscriptionHeaderCard extends StatelessWidget {
   final SubscriptionPlan plan;
@@ -88,8 +89,8 @@ class SubscriptionHeaderCard extends StatelessWidget {
           Positioned(
             right: -R.width(4),
             bottom: -R.height(6),
-            child: Image.asset(
-              'assets/images/payment_header1.png',
+            child: AppAssetImage(
+              'assets/images/payment_header1.webp',
               height: R.height(138),
               fit: BoxFit.contain,
               alignment: Alignment.bottomRight,

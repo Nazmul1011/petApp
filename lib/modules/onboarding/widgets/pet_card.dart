@@ -4,6 +4,7 @@ import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/modules/onboarding/controllers/onboarding_controller.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class DashedCirclePainter extends CustomPainter {
   final Color color;
@@ -147,7 +148,7 @@ class PetCard extends StatelessWidget {
                         scale: isSelected ? 1.15 : 1.0,
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeOutBack,
-                        child: Image.asset(
+                        child: AppAssetImage(
                           imagePath,
                           width: R.width(95),
                           height: R.width(95),

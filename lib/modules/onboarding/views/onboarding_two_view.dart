@@ -10,6 +10,7 @@ import 'package:petapp/shared/widgets/glass_container.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class OnboardingTwoView extends GetView<OnboardingTwoController> {
   const OnboardingTwoView({super.key});
@@ -186,7 +187,7 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
                                 ),
                               ),
                             )
-                          : Image.asset(
+                          : AppAssetImage(
                               'assets/images/onboarding_1/microphone.png',
                               width: R.width(50),
                               height: R.width(50),
@@ -255,10 +256,10 @@ class OnboardingTwoView extends GetView<OnboardingTwoController> {
           child: SizedBox(
             width: R.width(351),
             height: R.height(234),
-            child: Image.asset(
+            child: AppAssetImage(
               controller.selectedPet.value == PetType.dog
-                  ? 'assets/images/onboarding_1/dog sound 1.png'
-                  : 'assets/images/onboarding_1/Cat Sound 1.png',
+                  ? 'assets/images/onboarding_1/dog sound 1.webp'
+                  : 'assets/images/onboarding_1/Cat Sound 1.webp',
               width: R.width(351),
               height: R.height(234),
               fit: BoxFit.contain,

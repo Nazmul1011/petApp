@@ -21,7 +21,7 @@ class SavedTalksController extends GetxController {
   final isLoading = false.obs;
   final RxBool showHumanToPet = true.obs; // true = human→pet view active
   final RxInt playingIndex = (-1).obs;
-  final RxString petIcon = 'assets/images/dogwave.png'.obs;
+  final RxString petIcon = 'assets/images/dogwave.webp'.obs;
 
   @override
   void onInit() {
@@ -49,9 +49,9 @@ class SavedTalksController extends GetxController {
             orElse: () => pets.first,
           );
           if (activePet['type'] == 'CAT') {
-            petIcon.value = 'assets/images/catwave.png';
+            petIcon.value = 'assets/images/catwave.webp';
           } else {
-            petIcon.value = 'assets/images/dogwave.png';
+            petIcon.value = 'assets/images/dogwave.webp';
           }
         }
       }

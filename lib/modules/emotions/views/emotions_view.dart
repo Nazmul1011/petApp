@@ -5,6 +5,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 import '../controllers/emotions_controller.dart';
 import '../models/emotion_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -119,7 +120,7 @@ class EmotionsView extends GetView<EmotionsController> {
           )
         : Transform.scale(
             scale: 1.25,
-            child: Image.asset(
+            child: AppAssetImage(
               item.imagePath,
               width: double.infinity,
               height: double.infinity,
@@ -163,7 +164,7 @@ class EmotionsView extends GetView<EmotionsController> {
                   ),
                   if (item.isLocked)
                     Center(
-                      child: Image.asset(
+                      child: AppAssetImage(
                         'assets/images/Buton.png',
                         width: R.width(44),
                         height: R.width(44),

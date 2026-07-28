@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/core/themes/app_colors.dart';
+import 'package:petapp/modules/auth/controllers/auth_controller.dart';
+import 'package:petapp/modules/pet_profile/models/pet_model.dart' as pet;
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/shared/widgets/dashboard_page_title.dart';
 import 'package:petapp/shared/widgets/glass_container.dart';
 import 'package:petapp/modules/onboarding/widgets/waveform_widgets.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
+import 'package:petapp/shared/widgets/pet_avatar/pet_avatar.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
@@ -127,7 +131,7 @@ class DashboardView extends GetView<DashboardController> {
                       ],
                     ),
                     child: Center(
-                      child: Image.asset(
+                      child: AppAssetImage(
                         'assets/images/onboarding_1/microphone.png',
                         width: R.width(50),
                         height: R.width(50),
@@ -184,32 +188,40 @@ class DashboardView extends GetView<DashboardController> {
           horizontal: R.width(8),
         ),
         child: Obx(
-          () => Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
-              AnimatedRotation(
-                turns: controller.isHumanToDog.value ? 0.0 : 0.5,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                child: const Icon(
-                  Icons.swap_horiz,
-                  color: Colors.black,
-                  size: 24,
+          () {
+            // Rebuild when active pet / uploaded image changes.
+            final _ = AuthController.to.user.value;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildToggleAvatar(isHuman: controller.isHumanToDog.value),
+                AnimatedRotation(
+                  turns: controller.isHumanToDog.value ? 0.0 : 0.5,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: const Icon(
+                    Icons.swap_horiz,
+                    color: Colors.black,
+                    size: 24,
+                  ),
                 ),
-              ),
-              _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
-            ],
-          ),
+                _buildToggleAvatar(isHuman: !controller.isHumanToDog.value),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
   Widget _buildToggleAvatar({required bool isHuman}) {
+    final outerSize = R.width(50);
+    // Keep a clear white ring around the inner image (like the human emoji).
+    final innerSize = R.width(32);
+
     return Container(
-      width: R.width(50),
-      height: R.width(50),
+      width: outerSize,
+      height: outerSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.white,
@@ -218,23 +230,27 @@ class DashboardView extends GetView<DashboardController> {
           width: 1.0,
         ),
       ),
-      child: Center(
-        child: isHuman
-            ? Image.asset(
-                'assets/images/Emoji Image.png',
-                width: R.width(32),
-                height: R.width(32),
-                fit: BoxFit.contain,
-              )
-            : Image.asset(
-                controller.selectedPet.value == PetType.dog
-                    ? 'assets/images/dogwave.png'
-                    : 'assets/images/catwave.png',
-                width: R.width(32),
-                height: R.width(32),
-                fit: BoxFit.contain,
+      alignment: Alignment.center,
+      child: isHuman
+          ? AppAssetImage(
+              'assets/images/Emoji Image.png',
+              width: innerSize,
+              height: innerSize,
+              fit: BoxFit.contain,
+            )
+          : SizedBox(
+              width: innerSize,
+              height: innerSize,
+              child: PetAvatar(
+                // Uploaded pet photo when available; otherwise nicer dog/cat asset.
+                imageUrl: controller.activePetImageUrl,
+                type: controller.selectedPet.value == PetType.dog
+                    ? pet.PetType.DOG
+                    : pet.PetType.CAT,
+                size: innerSize,
+                fit: BoxFit.cover,
               ),
-      ),
+            ),
     );
   }
 }

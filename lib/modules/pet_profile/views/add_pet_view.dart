@@ -219,8 +219,8 @@ class AddPetView extends GetView<PetProfileController> {
                         ? Image.file(File(localImage.path), fit: BoxFit.cover)
                         : Image.asset(
                             controller.addSelectedType.value == 'DOG'
-                                ? "assets/images/dog image.png"
-                                : "assets/images/cat image.png",
+                                ? "assets/images/dog image.webp"
+                                : "assets/images/cat image.webp",
                             fit: BoxFit.cover,
                           ),
                   ),

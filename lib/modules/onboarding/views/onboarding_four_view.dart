@@ -6,6 +6,7 @@ import 'package:petapp/modules/onboarding/widgets/feature_card.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class OnboardingFourView extends GetView<OnboardingFourController> {
   const OnboardingFourView({super.key});
@@ -59,14 +60,9 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
                     OnboardingFeatureCard(
-                      icon: Image.asset(
+                      icon: AppAssetImage(
                         "assets/images/onbarding-4/picture.png",
                         fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) => const Icon(
-                          Icons.image_rounded,
-                          color: Color(0xFF7E57C2),
-                          size: 28,
-                        ),
                       ),
                       iconBgColor: const Color(0xFFF2ECFA),
                       title: "Pet profile",
@@ -74,14 +70,9 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       autoPlayDelay: const Duration(milliseconds: 500),
                     ),
                     OnboardingFeatureCard(
-                      icon: Image.asset(
+                      icon: AppAssetImage(
                         "assets/images/onbarding-4/voice.png",
                         fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) => const Icon(
-                          Icons.graphic_eq_rounded,
-                          color: Color(0xFF43A047),
-                          size: 28,
-                        ),
                       ),
                       iconBgColor: const Color(0xFFE5F6EE),
                       title: "Saved voices",
@@ -89,14 +80,9 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       autoPlayDelay: const Duration(milliseconds: 2300),
                     ),
                     OnboardingFeatureCard(
-                      icon: Image.asset(
+                      icon: AppAssetImage(
                         "assets/images/onbarding-4/training.png",
                         fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) => const Icon(
-                          Icons.sports_soccer_rounded,
-                          color: Color(0xFFFB8C00),
-                          size: 28,
-                        ),
                       ),
                       iconBgColor: const Color(0xFFFFF0E5),
                       title: "Games & training",
@@ -104,14 +90,9 @@ class OnboardingFourView extends GetView<OnboardingFourController> {
                       autoPlayDelay: const Duration(milliseconds: 4100),
                     ),
                     OnboardingFeatureCard(
-                      icon: Image.asset(
+                      icon: AppAssetImage(
                         "assets/images/onbarding-4/love.png",
                         fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) => const Icon(
-                          Icons.history_rounded,
-                          color: Color(0xFFE53935),
-                          size: 28,
-                        ),
                       ),
                       iconBgColor: const Color(0xFFFFF0F2),
                       title: "Mood history",

@@ -81,8 +81,8 @@ class PetProfileSetupView extends GetView<PetSetupController> {
                                             : Center(
                                                 child: Image.asset(
                                                   controller.selectedType.value == 'DOG'
-                                                      ? 'assets/images/dog image.png'
-                                                      : 'assets/images/cat image.png',
+                                                      ? 'assets/images/dog image.webp'
+                                                      : 'assets/images/cat image.webp',
                                                   width: R.width(70),
                                                   height: R.height(52),
                                                   fit: BoxFit.contain,

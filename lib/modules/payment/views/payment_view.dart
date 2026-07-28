@@ -7,6 +7,7 @@ import 'package:petapp/modules/auth/controllers/auth_controller.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 import '../controllers/payment_controller.dart';
 import '../models/subscription_plan.dart';
@@ -57,8 +58,8 @@ class PaymentView extends GetView<PaymentController> {
                   children: [
                     SizedBox(height: R.height(4)),
                     // Hero Image
-                    Image.asset(
-                      'assets/images/payment.png',
+                    AppAssetImage(
+                      'assets/images/payment.webp',
                       width: R.width(390),
                       height: R.height(220),
                       fit: BoxFit.contain,
@@ -184,7 +185,7 @@ class PaymentView extends GetView<PaymentController> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
+                            AppAssetImage(
                               'assets/images/Vector.png',
                               width: R.width(20),
                               height: R.width(20),

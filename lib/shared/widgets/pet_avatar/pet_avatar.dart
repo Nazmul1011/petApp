@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:petapp/modules/pet_profile/models/pet_model.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 /// Circular pet avatar that shows the uploaded pet image when available and
 /// falls back to the default dog/cat asset when [imageUrl] is missing or fails.
@@ -19,8 +20,8 @@ class PetAvatar extends StatelessWidget {
   });
 
   String get _fallbackAsset => type == PetType.CAT
-      ? 'assets/images/cat image.png'
-      : 'assets/images/dog image.png';
+      ? 'assets/images/cat image.webp'
+      : 'assets/images/dog image.webp';
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,9 @@ class PetAvatar extends StatelessWidget {
             placeholder: (context, url) => _buildFallback(),
             errorWidget: (context, url, error) => _buildFallback(),
           )
-        : _buildFallback();
+        : url.startsWith('assets/')
+            ? AppAssetImage(url, width: size, height: size, fit: fit)
+            : _buildFallback();
 
     return ClipOval(
       child: SizedBox(width: size, height: size, child: image),
@@ -44,7 +47,7 @@ class PetAvatar extends StatelessWidget {
   }
 
   Widget _buildFallback() {
-    return Image.asset(
+    return AppAssetImage(
       _fallbackAsset,
       width: size,
       height: size,

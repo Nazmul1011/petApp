@@ -6,6 +6,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class TalkHumanToPetView extends GetView<DashboardController> {
   const TalkHumanToPetView({super.key});
@@ -85,8 +86,8 @@ class TalkHumanToPetView extends GetView<DashboardController> {
         child: SizedBox(
           width: R.width(350),
           height: R.height(224),
-          child: Image.asset(
-            isDog ? 'assets/images/dogwave.png' : 'assets/images/catwave.png',
+          child: AppAssetImage(
+            isDog ? 'assets/images/dogwave.webp' : 'assets/images/catwave.webp',
             width: R.width(350),
             height: R.height(224),
             fit: BoxFit.contain,
@@ -176,7 +177,7 @@ class TalkHumanToPetView extends GetView<DashboardController> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Image.asset(
+      child: AppAssetImage(
         assetPath,
         width: R.width(48),
         height: R.width(48),

@@ -149,8 +149,8 @@ class OnboardingTwoController extends GetxController with BaseController {
 
   String get petImagePath {
     return selectedPet.value == PetType.dog
-        ? 'assets/images/dog image.png'
-        : 'assets/images/cat image.png';
+        ? 'assets/images/dog image.webp'
+        : 'assets/images/cat image.webp';
   }
 
   void completeOnboarding() {

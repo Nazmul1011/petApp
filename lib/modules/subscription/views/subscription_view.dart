@@ -6,6 +6,7 @@ import 'package:petapp/core/themes/app_typography.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/material_button/app_material_button.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 import '../../payment/models/subscription_plan.dart';
 import '../../payment/widgets/subscription_card.dart';
@@ -186,7 +187,7 @@ class SubscriptionView extends GetView<SubscriptionModuleController> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
+                              AppAssetImage(
                                 'assets/images/Vector.png',
                                 width: R.width(20),
                                 height: R.width(20),

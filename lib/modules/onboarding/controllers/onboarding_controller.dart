@@ -31,8 +31,8 @@ class OnboardingController extends GetxController with BaseController {
 
   void _showPopAnimation(PetType type) {
     final imagePath = type == PetType.dog
-        ? 'assets/images/dog image.png'
-        : 'assets/images/cat image.png';
+        ? 'assets/images/dog image.webp'
+        : 'assets/images/cat image.webp';
 
     Get.dialog(
       PetPopOverlay(imagePath: imagePath, onFinish: () => Get.back()),

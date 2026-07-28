@@ -4,6 +4,7 @@ import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class WelcomeSplashView extends StatefulWidget {
   const WelcomeSplashView({super.key});
@@ -28,7 +29,7 @@ class _WelcomeSplashViewState extends State<WelcomeSplashView> {
       backgroundColor: AppColors.primaryColor, // Purple background
       horizontalPadding: 0,
       body: Center(
-        child: Image.asset(
+        child: AppAssetImage(
           'assets/images/Logo Container.png',
           height: R.height(260),
           color: Colors.white,

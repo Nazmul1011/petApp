@@ -52,14 +52,14 @@ class OnboardingView extends GetView<OnboardingController> {
                   PetCard(
                     type: PetType.dog,
                     label: "Woof",
-                    imagePath: 'assets/images/onboarding_1/dog face 1.png',
+                    imagePath: 'assets/images/onboarding_1/dog face 1.webp',
                     isSelected: controller.selectedPet.value == PetType.dog,
                     onTap: () => controller.selectPet(PetType.dog),
                   ),
                   PetCard(
                     type: PetType.cat,
                     label: "Meow",
-                    imagePath: 'assets/images/onboarding_1/cat face 1.png',
+                    imagePath: 'assets/images/onboarding_1/cat face 1.webp',
                     isSelected: controller.selectedPet.value == PetType.cat,
                     onTap: () => controller.selectPet(PetType.cat),
                   ),

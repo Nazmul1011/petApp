@@ -4,6 +4,7 @@ import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/pet_avatar/pet_avatar.dart';
 import 'package:petapp/core/routes/app_routes.dart';
 import 'package:petapp/modules/pet_profile/models/pet_model.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
 import '../../modules/main/controllers/main_controller.dart';
 
@@ -33,7 +34,7 @@ class AppHeader extends StatelessWidget {
                   );
                 }
               },
-              child: Image.asset(
+              child: AppAssetImage(
                 'assets/images/HeaderLogo.png',
                 width: R.width(50),
                 height: R.width(50),
@@ -64,7 +65,7 @@ class AppHeader extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.subscription),
-                    child: Image.asset(
+                    child: AppAssetImage(
                       'assets/images/Crown Container.png',
                       width: R.width(50),
                       height: R.width(50),

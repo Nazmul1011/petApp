@@ -5,6 +5,7 @@ import 'package:petapp/core/themes/app_colors.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
 import 'package:petapp/shared/widgets/app_header.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 import '../controllers/whistle_controller.dart';
 
 class WhistleView extends GetView<WhistleController> {
@@ -39,7 +40,7 @@ class WhistleView extends GetView<WhistleController> {
                   GestureDetector(
                     onTap: () => _showInfoSheet(context),
                     behavior: HitTestBehavior.opaque,
-                    child: Image.asset(
+                    child: AppAssetImage(
                       'assets/images/Info icon.png',
                       width: R.width(24),
                       height: R.width(24),
@@ -102,7 +103,7 @@ class WhistleView extends GetView<WhistleController> {
                             ),
                           ),
                           child: Center(
-                            child: Image.asset(
+                            child: AppAssetImage(
                               'assets/images/whistle 2.png',
                               width: R.width(60),
                               height: R.width(60),

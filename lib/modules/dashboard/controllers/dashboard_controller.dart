@@ -74,6 +74,33 @@ class DashboardController extends GetxController with BaseController {
     }
   }
 
+  /// Active pet map from the signed-in user profile (if any).
+  Map<String, dynamic>? get activePetData {
+    final user = AuthController.to.user.value;
+    final pets = user?.pets;
+    if (pets == null || pets.isEmpty) return null;
+
+    final activePetId = user?.activePetId;
+    dynamic pet;
+    if (activePetId != null) {
+      pet = pets.firstWhere(
+        (p) => p is Map && p['id'] == activePetId,
+        orElse: () => pets.first,
+      );
+    } else {
+      pet = pets.first;
+    }
+    if (pet is Map<String, dynamic>) return pet;
+    if (pet is Map) return Map<String, dynamic>.from(pet);
+    return null;
+  }
+
+  /// Uploaded profile image for the active pet (null/empty → use default asset).
+  String? get activePetImageUrl {
+    final url = activePetData?['imageUrl'];
+    return url is String && url.isNotEmpty ? url : null;
+  }
+
   @override
   void onInit() {
     super.onInit();

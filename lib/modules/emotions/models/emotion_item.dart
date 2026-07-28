@@ -57,6 +57,6 @@ class EmotionItem {
     } else if (lowerName.contains('play') || lowerName.contains('happy')) {
       return 'assets/images/play dog 1.png';
     }
-    return 'assets/images/dog_happy_face.png';
+    return 'assets/images/dog_happy_face.webp';
   }
 }

@@ -8,6 +8,7 @@ import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../controllers/training_controller.dart';
 import '../models/training_item.dart';
 import 'package:petapp/core/routes/app_routes.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class TrainingView extends GetView<TrainingController> {
@@ -119,7 +120,7 @@ class TrainingView extends GetView<TrainingController> {
               size: 24,
             ),
           )
-        : Image.asset(
+        : AppAssetImage(
             item.imageUrl ?? 'assets/images/play dog 1.png',
             width: double.infinity,
             height: double.infinity,
@@ -158,7 +159,7 @@ class TrainingView extends GetView<TrainingController> {
             ),
             if (isLocked)
               Center(
-                child: Image.asset(
+                child: AppAssetImage(
                   'assets/images/Buton.png',
                   width: R.width(44),
                   height: R.width(44),
@@ -218,7 +219,7 @@ class TrainingView extends GetView<TrainingController> {
                               child: const Icon(Icons.broken_image, size: 40),
                             ),
                           )
-                        : Image.asset(
+                        : AppAssetImage(
                             item.imageUrl ?? 'assets/images/play dog 1.png',
                             width: R.width(350),
                             height: R.height(196),

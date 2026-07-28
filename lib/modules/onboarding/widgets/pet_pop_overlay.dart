@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 
 class PetPopOverlay extends StatefulWidget {
   final String imagePath;
@@ -88,7 +89,7 @@ class _PetPopOverlayState extends State<PetPopOverlay>
             scale: _scaleAnimation,
             child: Container(
               padding: const EdgeInsets.all(20),
-              child: Image.asset(
+              child: AppAssetImage(
                 widget.imagePath,
                 width: 260, // Slightly larger for more impact
                 height: 260,

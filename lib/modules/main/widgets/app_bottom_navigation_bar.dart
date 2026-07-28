@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petapp/modules/notification/controllers/notification_controller.dart';
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 import '../controllers/main_controller.dart';
 
 class AppBottomNavigationBar extends GetView<MainController> {
@@ -155,7 +156,7 @@ class AppBottomNavigationBar extends GetView<MainController> {
                 end: isSelected ? Colors.white : const Color(0xFF0A0A0A),
               ),
               builder: (context, color, child) {
-                final icon = Image.asset(
+                final icon = AppAssetImage(
                   assetPath,
                   width: R.width(32),
                   height: R.height(32),
