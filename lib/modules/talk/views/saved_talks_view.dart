@@ -5,8 +5,11 @@ import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:petapp/core/themes/app_colors.dart';
+import 'package:petapp/modules/pet_profile/models/pet_model.dart' as pet;
 import 'package:petapp/shared/helpers/responsive.dart';
+import 'package:petapp/shared/widgets/app_asset_image.dart';
 import 'package:petapp/shared/widgets/empty_state/app_empty_state.dart';
+import 'package:petapp/shared/widgets/pet_avatar/pet_avatar.dart';
 import 'package:petapp/shared/widgets/scaffold/app_scaffold.dart';
 import '../../talk/models/translation_model.dart';
 import '../../talk/services/talk_api_service.dart';
@@ -21,42 +24,55 @@ class SavedTalksController extends GetxController {
   final isLoading = false.obs;
   final RxBool showHumanToPet = true.obs; // true = human→pet view active
   final RxInt playingIndex = (-1).obs;
-  final RxString petIcon = 'assets/images/dogwave.webp'.obs;
+  final RxBool isDogPet = true.obs;
+  final RxnString petImageUrl = RxnString();
 
   @override
   void onInit() {
     super.onInit();
-    _updatePetIcon();
+    _updatePetAvatar();
     fetchSaved();
 
     _player.onPlayerComplete.listen((_) => playingIndex.value = -1);
 
-    // Dynamically update pet icon when the active user profile switches pets
+    // Dynamically update pet avatar when the active user profile switches pets
     ever(AuthController.to.user, (_) {
-      _updatePetIcon();
+      _updatePetAvatar();
     });
   }
 
-  void _updatePetIcon() {
+  void _updatePetAvatar() {
     try {
       final user = AuthController.to.user.value;
-      if (user != null) {
-        final activePetId = user.activePetId;
-        final pets = user.pets;
-        if (activePetId != null) {
-          final activePet = pets.firstWhere(
-            (p) => p['id'] == activePetId,
-            orElse: () => pets.first,
-          );
-          if (activePet['type'] == 'CAT') {
-            petIcon.value = 'assets/images/catwave.webp';
-          } else {
-            petIcon.value = 'assets/images/dogwave.webp';
-          }
-        }
+      if (user == null) return;
+
+      final pets = user.pets;
+      if (pets.isEmpty) return;
+
+      final activePetId = user.activePetId;
+      dynamic activePet;
+      if (activePetId != null) {
+        activePet = pets.firstWhere(
+          (p) => p is Map && p['id'] == activePetId,
+          orElse: () => pets.first,
+        );
+      } else {
+        activePet = pets.first;
       }
+
+      final petMap = activePet is Map<String, dynamic>
+          ? activePet
+          : activePet is Map
+              ? Map<String, dynamic>.from(activePet)
+              : null;
+      if (petMap == null) return;
+
+      isDogPet.value = petMap['type'] != 'CAT';
+      final url = petMap['imageUrl'];
+      petImageUrl.value =
+          url is String && url.isNotEmpty ? url : null;
     } catch (e) {
-      print('[SavedTalks] Error updating pet icon: $e');
+      print('[SavedTalks] Error updating pet avatar: $e');
     }
   }
 
@@ -86,7 +102,7 @@ class SavedTalksController extends GetxController {
             audioUrl.startsWith('/public/'))) {
       final input = item.inputText?.trim().toLowerCase();
       if (input != null && input.isNotEmpty) {
-        final isDog = petIcon.value.contains('dog');
+        final isDog = isDogPet.value;
         final learned = GetStorage().read('learned_${isDog ? 'dog' : 'cat'}_$input');
         if (learned is String && learned.isNotEmpty) {
           audioUrl = learned;
@@ -369,23 +385,32 @@ class SavedTalksView extends StatelessWidget {
                 ),
               ),
               child: Obx(
-                () => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildToggleAvatar(controller, isHuman: controller.showHumanToPet.value),
-                    AnimatedRotation(
-                      turns: controller.showHumanToPet.value ? 0.0 : 0.5,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: const Icon(
-                        Icons.swap_horiz,
-                        color: Colors.black,
-                        size: 24,
+                () {
+                  final _ = AuthController.to.user.value;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildToggleAvatar(
+                        controller,
+                        isHuman: controller.showHumanToPet.value,
                       ),
-                    ),
-                    _buildToggleAvatar(controller, isHuman: !controller.showHumanToPet.value),
-                  ],
-                ),
+                      AnimatedRotation(
+                        turns: controller.showHumanToPet.value ? 0.0 : 0.5,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        child: const Icon(
+                          Icons.swap_horiz,
+                          color: Colors.black,
+                          size: 24,
+                        ),
+                      ),
+                      _buildToggleAvatar(
+                        controller,
+                        isHuman: !controller.showHumanToPet.value,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -394,20 +419,45 @@ class SavedTalksView extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleAvatar(SavedTalksController controller, {required bool isHuman}) {
-    return isHuman
-        ? Image.asset(
-            'assets/images/Emoji Image.png',
-            width: R.width(32),
-            height: R.width(32),
-            fit: BoxFit.contain,
-          )
-        : Image.asset(
-            controller.petIcon.value,
-            width: R.width(32),
-            height: R.width(32),
-            fit: BoxFit.contain,
-          );
+  Widget _buildToggleAvatar(
+    SavedTalksController controller, {
+    required bool isHuman,
+  }) {
+    final outerSize = R.width(50);
+    final innerSize = R.width(32);
+
+    return Container(
+      width: outerSize,
+      height: outerSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        border: Border.all(
+          color: Colors.black.withValues(alpha: 0.06),
+          width: 1.0,
+        ),
+      ),
+      alignment: Alignment.center,
+      child: isHuman
+          ? AppAssetImage(
+              'assets/images/Emoji Image.png',
+              width: innerSize,
+              height: innerSize,
+              fit: BoxFit.contain,
+            )
+          : SizedBox(
+              width: innerSize,
+              height: innerSize,
+              child: PetAvatar(
+                imageUrl: controller.petImageUrl.value,
+                type: controller.isDogPet.value
+                    ? pet.PetType.DOG
+                    : pet.PetType.CAT,
+                size: innerSize,
+                fit: BoxFit.cover,
+              ),
+            ),
+    );
   }
 }
 
